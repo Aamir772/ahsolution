@@ -1,0 +1,13 @@
+{
+  "name": "ah-solution",
+  "version": "2.0.0",
+  "description": "Premium cinematic static website for AH Solution — plain HTML, CSS, and vanilla JavaScript.",
+  "private": true,
+  "scripts": {
+    "start": "python -m http.server 8000"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs"
+}
