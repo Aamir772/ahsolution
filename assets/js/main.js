@@ -1,6 +1,14 @@
 /* ==========================================================================
-   AH SOLUTION — main.js
+   AH SOLUTION — main.js (v4)
    Zero-dependency vanilla JS. Everything degrades gracefully.
+   Sections:
+      1 mobile nav   2 nav indicator  3 year   4 sticky header  5 scroll reveal
+      6 tilt         7 hero parallax  8 globe (see globe.js)  9 video facades (delegated)
+      10 dynamic video data   11 blog filter   12 reading progress
+      13 search modal   14 newsletter   15 copy link
+   Motion notes: durations/easings come from tokens.css (Motion-Primitives
+   patterns reimplemented in CSS). Reveal elements use .reveal/.in and are
+   observed once, including content injected later (see window.ahReveal).
    ========================================================================== */
 (() => {
   'use strict';
@@ -8,68 +16,144 @@
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const $  = (sel, root = document) => root.querySelector(sel);
   const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
+  const esc = (s = '') => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+  /* Device-world aware scroll source: the monitor scroller when nested-scrolling
+     is active, otherwise the window (mobile / full-width / no device markup). */
+  const deviceScreen = $('[data-device-screen]');
+  const nestedScroll = () => !!deviceScreen && getComputedStyle(deviceScreen).overflowY === 'auto';
+  const scrollTopOf = () => nestedScroll() ? deviceScreen.scrollTop : window.scrollY;
+  const viewportHeight = () => nestedScroll() ? deviceScreen.clientHeight : window.innerHeight;
+  const scrollRoot = deviceScreen || window;
 
   /* ------------------------------------------------------------------ *
    * 1. Mobile navigation
    * ------------------------------------------------------------------ */
   const toggle = $('.menu-toggle');
-  const links  = $('.nav-links');
-  if (toggle && links) {
-    toggle.addEventListener('click', () => {
-      const open = toggle.getAttribute('aria-expanded') === 'true';
-      toggle.setAttribute('aria-expanded', String(!open));
-      links.classList.toggle('open', !open);
-    });
-    $$('a', links).forEach(a => a.addEventListener('click', () => {
-      links.classList.remove('open');
-      toggle.setAttribute('aria-expanded', 'false');
-    }));
+  const navLinksEl = $('.nav-links');
+  if (toggle && navLinksEl) {
+    const setOpen = (open) => {
+      toggle.setAttribute('aria-expanded', String(open));
+      navLinksEl.classList.toggle('open', open);
+      if (open) { const first = $('a', navLinksEl); if (first) first.focus({ preventScroll: true }); }
+    };
+    // each link gets an index so CSS can stagger the open animation
+    $$('a', navLinksEl).forEach((a, i) => a.style.setProperty('--i', i));
+    toggle.addEventListener('click', () => setOpen(toggle.getAttribute('aria-expanded') !== 'true'));
+    $$('a', navLinksEl).forEach(a => a.addEventListener('click', () => setOpen(false)));
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && navLinksEl.classList.contains('open')) setOpen(false); });
   }
 
   /* ------------------------------------------------------------------ *
-   * 2. Current year
+   * 2. Animated nav indicator (glass pill follows active / hover)
+   * ------------------------------------------------------------------ */
+  (function navIndicator() {
+    const pill = $('.nav-pill');
+    const nav = $('.nav-links');
+    if (!pill || !nav) return;
+    const links = $$('a', nav);
+    const activeLink = $('a.active', nav) || links[0];
+    const moveTo = (el) => {
+      if (!el) return;
+      const r = el.getBoundingClientRect();
+      const pr = nav.getBoundingClientRect();
+      pill.style.width = r.width + 'px';
+      pill.style.transform = `translate(${Math.round(r.left - pr.left)}px, -50%)`;
+      pill.classList.add('ready');
+    };
+    const reset = () => moveTo(activeLink);
+    links.forEach(a => {
+      a.addEventListener('pointerenter', () => moveTo(a));
+      a.addEventListener('focus', () => moveTo(a));
+    });
+    nav.addEventListener('pointerleave', reset);
+    window.addEventListener('resize', reset, { passive: true });
+    window.addEventListener('load', reset);
+    setTimeout(reset, 60);
+  })();
+
+  /* ------------------------------------------------------------------ *
+   * 3. Current year
    * ------------------------------------------------------------------ */
   $$('[data-year]').forEach(el => { el.textContent = new Date().getFullYear(); });
 
   /* ------------------------------------------------------------------ *
-   * 3. Sticky header state
+   * 3b. 3D social icons (hero lower area; footer brand as fallback)
+   * ------------------------------------------------------------------ */
+  (function socialIcons() {
+    const host = $('.hero-copy') || $('.footer-brand');
+    if (!host || $('.social-3d', host)) return;
+    const ICONS = [
+      { cls: 'social-3d__btn--yt', label: 'AH Solution on YouTube', href: 'https://www.youtube.com/channel/UC_LdZmWha8cvotco41D77fw',
+        svg: '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M23.5 6.6a3 3 0 0 0-2.1-2.1C19.5 4 12 4 12 4s-7.5 0-9.4.5A3 3 0 0 0 .5 6.6 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.4 3 3 0 0 0 2.1 2.1C4.5 20 12 20 12 20s7.5 0 9.4-.5a3 3 0 0 0 2.1-2.1A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.4zM9.6 15.6V8.4l6.2 3.6-6.2 3.6z"/></svg>' },
+      { cls: 'social-3d__btn--ig', label: 'AH Solution on Instagram', href: 'https://www.instagram.com/ahsolutions01/',
+        svg: '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M12 2.2c3.2 0 3.6 0 4.9.1 1.2.1 1.8.3 2.2.4.6.2 1 .5 1.4.9.4.4.7.8.9 1.4.2.4.4 1 .4 2.2.1 1.3.1 1.7.1 4.9s0 3.6-.1 4.9c-.1 1.2-.3 1.8-.4 2.2-.2.6-.5 1-.9 1.4-.4.4-.8.7-1.4.9-.4.2-1 .4-2.2.4-1.3.1-1.7.1-4.9.1s-3.6 0-4.9-.1c-1.2-.1-1.8-.3-2.2-.4a3.8 3.8 0 0 1-1.4-.9 3.8 3.8 0 0 1-.9-1.4c-.2-.4-.4-1-.4-2.2C2.2 15.6 2.2 15.2 2.2 12s0-3.6.1-4.9c.1-1.2.3-1.8.4-2.2.2-.6.5-1 .9-1.4.4-.4.8-.7 1.4-.9.4-.2 1-.4 2.2-.4C8.4 2.2 8.8 2.2 12 2.2zm0 1.8c-3.1 0-3.5 0-4.7.1-.9 0-1.4.2-1.7.3-.4.2-.7.4-1 .7-.3.3-.5.6-.7 1-.1.3-.3.8-.3 1.7C3.5 8.9 3.5 9.3 3.5 12s0 3.1.1 4.3c0 .9.2 1.4.3 1.7.2.4.4.7.7 1 .3.3.6.5 1 .7.3.1.8.3 1.7.3 1.2.1 1.6.1 4.7.1s3.5 0 4.7-.1c.9 0 1.4-.2 1.7-.3.4-.2.7-.4 1-.7.3-.3.5-.6.7-1 .1-.3.3-.8.3-1.7.1-1.2.1-1.6.1-4.3s0-3.1-.1-4.3c0-.9-.2-1.4-.3-1.7a2.7 2.7 0 0 0-.7-1 2.7 2.7 0 0 0-1-.7c-.3-.1-.8-.3-1.7-.3-1.2-.1-1.6-.1-4.7-.1zm0 3.1a4.7 4.7 0 1 1 0 9.4 4.7 4.7 0 0 1 0-9.4zm0 7.7a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm6-7.9a1.1 1.1 0 1 1-2.2 0 1.1 1.1 0 0 1 2.2 0z"/></svg>' },
+      { cls: 'social-3d__btn--fb', label: 'AH Solution on Facebook', href: 'https://www.facebook.com/ahsolutions001',
+        svg: '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M24 12a12 12 0 1 0-13.9 11.9v-8.4H7.1V12h3V9.4c0-3 1.8-4.6 4.5-4.6 1.3 0 2.7.2 2.7.2v2.9h-1.5c-1.5 0-2 .9-2 1.9V12h3.3l-.5 3.5h-2.8v8.4A12 12 0 0 0 24 12z"/></svg>' }
+    ];
+    const nav = document.createElement('nav');
+    nav.className = 'social-3d';
+    nav.setAttribute('aria-label', 'AH Solution on social media');
+    nav.innerHTML = ICONS.map(i =>
+      `<a class="social-3d__btn ${i.cls}" href="${i.href}" target="_blank" rel="noopener noreferrer" aria-label="${i.label}">${i.svg}</a>`
+    ).join('');
+    host.appendChild(nav);
+  })();
+
+  /* ------------------------------------------------------------------ *
+   * 4. Sticky header state
    * ------------------------------------------------------------------ */
   const header = $('.site-header');
   if (header) {
-    const onScroll = () => header.classList.toggle('scrolled', window.scrollY > 12);
+    const onScroll = () => header.classList.toggle('scrolled', scrollTopOf() > 12);
     onScroll();
-    window.addEventListener('scroll', onScroll, { passive: true });
+    scrollRoot.addEventListener('scroll', onScroll, { passive: true });
   }
 
   /* ------------------------------------------------------------------ *
-   * 4. Scroll-reveal
+   * 5. Scroll-reveal  (one observer; works for content injected later)
    * ------------------------------------------------------------------ */
-  const revealEls = $$('.reveal');
-  if (revealEls.length) {
-    if ('IntersectionObserver' in window && !reduceMotion) {
-      const io = new IntersectionObserver((entries) => {
-        entries.forEach(en => {
-          if (en.isIntersecting) { en.target.classList.add('in'); io.unobserve(en.target); }
-        });
-      }, { rootMargin: '0px 0px -8% 0px', threshold: 0.12 });
-      revealEls.forEach(el => io.observe(el));
-    } else {
-      revealEls.forEach(el => el.classList.add('in'));
-    }
+  const revealSeen = new WeakSet();
+  let revealIO = null;
+  if ('IntersectionObserver' in window && !reduceMotion) {
+    revealIO = new IntersectionObserver((entries) => {
+      entries.forEach(en => {
+        if (!en.isIntersecting) return;
+        en.target.classList.add('in');
+        revealIO.unobserve(en.target);
+      });
+    }, { rootMargin: '0px 0px -8% 0px', threshold: 0.12 });
+  }
+  const observeReveal = (el) => {
+    if (!el || revealSeen.has(el)) return;
+    revealSeen.add(el);
+    if (revealIO) revealIO.observe(el); else el.classList.add('in');
+  };
+  window.ahReveal = (root) => {
+    const scope = root || document;
+    if (scope.classList && scope.classList.contains('reveal')) observeReveal(scope);
+    $$('.reveal', scope).forEach(observeReveal);
+  };
+  $$('.reveal').forEach(observeReveal);
+  // cards rendered by scripts (video data, CMS lists, filters) reveal too
+  if ('MutationObserver' in window) {
+    new MutationObserver((muts) => {
+      muts.forEach(m => m.addedNodes.forEach(n => {
+        if (n.nodeType !== 1) return;
+        if (n.classList && n.classList.contains('reveal')) observeReveal(n);
+        $$('.reveal', n).forEach(observeReveal);
+      }));
+    }).observe(document.body, { childList: true, subtree: true });
   }
 
   /* ------------------------------------------------------------------ *
-   * 5. 3D tilt on cards
+   * 6. 3D tilt on cards
    * ------------------------------------------------------------------ */
   const fine = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
   if (fine && !reduceMotion) {
     $$('[data-tilt]').forEach(el => {
       const max = Number(el.dataset.tilt) || 7;
       let frame = null;
-      const apply = (rx, ry) => {
-        el.style.transform =
-          `perspective(1000px) rotateX(${rx}deg) rotateY(${ry}deg) translateY(-4px)`;
-      };
       el.addEventListener('pointermove', (e) => {
         const r = el.getBoundingClientRect();
         const px = (e.clientX - r.left) / r.width;
@@ -79,22 +163,19 @@
         if (frame) return;
         frame = requestAnimationFrame(() => {
           frame = null;
-          apply((0.5 - py) * max, (px - 0.5) * max);
+          el.style.transform = `perspective(1000px) rotateX(${(0.5 - py) * max}deg) rotateY(${(px - 0.5) * max}deg) translateY(-4px)`;
         });
       });
-      el.addEventListener('pointerleave', () => {
-        el.style.transform = '';
-      });
+      el.addEventListener('pointerleave', () => { el.style.transform = ''; });
     });
   }
 
   /* ------------------------------------------------------------------ *
-   * 6. Hero parallax
+   * 7. Hero parallax
    * ------------------------------------------------------------------ */
   const hero = $('.hero');
   if (hero && fine && !reduceMotion) {
     const core = $('[data-hero-core]');
-    let idle;
     hero.addEventListener('pointermove', (e) => {
       const r = hero.getBoundingClientRect();
       const nx = (e.clientX - r.left) / r.width;
@@ -106,217 +187,184 @@
       if (core && core.pointer) core.pointer(nx - 0.5, ny - 0.5);
     });
     hero.addEventListener('pointerleave', () => {
-      hero.style.setProperty('--px', '0');
-      hero.style.setProperty('--py', '0');
-      hero.style.setProperty('--mx', '78%');
-      hero.style.setProperty('--my', '20%');
+      hero.style.setProperty('--px', '0'); hero.style.setProperty('--py', '0');
+      hero.style.setProperty('--mx', '78%'); hero.style.setProperty('--my', '20%');
       if (core && core.pointer) core.pointer(0, 0);
     });
   }
 
   /* ------------------------------------------------------------------ *
-   * 7. Hero 3D particle core (canvas 2D — no external 3D library)
+   * 9. Video facades — click to load the real YouTube embed (delegated,
+   *    so cards rendered later from data also work)
    * ------------------------------------------------------------------ */
-  (function heroCore() {
-    const canvas = $('[data-hero-core] canvas');
-    if (!canvas) return;
-    const ctx = canvas.getContext && canvas.getContext('2d');
-    if (!ctx) return; // graceful fallback: CSS orb stays
+  document.addEventListener('click', (e) => {
+    const btn = e.target.closest('[data-video-id]');
+    if (btn) { e.preventDefault(); loadFacade(btn); }
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key !== 'Enter' && e.key !== ' ') return;
+    const btn = e.target.closest && e.target.closest('[data-video-id]');
+    if (btn) { e.preventDefault(); loadFacade(btn); }
+  });
+  function loadFacade(btn) {
+    const id = btn.dataset.videoId;
+    const title = btn.dataset.videoTitle || 'YouTube video';
+    const frame = document.createElement('iframe');
+    frame.src = `https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0`;
+    frame.title = title;
+    frame.loading = 'lazy';
+    frame.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
+    frame.referrerPolicy = 'strict-origin-when-cross-origin';
+    frame.allowFullscreen = true;
+    btn.replaceWith(frame);
+  }
 
-    const wrap = canvas.parentElement;
-    let W = 0, H = 0, cx = 0, cy = 0, R = 0, dpr = 1;
+  /* ------------------------------------------------------------------ *
+   * 10. Dynamic video highlights / library / shorts (from videos.json)
+   * ------------------------------------------------------------------ */
+  (function videoData() {
+    const containers = {
+      highlights: $$('[data-video-highlights]'),
+      latest: $$('[data-latest-videos]'),
+      shorts: $$('[data-shorts-rail]')
+    };
+    if (!containers.highlights.length && !containers.latest.length && !containers.shorts.length) return;
 
-    const N = 520;
-    const points = [];
-    for (let i = 0; i < N; i++) {
-      const y = 1 - (i / (N - 1)) * 2;
-      const rr = Math.sqrt(Math.max(0, 1 - y * y));
-      const theta = i * Math.PI * (3 - Math.sqrt(5));
-      points.push({ x: Math.cos(theta) * rr, y, z: Math.sin(theta) * rr, tw: Math.random() * Math.PI * 2 });
+    const base = location.pathname.includes('/guides/') ? '../' : '';
+    const statusEls = $$('[data-video-status]');
+
+    // Clearly-labelled offline snapshot. Used only if the live JSON cannot load,
+    // and marked as cached in the UI so it is never mistaken for live data.
+    const FALLBACK = {
+      source: 'cached-snapshot', generatedAt: null,
+      videos: [
+        { id: 'iyHKLgdU2Rs', title: 'HP Pavilion Ryzen 5 Laptop Unboxing Teaser', url: 'https://www.youtube.com/shorts/iyHKLgdU2Rs', isShort: true, published: '2021-08-22T16:59:05+00:00', thumbnail: 'https://i2.ytimg.com/vi/iyHKLgdU2Rs/hqdefault.jpg', views: 15501, likes: 25, durationSeconds: 22 },
+        { id: 'GVZDxvv6Ew0', title: 'How to Set Live Wallpaper on PC Using MLWApp', url: 'https://www.youtube.com/watch?v=GVZDxvv6Ew0', isShort: false, published: '2020-12-16T04:02:39+00:00', thumbnail: 'https://i4.ytimg.com/vi/GVZDxvv6Ew0/hqdefault.jpg', views: 563, likes: 29, durationSeconds: 206 },
+        { id: 'TSajmI9B0Lc', title: 'AQFIT W15 Smartwatch Unboxing & Review', url: 'https://www.youtube.com/watch?v=TSajmI9B0Lc', isShort: false, published: '2021-06-24T16:34:44+00:00', thumbnail: 'https://i1.ytimg.com/vi/TSajmI9B0Lc/hqdefault.jpg', views: 3466, likes: 163, durationSeconds: 289 },
+        { id: 'StUH6IwFz-k', title: '5 Unique Android Apps You Should Try!', url: 'https://www.youtube.com/watch?v=StUH6IwFz-k', isShort: false, published: '2021-05-12T05:30:02+00:00', thumbnail: 'https://i4.ytimg.com/vi/StUH6IwFz-k/hqdefault.jpg', views: 3435, likes: 274, durationSeconds: 428 },
+        { id: 'MMWnwjDwdbw', title: 'HP Pavilion Gaming Ryzen 5 Unboxing & Review', url: 'https://www.youtube.com/watch?v=MMWnwjDwdbw', isShort: false, published: '2021-10-04T07:18:51+00:00', thumbnail: 'https://i2.ytimg.com/vi/MMWnwjDwdbw/hqdefault.jpg', views: 3752, likes: 45, durationSeconds: 307 }
+      ]
+    };
+
+    const playSvg = '<svg width="20" height="20" viewBox="0 0 24 24" fill="#fff" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>';
+    const shortSvg = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M10 8l6 4-6 4V8z"/><rect x="3" y="3" width="18" height="18" rx="5" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>';
+
+    const fmtViews = (n) => n == null ? null : n >= 1e6 ? (n / 1e6).toFixed(1).replace(/\.0$/, '') + 'M' : n >= 1e3 ? (n / 1e3).toFixed(1).replace(/\.0$/, '') + 'K' : String(n);
+    const fmtDur = (s) => {
+      if (s == null) return null;
+      const h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), sec = s % 60;
+      return (h ? h + ':' + String(m).padStart(2, '0') : String(m)) + ':' + String(sec).padStart(2, '0');
+    };
+    const days = (v) => Math.max(1, (Date.now() - new Date(v.published).getTime()) / 86400000);
+    const meta = (v, extra) => {
+      const bits = [];
+      if (v.views != null) bits.push('<b>' + fmtViews(v.views) + '</b> views');
+      if (v.likes != null) bits.push('<b>' + fmtViews(v.likes) + '</b> likes');
+      const d = fmtDur(v.durationSeconds);
+      if (d) bits.push('<b>' + d + '</b>');
+      if (extra) bits.push(extra);
+      return '<div class="video-stats">' + bits.map(b => '<span>' + b + '</span>').join('') + '</div>';
+    };
+
+    const facade = (v, cls) => {
+      const t = esc(v.title);
+      return `<button class="${cls}" data-video-id="${esc(v.id)}" data-video-title="${t}" aria-label="Play: ${t}">` +
+        `<img src="${esc(v.thumbnail)}" alt="" loading="lazy" decoding="async" width="480" height="360" onerror="this.onerror=null;this.src='https://i.ytimg.com/vi/${esc(v.id)}/mqdefault.jpg'">` +
+        `<span class="facade-play" aria-hidden="true">${playSvg}</span></button>`;
+    };
+
+    const latestCard = (v, delay) => `<div class="video-card reveal" data-delay="${delay || 0}">` +
+      facade(v, 'video-facade') +
+      `<div class="video-info"><h3>${esc(v.title)}</h3>${meta(v, v.isShort ? 'Short' : '')}</div></div>`;
+
+    const highlightDefs = {
+      top: { cls: 'hl-card--top', label: 'Top video', rule: 'Highest total views on the channel' },
+      trending: { cls: 'hl-card--trending', label: 'Trending', rule: 'Highest average views per day since upload (view velocity)' },
+      liked: { cls: 'hl-card--liked', label: 'Most liked', rule: 'Highest public like count' }
+    };
+    const highlightCard = (kind, v, rule) => {
+      const def = highlightDefs[kind];
+      const t = esc(v.title);
+      const statVal = kind === 'liked' ? fmtViews(v.likes) : fmtViews(v.views);
+      const statLbl = kind === 'liked' ? 'likes' : 'views';
+      const extra = fmtDur(v.durationSeconds);
+      return `<article class="hl-card ${def.cls} reveal">` +
+        `<button class="hl-thumb" data-video-id="${esc(v.id)}" data-video-title="${t}" aria-label="Play: ${t}">` +
+        `<img src="${esc(v.thumbnail)}" alt="" loading="lazy" decoding="async" width="480" height="360" onerror="this.onerror=null;this.src='https://i.ytimg.com/vi/${esc(v.id)}/mqdefault.jpg'">` +
+        `<span class="hl-tag"><span class="dot"></span>${esc(def.label)}${v.isShort ? ' · Short' : ''}</span>` +
+        `<span class="hl-play" aria-hidden="true">${playSvg}</span></button>` +
+        `<div class="hl-body"><h3>${t}</h3>` +
+        `<div class="hl-stat">${statVal != null ? `<b>${statVal}</b><span>${statLbl}</span>` : '<b>—</b><span>' + statLbl + ' unavailable</span>'}${extra ? `<span>· ${extra}</span>` : ''}</div>` +
+        `<div class="hl-foot"><a href="${esc(v.url)}" target="_blank" rel="noopener noreferrer">Watch on YouTube ↗</a><span class="muted" style="font-size:10px">${esc(rule)}</span></div>` +
+        `</div></article>`;
+    };
+
+    const shortCard = (v) => {
+      const t = esc(v.title);
+      return `<a class="short-card" href="${esc(v.url)}" target="_blank" rel="noopener noreferrer" aria-label="Watch Short: ${t}">` +
+        `<img src="${esc(v.thumbnail)}" alt="" loading="lazy" decoding="async" width="480" height="360" onerror="this.onerror=null;this.src='https://i.ytimg.com/vi/${esc(v.id)}/mqdefault.jpg'">` +
+        `<span class="short-badge">${shortSvg} Short</span>` +
+        `<span class="short-play" aria-hidden="true">${playSvg}</span>` +
+        `<span class="short-info"><h3>${t}</h3>${meta(v, null)}</span></a>`;
+    };
+
+    function setStatus(text, cached) {
+      statusEls.forEach(el => {
+        el.innerHTML = '<span class="data-badge' + (cached ? ' is-cache' : '') + '"><span class="dot"></span>' +
+          (cached ? 'Cached snapshot' : 'Live channel data') + '</span><span>' + esc(text) + '</span>';
+      });
     }
 
-    // three tilted orbit rings
-    const rings = [
-      { ax: 0.4, ay: 0.0, az: 0.0, spd: 0.9 },
-      { ax: 1.2, ay: 0.5, az: 0.3, spd: -0.7 },
-      { ax: -0.6, ay: 0.9, az: 1.1, spd: 0.5 }
-    ].map(r => {
-      const pts = [];
-      for (let i = 0; i <= 72; i++) {
-        const a = (i / 72) * Math.PI * 2;
-        pts.push({ x: Math.cos(a), y: 0, z: Math.sin(a) });
-      }
-      return { ...r, pts, phase: Math.random() * Math.PI * 2 };
-    });
+    function render(data, cached) {
+      const videos = (data.videos || []).filter(v => v && v.id);
+      const byViews = [...videos].sort((a, b) => (b.views ?? 0) - (a.views ?? 0));
+      const top = byViews[0];
+      const liked = videos.filter(v => v.likes != null).sort((a, b) => b.likes - a.likes)[0];
+      const trending = videos
+        .filter(v => v.id !== top?.id && v.id !== liked?.id)
+        .sort((a, b) => ((b.views ?? 0) / days(b)) - ((a.views ?? 0) / days(a)))[0];
 
-    let mx = 0, my = 0, tmx = 0, tmy = 0;
-    let running = false, raf = 0, start = performance.now();
-    const fov = 2.35;
+      const hlPicks = [['top', top], ['trending', trending], ['liked', liked]].filter(([, v]) => v);
+      const hlIds = new Set(hlPicks.map(([, v]) => v.id));
 
-    function rot(p, ax, ay, az) {
-      let { x, y, z } = p;
-      if (az) { const c = Math.cos(az), s = Math.sin(az); const nx = x * c - y * s; y = x * s + y * c; x = nx; }
-      const cyy = Math.cos(ay), syy = Math.sin(ay);
-      let nx = x * cyy - z * syy; z = x * syy + z * cyy; x = nx;
-      const cxx = Math.cos(ax), sxx = Math.sin(ax);
-      const ny = y * cxx - z * sxx; z = y * sxx + z * cxx; y = ny;
-      return { x, y, z };
-    }
-
-    function project(p, ax, ay) {
-      const q = rot(p, ax, ay, 0);
-      const s = fov / (fov + q.z);
-      return { sx: cx + q.x * R * s, sy: cy + q.y * R * s, s, z: q.z };
-    }
-
-    function resize() {
-      const rect = wrap.getBoundingClientRect();
-      dpr = Math.min(window.devicePixelRatio || 1, 2);
-      W = Math.max(1, rect.width);
-      H = Math.max(1, rect.height);
-      canvas.width = W * dpr;
-      canvas.height = H * dpr;
-      canvas.style.width = W + 'px';
-      canvas.style.height = H + 'px';
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      cx = W / 2; cy = H / 2;
-      R = Math.min(W, H) * 0.37;
-    }
-
-    function draw(now) {
-      const t = (now - start) * 0.001;
-      mx += (tmx - mx) * 0.06;
-      my += (tmy - my) * 0.06;
-      const ay = t * 0.35 + mx * 0.9;
-      const ax = Math.sin(t * 0.22) * 0.22 + my * 0.7;
-
-      ctx.clearRect(0, 0, W, H);
-
-      // core glow
-      const g = ctx.createRadialGradient(cx, cy, 0, cx, cy, R * 0.95);
-      g.addColorStop(0, 'rgba(229,9,20,0.30)');
-      g.addColorStop(0.35, 'rgba(139,0,0,0.16)');
-      g.addColorStop(1, 'rgba(0,0,0,0)');
-      ctx.fillStyle = g;
-      ctx.beginPath();
-      ctx.arc(cx, cy, R * 0.95, 0, Math.PI * 2);
-      ctx.fill();
-
-      // orbit rings
-      ctx.lineWidth = 1;
-      rings.forEach(rg => {
-        const rr = rot(rot(rg.pts[0], rg.ax, ay + rg.phase, rg.az), ax, 0, 0);
-        ctx.beginPath();
-        for (let i = 0; i < rg.pts.length; i++) {
-          const q = rot(rg.pts[i], rg.ax, ay + rg.phase, rg.az);
-          const w = rot(q, ax, 0, 0);
-          const s = fov / (fov + w.z);
-          const X = cx + w.x * R * s;
-          const Y = cy + w.y * R * s;
-          if (i === 0) ctx.moveTo(X, Y); else ctx.lineTo(X, Y);
-        }
-        ctx.strokeStyle = 'rgba(229,9,20,0.18)';
-        ctx.stroke();
-        // travelling spark
-        const idx = Math.floor(((t * rg.spd + rg.phase) % (Math.PI * 2)) / (Math.PI * 2) * 72 + 72) % 72;
-        const q = rot(rg.pts[idx], rg.ax, ay + rg.phase, rg.az);
-        const w = rot(q, ax, 0, 0);
-        const s = fov / (fov + w.z);
-        const X = cx + w.x * R * s;
-        const Y = cy + w.y * R * s;
-        ctx.beginPath();
-        ctx.arc(X, Y, 2.2, 0, Math.PI * 2);
-        ctx.fillStyle = 'rgba(255,120,130,0.95)';
-        ctx.shadowColor = 'rgba(229,9,20,0.9)';
-        ctx.shadowBlur = 12;
-        ctx.fill();
-        ctx.shadowBlur = 0;
+      containers.highlights.forEach(el => {
+        el.innerHTML = hlPicks.map(([kind, v]) => highlightCard(kind, v, highlightDefs[kind].rule)).join('');
+        if (window.ahReveal) window.ahReveal(el);
       });
 
-      // particle sphere (additive)
-      ctx.globalCompositeOperation = 'lighter';
-      for (let i = 0; i < N; i++) {
-        const p = points[i];
-        const q = rot(p, ax, ay, 0);
-        const s = fov / (fov + q.z);
-        const X = cx + q.x * R * s;
-        const Y = cy + q.y * R * s;
-        const near = Math.min(1, Math.max(0, (s - fov / (fov + 1)) / (fov / (fov - 1) - fov / (fov + 1))));
-        const tw = 0.75 + 0.25 * Math.sin(t * 2 + p.tw);
-        const alpha = (0.10 + near * 0.75) * tw;
-        const rad = 0.6 + near * 1.7;
-        const cr = Math.round(150 + near * 105);
-        const cg = Math.round(20 + near * 170);
-        const cb = Math.round(30 + near * 150);
-        // soft halo
-        ctx.beginPath();
-        ctx.arc(X, Y, rad * 3, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(${cr},${cg},${cb},${alpha * 0.12})`;
-        ctx.fill();
-        // bright dot
-        ctx.beginPath();
-        ctx.arc(X, Y, rad, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(${cr},${cg},${cb},${alpha})`;
-        ctx.fill();
-      }
-      ctx.globalCompositeOperation = 'source-over';
+      const latest = videos.filter(v => !v.isShort && !hlIds.has(v.id));
+      containers.latest.forEach(el => {
+        const limit = Number(el.dataset.limit) || latest.length;
+        el.innerHTML = latest.slice(0, limit).map((v, i) => latestCard(v, (i % 3) + 1)).join('')
+          || '<p class="muted">No published long-form videos were found in the current feed.</p>';
+        if (window.ahReveal) window.ahReveal(el);
+      });
+
+      const shorts = videos.filter(v => v.isShort);
+      containers.shorts.forEach(el => {
+        el.innerHTML = shorts.map(shortCard).join('')
+          || '<p class="muted">No Shorts were found in the current feed.</p>';
+      });
+
+      const when = data.generatedAt ? new Date(data.generatedAt).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' }) : 'unknown date';
+      setStatus(`Source: YouTube public feed · refreshed ${when}. Stats update when the data file is rebuilt (npm run fetch:videos).`, cached);
     }
 
-    function loop(now) {
-      draw(now);
-      raf = requestAnimationFrame(loop);
-    }
-    function startLoop() { if (running) return; running = true; raf = requestAnimationFrame(loop); }
-    function stopLoop() { running = false; cancelAnimationFrame(raf); }
-
-    resize();
-    window.addEventListener('resize', resize);
-    if (window.ResizeObserver) new ResizeObserver(resize).observe(wrap);
-
-    if (reduceMotion) {
-      draw(performance.now());          // one static frame
-    } else {
-      startLoop();
-      document.addEventListener('visibilitychange', () => document.hidden ? stopLoop() : startLoop());
-      if ('IntersectionObserver' in window) {
-        new IntersectionObserver((en) => en[0].isIntersecting ? startLoop() : stopLoop(), { threshold: 0.02 })
-          .observe(wrap);
-      }
-    }
-
-    // expose pointer influence for hero parallax
-    wrap.pointer = (nx, ny) => { tmx = nx; tmy = ny; };
+    fetch(base + 'assets/data/videos.json', { cache: 'no-cache' })
+      .then(r => { if (!r.ok) throw new Error(r.status); return r.json(); })
+      .then(data => render(data, data.source === 'cached-snapshot'))
+      .catch(() => render(FALLBACK, true));
   })();
 
   /* ------------------------------------------------------------------ *
-   * 8. Video facades (lazy YouTube — click to load the real embed)
-   * ------------------------------------------------------------------ */
-  $$('[data-video-id]').forEach(btn => {
-    const play = () => {
-      const id = btn.dataset.videoId;
-      const title = btn.dataset.videoTitle || 'YouTube video';
-      const frame = document.createElement('iframe');
-      frame.src = `https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0`;
-      frame.title = title;
-      frame.loading = 'lazy';
-      frame.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
-      frame.referrerPolicy = 'strict-origin-when-cross-origin';
-      frame.allowFullscreen = true;
-      btn.replaceWith(frame);
-    };
-    btn.addEventListener('click', play);
-    btn.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); play(); } });
-  });
-
-  /* ------------------------------------------------------------------ *
-   * 9. Blog filtering + search (blog listings)
+   * 11. Blog filtering + search
    * ------------------------------------------------------------------ */
   const blogSearch = $('[data-blog-search]');
-  const cards = $$('[data-blog-card]');
   const chips = $$('[data-filter]');
-  if (cards.length) {
+  if ($('[data-blog-card]')) {
     let activeFilter = 'all';
     const run = () => {
+      const cards = $$('[data-blog-card]');
       const query = (blogSearch?.value || '').trim().toLowerCase();
       let shown = 0;
       cards.forEach(card => {
@@ -330,52 +378,58 @@
     };
     blogSearch?.addEventListener('input', run);
     chips.forEach(chip => chip.addEventListener('click', () => {
-      activeFilter = chip.dataset.filter || 'all';
+      activeFilter = (chip.dataset.filter || 'all').toLowerCase();
       chips.forEach(c => c.classList.toggle('active', c === chip));
       run();
     }));
-    // pre-filter from ?q= or ?category=
+    document.addEventListener('ah:blog:refresh', run);
     const params = new URLSearchParams(location.search);
     if (blogSearch && params.get('q')) blogSearch.value = params.get('q');
-    const cat = params.get('category');
+    const cat = (params.get('category') || '').toLowerCase();
     if (cat) {
-      const chip = chips.find(c => c.dataset.filter === cat);
-      if (chip) chip.click();
+      const chip = chips.find(c => (c.dataset.filter || '').toLowerCase() === cat);
+      if (chip) chip.click(); else run();
     } else if (blogSearch?.value) {
       run();
     }
   }
 
   /* ------------------------------------------------------------------ *
-   * 10. Reading progress (article pages)
+   * 12. Reading progress (article pages)
    * ------------------------------------------------------------------ */
   const progress = $('.reading-progress');
   const article = $('[data-article-content]');
   if (progress && article) {
     const update = () => {
       const rect = article.getBoundingClientRect();
-      const total = article.offsetHeight - window.innerHeight;
+      const total = article.offsetHeight - viewportHeight();
       const done = Math.min(1, Math.max(0, -rect.top / Math.max(1, total)));
       progress.style.width = (done * 100) + '%';
     };
-    window.addEventListener('scroll', update, { passive: true });
+    scrollRoot.addEventListener('scroll', update, { passive: true });
     update();
   }
 
   /* ------------------------------------------------------------------ *
-   * 11. Site search modal
+   * 13. Site search modal
    * ------------------------------------------------------------------ */
   (function searchModal() {
     const modal = $('[data-search-modal]');
     if (!modal) return;
-    const input   = $('input', modal);
+    const input = $('input', modal);
     const results = $('[data-search-results]', modal);
-
     const INDEX = [
       { t: 'Home', d: 'AH Solution — Technology made simple', u: 'index.html', k: 'home start technology made simple' },
-      { t: 'Videos', d: 'Watch practical tech tutorials and first looks', u: 'vlogs.html', k: 'videos youtube watch tutorials' },
+      { t: 'Videos', d: 'Watch practical tech tutorials and first looks', u: 'vlogs.html', k: 'videos youtube watch tutorials library' },
+      { t: 'Shorts', d: 'Short vertical clips and quick first looks', u: 'vlogs.html#shorts', k: 'shorts vertical quick clips reels' },
       { t: 'Blog', d: 'Written guides, checklists and explainers', u: 'blog.html', k: 'blog articles guides read' },
+      { t: 'Categories', d: 'Browse every topic on AH Solution', u: 'index.html#categories', k: 'categories topics browse explore' },
       { t: 'Tutorials', d: 'Interactive tutorial explorer', u: 'tutorials.html', k: 'tutorials how to explore' },
+      { t: 'Mobile Tips', d: 'Everyday tips for the phone you own', u: 'tutorials.html?category=mobile', k: 'mobile phone android tips' },
+      { t: 'Android Apps', d: 'Useful and safe app recommendations', u: 'blog.html?category=apps', k: 'apps android software recommendations' },
+      { t: 'PC & Windows', d: 'Customisation and everyday PC tasks', u: 'blog.html?category=pc', k: 'pc windows computer laptop' },
+      { t: 'Software Guides', d: 'Written guides and explainers', u: 'tutorials.html?category=guides', k: 'software guides written explainers' },
+      { t: 'Gadgets', d: 'First looks and gadget checklists', u: 'blog.html?category=gadgets', k: 'gadgets smartwatch laptop review' },
       { t: 'About', d: 'The AH Solution mission', u: 'about.html', k: 'about mission brand' },
       { t: 'Contact', d: 'Reach AH Solution by email or socials', u: 'contact.html', k: 'contact email collaboration' },
       { t: 'Live wallpaper on PC', d: 'Set a video as your Windows wallpaper', u: 'guides/live-wallpaper-on-pc.html', k: 'pc windows wallpaper video mlwapp customization' },
@@ -385,56 +439,74 @@
       { t: 'Terms & conditions', d: 'Terms of use for this website', u: 'terms.html', k: 'terms legal conditions' }
     ];
     const base = location.pathname.includes('/guides/') ? '../' : '';
-
     const render = (items) => {
-      if (!items.length) {
-        results.innerHTML = '<div class="search-empty">No matches. Try “android”, “pc”, “wallpaper” or “smartwatch”.</div>';
-        return;
-      }
-      results.innerHTML = items.map(i =>
-        `<a class="search-result" href="${base}${i.u}"><strong>${i.t}</strong><span>${i.d}</span></a>`
-      ).join('');
+      if (!items.length) { results.innerHTML = '<div class="search-empty">No matches. Try “android”, “pc”, “wallpaper” or “smartwatch”.</div>'; return; }
+      results.innerHTML = items.map(i => `<a class="search-result" href="${base}${i.u}"><strong>${esc(i.t)}</strong><span>${esc(i.d)}</span></a>`).join('');
     };
-
     const query = (q) => {
       q = q.trim().toLowerCase();
       if (!q) return INDEX.slice(0, 6);
       return INDEX.filter(i => (i.t + ' ' + i.d + ' ' + i.k).toLowerCase().includes(q)).slice(0, 8);
     };
-
+    let isOpen = false;
+    let lastFocus = null;
+    const FOCUSABLE = 'a[href],button:not([disabled]),input,select,textarea,[tabindex]:not([tabindex="-1"])';
+    const focusables = () => $$(FOCUSABLE, modal).filter(el => el.offsetParent !== null || el === document.activeElement);
     const open = () => {
+      if (isOpen) return;
+      isOpen = true;
+      lastFocus = document.activeElement;
       modal.classList.add('open');
       document.body.style.overflow = 'hidden';
       render(INDEX.slice(0, 6));
-      setTimeout(() => input.focus(), 30);
+      // force a reflow so display:none -> block is committed before the
+      // backdrop/panel transition starts (no rAF dependency on GPU load)
+      void modal.offsetWidth;
+      modal.classList.add('is-shown');
+      input.focus({ preventScroll: true });
     };
-    const close = () => { modal.classList.remove('open'); document.body.style.overflow = ''; };
-
+    const close = () => {
+      if (!isOpen) return;
+      isOpen = false;
+      modal.classList.remove('is-shown');
+      document.body.style.overflow = '';
+      const settle = () => { if (!isOpen) modal.classList.remove('open'); };
+      modal.addEventListener('transitionend', settle, { once: true });
+      setTimeout(settle, 320);
+      if (lastFocus && typeof lastFocus.focus === 'function') lastFocus.focus({ preventScroll: true });
+      lastFocus = null;
+    };
     $$('[data-search-open]').forEach(b => b.addEventListener('click', open));
     $$('[data-search-close]', modal).forEach(b => b.addEventListener('click', close));
     modal.addEventListener('click', (e) => { if (e.target === modal) close(); });
     document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') close();
-      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') { e.preventDefault(); open(); }
-      if (e.key === '/' && !/input|textarea/i.test(document.activeElement.tagName)) { e.preventDefault(); open(); }
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') { e.preventDefault(); isOpen ? close() : open(); return; }
+      if (e.key === '/' && !/input|textarea/i.test(document.activeElement.tagName)) { e.preventDefault(); open(); return; }
+      if (!isOpen) return;
+      if (e.key === 'Escape') { e.preventDefault(); close(); return; }
+      if (e.key !== 'Tab') return;
+      const items = focusables();
+      if (!items.length) return;
+      const first = items[0];
+      const last = items[items.length - 1];
+      if (!modal.contains(document.activeElement)) { e.preventDefault(); first.focus(); }
+      else if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
     });
     input.addEventListener('input', () => render(query(input.value)));
   })();
 
   /* ------------------------------------------------------------------ *
-   * 12. Newsletter (honest, no-backend handling)
+   * 14. Newsletter (honest, no-backend handling)
    * ------------------------------------------------------------------ */
   $$('[data-newsletter]').forEach(form => {
     const status = $('[data-newsletter-status]', form);
     form.addEventListener('submit', (e) => {
       const email = $('input[type=email]', form)?.value.trim() || '';
       const endpoint = (form.dataset.endpoint || '').trim();
-      if (endpoint) return; // real provider configured — let it submit
+      if (endpoint) return;
       e.preventDefault();
-      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-        if (status) status.textContent = 'Please enter a valid email address.';
-        return;
-      }
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { if (status) status.textContent = 'Please enter a valid email address.'; return; }
       const subject = encodeURIComponent('Newsletter subscription — AH Solution');
       const body = encodeURIComponent(`Please add this address to the AH Solution updates list:\n\n${email}`);
       window.location.href = `mailto:official.ahsolution@gmail.com?subject=${subject}&body=${body}`;
@@ -444,7 +516,7 @@
   });
 
   /* ------------------------------------------------------------------ *
-   * 13. Share / copy link
+   * 15. Share / copy link
    * ------------------------------------------------------------------ */
   $$('[data-copy-link]').forEach(btn => {
     btn.addEventListener('click', async () => {
@@ -453,9 +525,7 @@
         const prev = btn.textContent;
         btn.textContent = 'Link copied ✓';
         setTimeout(() => { btn.textContent = prev; }, 1800);
-      } catch {
-        btn.textContent = location.href;
-      }
+      } catch { btn.textContent = location.href; }
     });
   });
 })();

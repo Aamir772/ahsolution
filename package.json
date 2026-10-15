@@ -1,10 +1,23 @@
 {
   "name": "ah-solution",
-  "version": "2.0.0",
-  "description": "Premium cinematic static website for AH Solution — plain HTML, CSS, and vanilla JavaScript.",
+  "version": "3.1.0",
+  "description": "PREMIUM cinematic static website for AH Solution — plain HTML, CSS, and vanilla JS, with Supabase admin panel and CMS.",
   "private": true,
   "scripts": {
-    "start": "python -m http.server 8000"
+    "start": "python -m http.server 8000",
+    "serve": "npx --yes serve -l 8000 .",
+    "build:deco": "node scripts/build-deco.mjs",
+    "fetch:videos": "node scripts/fetch-videos.mjs",
+    "build:index": "node scripts/build-ai-index.mjs",
+    "test:ai": "node scripts/ai-function-test.mjs",
+    "qa:ai": "node scripts/ai-qa.cjs",
+    "qa:device": "node scripts/qa-device.cjs",
+    "qa:pages": "node scripts/qa-pages.cjs",
+    "qa:scroll": "node scripts/qa-scroll.cjs",
+    "qa:admin": "node scripts/qa-admin.cjs",
+    "qa": "node scripts/qa-device.cjs && node scripts/qa-pages.cjs && node scripts/qa-scroll.cjs && node scripts/ai-qa.cjs && node scripts/qa-admin.cjs",
+    "admin:init": "node -e \"const h=require('./netlify/functions/init-admin/init-admin.js');const t=process.env.ADMIN_SETUP_TOKEN;if(!t){console.error('Set SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, ADMIN_SETUP_TOKEN, ADMIN_EMAIL and ADMIN_PASSWORD first');process.exit(1)}h.handler({httpMethod:'POST',headers:{authorization:'Bearer '+t},body:JSON.stringify({email:process.env.ADMIN_EMAIL,password:process.env.ADMIN_PASSWORD})}).then(r=>{console.log(r.statusCode,r.body);process.exit(r.statusCode===200?0:1)}).catch(e=>{console.error(e);process.exit(1)})\"",
+    "articles": "node netlify/functions/articles/articles.js"
   },
   "keywords": [],
   "author": "",

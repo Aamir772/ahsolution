@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#08080b">
+  <meta name="color-scheme" content="dark">
+  <meta name="robots" content="noindex,nofollow">
+  <title>Admin sign in | AH Solution</title>
+  <link rel="stylesheet" href="../assets/css/tokens.css">
+  <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+  <main class="login-wrap">
+    <div class="card login-card">
+      <a class="brand" href="../index.html" style="margin-bottom:22px">
+        <span class="brand-mark">AH<span>.</span></span>
+        <span class="brand-copy">
+          <span class="brand-name">AH SOLUTION</span>
+          <span class="brand-sub">Content admin</span>
+        </span>
+      </a>
+
+      <h1>Sign in</h1>
+      <p class="sub">Administrator access for the AH Solution CMS.</p>
+
+      <div class="notice" data-notice hidden></div>
+
+      <form class="stack" data-login-form novalidate>
+        <label>
+          Email
+          <input type="email" name="email" autocomplete="username" required placeholder="you@example.com">
+        </label>
+        <label>
+          Password
+          <input type="password" name="password" autocomplete="current-password" required placeholder="••••••••">
+        </label>
+        <button class="btn btn--primary" type="submit" data-submit>Sign in</button>
+      </form>
+
+      <p class="login-foot">
+        Access is limited to allow-listed administrator accounts.
+        <a href="../index.html">Back to the site</a>
+      </p>
+
+      <div style="margin-top:18px;text-align:center">
+        <button class="text-button" type="button" id="show-forgot-password">Forgot password?</button>
+      </div>
+
+      <!-- Password recovery -->
+      <div id="forgot-password-section" style="margin-top:18px;padding-top:18px;border-top:1px solid rgba(255,255,255,.12)" hidden>
+        <p>Forgot your password?</p>
+        <form id="forgot-password-form" class="stack" style="max-width:360px;" novalidate>
+          <label>
+            Email address
+            <input type="email" id="forgot-email" name="email" autocomplete="username" required placeholder="you@example.com">
+          </label>
+          <button class="btn btn--primary" type="submit" data-submit>Send reset link</button>
+        </form>
+        <p class="hint">We'll send a password reset link to this email address. Links expire after 24 hours.</p>
+        <button class="text-button" type="button" style="margin-top:8px" id="back-to-login">← Back to sign in</button>
+      </div>
+    </div>
+  </main>
+
+  <script src="admin.js"></script>
+  <script>
+    (function () {
+      'use strict';
+      var A = window.AHAdmin;
+      var form = document.querySelector('[data-login-form]');
+      var noticeEl = document.querySelector('[data-notice]');
+      var submit = form.querySelector('[data-submit]');
+      var forgotSection = document.getElementById('forgot-password-section');
+      var showForgot = document.getElementById('show-forgot-password');
+      var backToLogin = document.getElementById('back-to-login');
+      var forgotForm = document.getElementById('forgot-password-form');
+      var forgotEmail = document.getElementById('forgot-email');
+      var messages = {
+        invalid_credentials: 'Email or password is incorrect.',
+        email_not_confirmed: 'Confirm your email address before signing in.',
+        missing_keys: 'Admin authentication is not configured on the server yet.',
+        not_configured: 'Admin authentication is not configured on the server yet.',
+        network_error: 'Could not reach the server. Check your connection and try again.',
+        too_many_requests: 'Too many attempts. Please wait a little and try again.'
+      };
+
+      function showRecovery() {
+        forgotSection.hidden = false;
+        form.hidden = true;
+        showForgot.hidden = true;
+        forgotEmail.value = form.email.value.trim();
+        A.notice(noticeEl, 'ok', '');
+        forgotEmail.focus();
+      }
+      function showLogin() {
+        forgotSection.hidden = true;
+        form.hidden = false;
+        showForgot.hidden = false;
+        A.notice(noticeEl, 'ok', '');
+      }
+
+      var existing = A.session();
+      if (existing && existing.access_token) {
+        A.token().then(function (t) {
+          if (t) location.replace('dashboard.html');
+        }).catch(function () { A.clearSession(); });
+      }
+
+      showForgot.addEventListener('click', showRecovery);
+      backToLogin.addEventListener('click', showLogin);
+
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        var email = form.email.value.trim();
+        var password = form.password.value;
+        if (!email || !password) {
+          A.notice(noticeEl, 'error', 'Enter your email and password.');
+          return;
+        }
+        submit.disabled = true;
+        submit.setAttribute('aria-busy', 'true');
+        submit.textContent = 'Signing in…';
+        A.notice(noticeEl, 'ok', '');
+        A.login(email, password).then(function (user) {
+          A.notice(noticeEl, 'ok', 'Signed in successfully. Opening dashboard…');
+          location.replace('dashboard.html');
+        }).catch(function (err) {
+          submit.disabled = false;
+          submit.removeAttribute('aria-busy');
+          submit.textContent = 'Sign in';
+          var code = err.message || 'login_failed';
+          var friendly = messages[code] || (code === 'login_failed'
+            ? 'Sign-in failed. Check your details or use password recovery.'
+            : 'Sign-in failed: ' + (err.detail || code));
+          A.notice(noticeEl, 'error', friendly);
+        });
+      });
+
+      forgotForm.addEventListener('submit', function (e) {
+        e.preventDefault();
+        var email = forgotEmail.value.trim();
+        var btn = forgotForm.querySelector('[type="submit"]');
+        if (!email) { A.notice(noticeEl, 'error', 'Enter your email address.'); return; }
+        btn.disabled = true;
+        btn.setAttribute('aria-busy', 'true');
+        btn.textContent = 'Sending…';
+        A.notice(noticeEl, 'ok', '');
+        fetch('/.netlify/functions/admin-auth', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'send_password_reset', email: email })
+        }).then(function (response) {
+          return response.text().then(function (text) {
+            var data;
+            try { data = text ? JSON.parse(text) : {}; } catch (_) { data = {}; }
+            if (!response.ok || !data.ok) throw new Error(data.error || 'reset_request_failed');
+            A.notice(noticeEl, 'ok', 'If this email belongs to an admin account, a reset link will be sent. Check your inbox and spam folder.');
+            forgotForm.reset();
+          });
+        }).catch(function (err) {
+          A.notice(noticeEl, 'error', messages[err.message] || ('Could not request a reset link: ' + err.message));
+        }).finally(function () {
+          btn.disabled = false;
+          btn.removeAttribute('aria-busy');
+          btn.textContent = 'Send reset link';
+        });
+      });
+    })();
+  </script>
+</body>
+</html>

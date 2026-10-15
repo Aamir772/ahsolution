@@ -1,0 +1,405 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#08080b">
+  <meta name="color-scheme" content="dark">
+  <meta name="robots" content="noindex,nofollow">
+  <title>Editor | AH Solution Admin</title>
+  <link rel="stylesheet" href="../assets/css/tokens.css">
+  <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+  <div class="shell">
+    <header class="topbar">
+      <a class="brand" href="dashboard.html">
+        <span class="brand-mark">AH<span>.</span></span>
+        <span class="brand-copy">
+          <span class="brand-name">AH SOLUTION</span>
+          <span class="brand-sub">Article editor</span>
+        </span>
+      </a>
+      <div class="topbar-right">
+        <a class="btn btn--sm btn--ghost" href="dashboard.html">← Dashboard</a>
+        <button class="btn btn--sm" type="button" data-save-draft>Save draft</button>
+        <button class="btn btn--sm btn--primary" type="button" data-publish>Publish</button>
+      </div>
+    </header>
+
+    <div class="notice" data-notice hidden style="margin-bottom:18px"></div>
+
+    <form data-editor-form novalidate>
+      <div class="editor-grid">
+        <div class="stack">
+          <label>
+            Title
+            <input type="text" name="title" data-title maxlength="200" placeholder="A clear, specific title" required>
+          </label>
+
+          <label>
+            Slug
+            <input type="text" name="slug" data-slug maxlength="100" placeholder="auto-generated-from-title" pattern="[a-z0-9-]*">
+            <span class="hint">Lowercase letters, numbers and hyphens. Leave blank to generate from the title.</span>
+          </label>
+
+          <div>
+            <div class="toolbar" role="toolbar" aria-label="Text formatting" data-toolbar>
+              <button type="button" data-cmd="bold" title="Bold (Ctrl+B)"><b>B</b></button>
+              <button type="button" data-cmd="italic" title="Italic (Ctrl+I)"><i>I</i></button>
+              <button type="button" data-cmd="underline" title="Underline (Ctrl+U)"><u>U</u></button>
+              <button type="button" data-cmd="strikeThrough" title="Strikethrough"><s>S</s></button>
+              <span class="sep" aria-hidden="true"></span>
+              <button type="button" data-block="h2" title="Heading">H2</button>
+              <button type="button" data-block="h3" title="Subheading">H3</button>
+              <button type="button" data-block="p" title="Paragraph">¶</button>
+              <span class="sep" aria-hidden="true"></span>
+              <button type="button" data-cmd="insertUnorderedList" title="Bulleted list">• List</button>
+              <button type="button" data-cmd="insertOrderedList" title="Numbered list">1. List</button>
+              <button type="button" data-block="blockquote" title="Quote">❝</button>
+              <button type="button" data-cmd="code" title="Inline code">&lt;/&gt;</button>
+              <span class="sep" aria-hidden="true"></span>
+              <button type="button" data-link title="Insert link">Link</button>
+              <button type="button" data-image title="Insert image">Image</button>
+              <span class="sep" aria-hidden="true"></span>
+              <button type="button" data-cmd="removeFormat" title="Clear formatting">Clear</button>
+              <button type="button" data-cmd="undo" title="Undo">↶</button>
+              <button type="button" data-cmd="redo" title="Redo">↷</button>
+            </div>
+            <div class="rich" contenteditable="true" data-body role="textbox" aria-multiline="true"
+                 aria-label="Article body" data-placeholder="Write the article body…"></div>
+          </div>
+        </div>
+
+        <aside class="stack">
+          <section class="card side-card">
+            <h2>Publishing</h2>
+            <label>
+              Status
+              <select name="status" data-status>
+                <option value="draft">Draft</option>
+                <option value="published">Published</option>
+                <option value="archived">Archived</option>
+              </select>
+            </label>
+            <p class="hint" data-meta>Not saved yet.</p>
+          </section>
+
+          <section class="card side-card">
+            <h2>Details</h2>
+            <label>
+              Excerpt
+              <textarea name="excerpt" data-excerpt maxlength="400" rows="3" placeholder="One or two sentences shown in listings"></textarea>
+            </label>
+            <label>
+              Category
+              <div class="chip-row" data-chips>
+                <button class="chip" type="button" data-category="Android">Android</button>
+                <button class="chip" type="button" data-category="PC &amp; Windows">PC &amp; Windows</button>
+                <button class="chip" type="button" data-category="Apps">Apps</button>
+                <button class="chip" type="button" data-category="Gadgets">Gadgets</button>
+                <button class="chip" type="button" data-category="Guides">Guides</button>
+              </div>
+            </label>
+            <label>
+              Tags
+              <input type="text" name="tags" data-tags maxlength="200" placeholder="smartwatch, buying guide">
+            </label>
+          </section>
+
+          <section class="card side-card">
+            <h2>Cover image</h2>
+            <img class="cover-preview" data-cover-preview alt="" data-empty="1">
+            <input class="file-control" type="file" accept="image/jpeg,image/png,image/webp,image/avif" data-cover-file aria-label="Choose cover image">
+            <label>
+              Or image URL
+              <input type="url" name="cover_image_url" data-cover-url placeholder="https://…">
+            </label>
+            <button class="btn btn--sm" type="button" data-cover-upload>Upload cover image</button>
+            <p class="hint">Images are uploaded securely through the site backend. The returned URL is saved with this article.</p>
+          </section>
+
+          <section class="card side-card">
+            <h2>Search preview</h2>
+            <label>
+              SEO description
+              <textarea name="seo_description" data-seo maxlength="300" rows="3" placeholder="Shown in search results"></textarea>
+            </label>
+            <div style="border:1px solid var(--c-line);border-radius:12px;padding:12px;background:rgba(8,8,11,.5)">
+              <div style="color:#9ecbff;font-size:12.5px" data-seo-url>ahsolution.live/article</div>
+              <div style="font-weight:700;margin-top:3px" data-seo-title>Article title</div>
+              <div style="color:var(--c-muted);font-size:12.5px" data-seo-desc>Article description</div>
+            </div>
+          </section>
+        </aside>
+      </div>
+    </form>
+  </div>
+
+  <script src="admin.js"></script>
+  <script>
+    (function () {
+      var A = window.AHAdmin;
+      if (!A.requireAuth()) return;
+
+      var form = A.$('[data-editor-form]');
+      var noticeEl = A.$('[data-notice]');
+      var titleEl = A.$('[data-title]');
+      var slugEl = A.$('[data-slug]');
+      var bodyEl = A.$('[data-body]');
+      var statusEl = A.$('[data-status]');
+      var excerptEl = A.$('[data-excerpt]');
+      var tagsEl = A.$('[data-tags]');
+      var seoEl = A.$('[data-seo]');
+      var metaEl = A.$('[data-meta]');
+      var coverUrlEl = A.$('[data-cover-url]');
+      var coverPreview = A.$('[data-cover-preview]');
+      var category = '';
+      var currentId = null;
+      var slugTouched = false;
+      var saving = false;
+
+      /* ---------------- boot: existing article or new ---------------- */
+      var params = new URLSearchParams(location.search);
+      var id = params.get('id');
+      if (id) {
+        A.articles.list({ limit: 1 }).then(function () { /* warm the token */ })
+          .catch(function () {});
+        A.token().then(function (t) {
+          return fetch('/.netlify/functions/articles', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + t },
+            body: JSON.stringify({ action: 'list', limit: 100 })
+          }).then(function (r) { return r.json(); });
+        }).then(function (res) {
+          var found = (res.articles || []).filter(function (a) { return a.id === id; })[0];
+          if (!found) { A.notice(noticeEl, 'error', 'That article could not be found.'); return; }
+          fill(found);
+        }).catch(function (err) {
+          A.notice(noticeEl, 'error', 'Could not load the article: ' + err.message);
+        });
+      }
+
+      function fill(a) {
+        currentId = a.id;
+        titleEl.value = a.title || '';
+        slugEl.value = a.slug || '';
+        slugTouched = true;
+        bodyEl.innerHTML = a.body || '';
+        statusEl.value = a.status || 'draft';
+        excerptEl.value = a.excerpt || '';
+        tagsEl.value = Array.isArray(a.tags) ? a.tags.join(', ') : (a.tags || '');
+        seoEl.value = a.seo_description || '';
+        setCover(a.cover_image_url || '');
+        setCategory(a.category || '');
+        metaEl.textContent = 'Last updated ' + A.fmtDate(a.updated_at || a.created_at) +
+          ' · ' + (a.reading_minutes || 1) + ' min read · ' + (a.view_count || 0) + ' views';
+        updateSeo();
+        document.title = 'Edit: ' + (a.title || 'Article') + ' | AH Solution Admin';
+      }
+
+      function setCover(url) {
+        coverUrlEl.value = url || '';
+        if (url) {
+          coverPreview.src = url;
+          coverPreview.removeAttribute('data-empty');
+          coverPreview.onerror = function () {
+            coverPreview.setAttribute('data-empty', '1');
+            A.notice(noticeEl, 'error', 'The cover image URL could not be loaded. Check the URL or upload the image again.');
+          };
+          coverPreview.onload = function () { coverPreview.removeAttribute('data-empty'); };
+        } else {
+          coverPreview.removeAttribute('src');
+          coverPreview.setAttribute('data-empty', '1');
+        }
+      }
+      function setCategory(cat) {
+        category = cat;
+        A.$$('[data-chips] .chip').forEach(function (c) {
+          c.setAttribute('aria-pressed', String(c.dataset.category === cat));
+        });
+      }
+      A.$$('[data-chips] .chip').forEach(function (c) {
+        c.addEventListener('click', function () {
+          setCategory(category === c.dataset.category ? '' : c.dataset.category);
+        });
+      });
+
+      /* ---------------- slug auto-generation ---------------- */
+      function slugify(s) {
+        return String(s || '').toLowerCase().trim()
+          .replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 100);
+      }
+      titleEl.addEventListener('input', function () {
+        if (!slugTouched) slugEl.value = slugify(titleEl.value);
+        updateSeo();
+      });
+      slugEl.addEventListener('input', function () { slugTouched = true; slugEl.value = slugify(slugEl.value); updateSeo(); });
+
+      function updateSeo() {
+        A.$('[data-seo-title]').textContent = titleEl.value || 'Article title';
+        A.$('[data-seo-desc]').textContent = seoEl.value || excerptEl.value || 'Article description';
+        A.$('[data-seo-url]').textContent = 'ahsolution.live/article/' + (slugEl.value || '…');
+      }
+      seoEl.addEventListener('input', updateSeo);
+      excerptEl.addEventListener('input', updateSeo);
+
+      /* ---------------- rich text toolbar ---------------- */
+      A.$('[data-toolbar]').addEventListener('click', function (e) {
+        var btn = e.target.closest('button');
+        if (!btn) return;
+        e.preventDefault();
+        bodyEl.focus();
+
+        if (btn.dataset.cmd === 'code') {
+          document.execCommand('insertHTML', false, '<code>' + (getSelection().toString() || 'code') + '</code>');
+          return;
+        }
+        if (btn.dataset.block) {
+          document.execCommand('formatBlock', false, btn.dataset.block);
+          return;
+        }
+        if (btn.hasAttribute('data-link')) {
+          var url = window.prompt('Link URL (https://…)');
+          if (url) {
+            try {
+              var parsed = new URL(url, location.href);
+              if (!['http:', 'https:', 'mailto:'].includes(parsed.protocol)) throw new Error('scheme');
+              document.execCommand('createLink', false, parsed.href);
+            } catch (_) { A.notice(noticeEl, 'error', 'Enter a valid http, https, or mailto link.'); }
+          }
+          return;
+        }
+        if (btn.hasAttribute('data-image')) {
+          var src = window.prompt('Image URL (https://…)');
+          if (src) {
+            try {
+              var parsedImage = new URL(src, location.href);
+              if (!['http:', 'https:'].includes(parsedImage.protocol)) throw new Error('scheme');
+              document.execCommand('insertHTML', false, '<img src="' + A.esc(parsedImage.href) + '" alt="">');
+            } catch (_) { A.notice(noticeEl, 'error', 'Enter a valid http or https image URL.'); }
+          }
+          return;
+        }
+        if (btn.dataset.cmd) document.execCommand(btn.dataset.cmd, false, null);
+      });
+      [titleEl, slugEl, bodyEl, excerptEl, tagsEl, seoEl, statusEl, coverUrlEl].forEach(function (el) {
+        el.addEventListener('input', A.debounce(function () { saveLocal(); }, 800));
+        el.addEventListener('change', A.debounce(function () { saveLocal(); }, 800));
+      });
+
+      /* ---------------- local safety copy ---------------- */
+      var localKey = 'ah-admin-draft';
+      function saveLocal() {
+        try {
+          localStorage.setItem(localKey, JSON.stringify({
+            id: currentId, title: titleEl.value, slug: slugEl.value, body: bodyEl.innerHTML,
+            excerpt: excerptEl.value, tags: tagsEl.value, seo_description: seoEl.value,
+            category: category, status: statusEl.value, cover_image_url: coverUrlEl.value,
+            at: Date.now()
+          }));
+        } catch (e) {}
+      }
+      function restoreLocal() {
+        try {
+          var d = JSON.parse(localStorage.getItem(localKey) || 'null');
+          if (!d || d.id !== currentId || !d.body) return false;
+          if (!bodyEl.innerHTML.trim() && window.confirm('Restore the locally saved draft from ' + new Date(d.at).toLocaleString() + '?')) {
+            bodyEl.innerHTML = d.body;
+            if (!titleEl.value) titleEl.value = d.title || '';
+            if (!slugEl.value) slugEl.value = d.slug || '';
+            if (!excerptEl.value) excerptEl.value = d.excerpt || '';
+            if (!tagsEl.value) tagsEl.value = d.tags || '';
+            if (!seoEl.value) seoEl.value = d.seo_description || '';
+            if (d.category) setCategory(d.category);
+            if (d.status) statusEl.value = d.status;
+            if (!coverUrlEl.value && d.cover_image_url) setCover(d.cover_image_url);
+            updateSeo();
+            return true;
+          }
+        } catch (e) {}
+        return false;
+      }
+      if (!currentId) setTimeout(restoreLocal, 400);
+
+      /* ---------------- cover upload ---------------- */
+      A.$('[data-cover-file]').addEventListener('change', function () {
+        var f = this.files && this.files[0];
+        if (!f) return;
+        if (f.size > 3 * 1024 * 1024) { A.notice(noticeEl, 'error', 'Cover images must be 3 MB or smaller.'); this.value = ''; return; }
+        A.notice(noticeEl, 'ok', 'Uploading cover…');
+        A.uploadCover(f).then(function (res) {
+          setCover(res.url);
+          A.notice(noticeEl, 'ok', 'Cover uploaded.');
+        }).catch(function (err) {
+          A.notice(noticeEl, 'error', 'Upload failed: ' + err.message);
+        });
+      });
+      A.$('[data-cover-upload]').addEventListener('click', function () {
+        var f = A.$('[data-cover-file]').files && A.$('[data-cover-file]').files[0];
+        if (!f) { A.notice(noticeEl, 'error', 'Choose an image file first.'); return; }
+        A.$('[data-cover-file]').dispatchEvent(new Event('change'));
+      });
+      coverUrlEl.addEventListener('input', function () { setCover(coverUrlEl.value.trim()); });
+
+      /* ---------------- save / publish ---------------- */
+      function collect() {
+        return {
+          id: currentId || undefined,
+          title: titleEl.value.trim(),
+          slug: slugEl.value.trim(),
+          excerpt: excerptEl.value.trim(),
+          body: bodyEl.innerHTML,
+          category: category,
+          tags: tagsEl.value.trim(),
+          cover_image_url: coverUrlEl.value.trim(),
+          seo_description: seoEl.value.trim(),
+          status: statusEl.value
+        };
+      }
+
+      function save(targetStatus) {
+        if (saving) return Promise.resolve();
+        var data = collect();
+        if (targetStatus) data.status = targetStatus;
+        if (!data.title) { A.notice(noticeEl, 'error', 'A title is required.'); titleEl.focus(); return Promise.resolve(); }
+        if (!bodyEl.textContent.trim()) { A.notice(noticeEl, 'error', 'The article body is empty.'); bodyEl.focus(); return Promise.resolve(); }
+
+        saving = true;
+        A.notice(noticeEl, 'ok', data.status === 'published' ? 'Publishing…' : 'Saving…');
+
+        var job = currentId ? A.articles.update(data) : A.articles.create(data);
+        return job.then(function (res) {
+          saving = false;
+          if (!res.body || !res.body.ok) throw new Error((res.body && res.body.error) || 'save_failed');
+          var saved = res.body.article || {};
+          currentId = saved.id || currentId;
+          if (saved.slug) { slugEl.value = saved.slug; slugTouched = true; }
+          if (saved.status) statusEl.value = saved.status;
+          try { localStorage.removeItem('ah-admin-draft'); } catch (e) {}
+          A.notice(noticeEl, 'ok', data.status === 'published' ? 'Published.' : 'Draft saved.');
+          metaEl.textContent = 'Saved just now · ' + (saved.reading_minutes || 1) + ' min read';
+          updateSeo();
+          if (!id && currentId) history.replaceState(null, '', 'editor.html?id=' + encodeURIComponent(currentId));
+        }).catch(function (err) {
+          saving = false;
+          if (err.message === 'auth_required') { location.replace('login.html'); return; }
+          var msg = err.message === 'slug_taken' ? 'That slug is already used by another article.'
+            : err.message === 'invalid_slug' ? 'The slug may only contain lowercase letters, numbers and hyphens.'
+            : 'Save failed: ' + err.message;
+          A.notice(noticeEl, 'error', msg);
+        });
+      }
+
+      A.$('[data-save-draft]').addEventListener('click', function () { save('draft'); });
+      A.$('[data-publish]').addEventListener('click', function () { save('published'); });
+      form.addEventListener('submit', function (e) { e.preventDefault(); save(statusEl.value); });
+      document.addEventListener('keydown', function (e) {
+        if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') { e.preventDefault(); save(statusEl.value); }
+      });
+
+      updateSeo();
+    })();
+  </script>
+</body>
+</html>

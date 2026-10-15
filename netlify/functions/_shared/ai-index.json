@@ -1,0 +1,393 @@
+{
+  "generatedAt": "2026-10-14T07:23:10.175Z",
+  "site": "AH Solution",
+  "source": "build-ai-index",
+  "counts": {
+    "pages": 18,
+    "articles": 3,
+    "videos": 15,
+    "total": 36
+  },
+  "entries": [
+    {
+      "id": "page:index-html",
+      "type": "page",
+      "title": "Home",
+      "url": "index.html",
+      "description": "AH Solution — Technology made simple",
+      "keywords": "home start technology made simple",
+      "text": "Home. AH Solution — Technology made simple. home start technology made simple"
+    },
+    {
+      "id": "page:vlogs-html",
+      "type": "page",
+      "title": "Videos",
+      "url": "vlogs.html",
+      "description": "Watch practical tech tutorials and first looks",
+      "keywords": "videos youtube watch tutorials library",
+      "text": "Videos. Watch practical tech tutorials and first looks. videos youtube watch tutorials library"
+    },
+    {
+      "id": "page:vlogs-html-shorts",
+      "type": "page",
+      "title": "Shorts",
+      "url": "vlogs.html#shorts",
+      "description": "Short vertical clips and quick first looks",
+      "keywords": "shorts vertical quick clips reels",
+      "text": "Shorts. Short vertical clips and quick first looks. shorts vertical quick clips reels"
+    },
+    {
+      "id": "page:blog-html",
+      "type": "page",
+      "title": "Blog",
+      "url": "blog.html",
+      "description": "Written guides, checklists and explainers",
+      "keywords": "blog articles guides read",
+      "text": "Blog. Written guides, checklists and explainers. blog articles guides read"
+    },
+    {
+      "id": "page:index-html-categories",
+      "type": "page",
+      "title": "Categories",
+      "url": "index.html#categories",
+      "description": "Browse every topic on AH Solution",
+      "keywords": "categories topics browse explore",
+      "text": "Categories. Browse every topic on AH Solution. categories topics browse explore"
+    },
+    {
+      "id": "page:tutorials-html",
+      "type": "page",
+      "title": "Tutorials",
+      "url": "tutorials.html",
+      "description": "Interactive tutorial explorer",
+      "keywords": "tutorials how to explore",
+      "text": "Tutorials. Interactive tutorial explorer. tutorials how to explore"
+    },
+    {
+      "id": "page:tutorials-html-category-mobile",
+      "type": "page",
+      "title": "Mobile Tips",
+      "url": "tutorials.html?category=mobile",
+      "description": "Everyday tips for the phone you own",
+      "keywords": "mobile phone android tips",
+      "text": "Mobile Tips. Everyday tips for the phone you own. mobile phone android tips"
+    },
+    {
+      "id": "page:blog-html-category-apps",
+      "type": "page",
+      "title": "Android Apps",
+      "url": "blog.html?category=apps",
+      "description": "Useful and safe app recommendations",
+      "keywords": "apps android software recommendations",
+      "text": "Android Apps. Useful and safe app recommendations. apps android software recommendations"
+    },
+    {
+      "id": "page:blog-html-category-pc",
+      "type": "page",
+      "title": "PC & Windows",
+      "url": "blog.html?category=pc",
+      "description": "Customisation and everyday PC tasks",
+      "keywords": "pc windows computer laptop",
+      "text": "PC & Windows. Customisation and everyday PC tasks. pc windows computer laptop"
+    },
+    {
+      "id": "page:tutorials-html-category-guides",
+      "type": "page",
+      "title": "Software Guides",
+      "url": "tutorials.html?category=guides",
+      "description": "Written guides and explainers",
+      "keywords": "software guides written explainers",
+      "text": "Software Guides. Written guides and explainers. software guides written explainers"
+    },
+    {
+      "id": "page:blog-html-category-gadgets",
+      "type": "page",
+      "title": "Gadgets",
+      "url": "blog.html?category=gadgets",
+      "description": "First looks and gadget checklists",
+      "keywords": "gadgets smartwatch laptop review",
+      "text": "Gadgets. First looks and gadget checklists. gadgets smartwatch laptop review"
+    },
+    {
+      "id": "page:about-html",
+      "type": "page",
+      "title": "About",
+      "url": "about.html",
+      "description": "The AH Solution mission",
+      "keywords": "about mission brand",
+      "text": "About. The AH Solution mission. about mission brand"
+    },
+    {
+      "id": "page:contact-html",
+      "type": "page",
+      "title": "Contact",
+      "url": "contact.html",
+      "description": "Reach AH Solution by email or socials",
+      "keywords": "contact email collaboration",
+      "text": "Contact. Reach AH Solution by email or socials. contact email collaboration"
+    },
+    {
+      "id": "page:guides-live-wallpaper-on-pc-html",
+      "type": "page",
+      "title": "Live wallpaper on PC",
+      "url": "guides/live-wallpaper-on-pc.html",
+      "description": "Set a video as your Windows wallpaper",
+      "keywords": "pc windows wallpaper video mlwapp customization live laptop performance battery",
+      "text": "Live wallpaper on PC. Set a video as your Windows wallpaper. pc windows wallpaper video mlwapp customization pc windows wallpaper video mlwapp customization live laptop performance battery"
+    },
+    {
+      "id": "page:guides-choose-android-apps-safely-html",
+      "type": "page",
+      "title": "Choose Android apps safely",
+      "url": "guides/choose-android-apps-safely.html",
+      "description": "Safety checklist before installing an app",
+      "keywords": "android app safety permissions install privacy developer reviews installing mobile",
+      "text": "Choose Android apps safely. Safety checklist before installing an app. android app safety permissions install privacy android app safety permissions install privacy developer reviews installing mobile"
+    },
+    {
+      "id": "page:guides-budget-smartwatch-checklist-html",
+      "type": "page",
+      "title": "Budget smartwatch checklist",
+      "url": "guides/budget-smartwatch-checklist.html",
+      "description": "What to check before buying",
+      "keywords": "smartwatch buying guide wearable battery budget checklist compatibility notifications fitness review aqfit w15",
+      "text": "Budget smartwatch checklist. What to check before buying. smartwatch buying guide wearable battery smartwatch buying guide wearable battery budget checklist compatibility notifications fitness review aqfit w15"
+    },
+    {
+      "id": "page:privacy-html",
+      "type": "page",
+      "title": "Privacy notice",
+      "url": "privacy.html",
+      "description": "How this website handles information",
+      "keywords": "privacy policy",
+      "text": "Privacy notice. How this website handles information. privacy policy"
+    },
+    {
+      "id": "page:terms-html",
+      "type": "page",
+      "title": "Terms & conditions",
+      "url": "terms.html",
+      "description": "Terms of use for this website",
+      "keywords": "terms legal conditions",
+      "text": "Terms & conditions. Terms of use for this website. terms legal conditions"
+    },
+    {
+      "id": "article:budget-smartwatch-checklist",
+      "type": "article",
+      "title": "What to check before buying a budget smartwatch",
+      "url": "guides/budget-smartwatch-checklist.html",
+      "description": "A budget smartwatch can be great value — as long as it fits your phone and the way you actually use it. Here is what to compare before you buy.",
+      "headings": [
+        "1. Confirm phone compatibility",
+        "2. Understand what the battery claim means",
+        "3. Check the features you will actually use",
+        "4. Treat health measurements appropriately",
+        "5. Look beyond the hardware",
+        "6. Compare the total value",
+        "Keep learning with AH Solution"
+      ],
+      "keywords": "budget smartwatch buying checklist battery compatibility notifications fitness review aqfit w15",
+      "text": "A budget smartwatch can be great value — as long as it fits your phone and the way you actually use it. Here is what to compare before you buy. 1. Confirm phone compatibility Check the watch's supported Android or iOS versions and whether the companion app is available in your region. Read the setup requirements before ordering. 2. Understand what the battery claim means Battery estimates depend on screen brightness, always-on display, notification frequency, GPS usage, and other settings. Look for real-world reviews that describe how the device was used. 3. Check the features you will actually use Notifications and call handling, if important to you. Workout modes and GPS availability. Water-resistance rating and its stated limitations. Display readability in bright light. Charging method and availability of a replacement cable. 4. Treat health measurements appropriately Consumer wearables can be useful for general wellness trends, but readings vary by device and conditions. Do not treat a budget watch as a replacement for professional medical measurement or advice. 5. Look beyond the hardware Read reviews of the companion app, check the return policy, warranty, customer support, and whether the brand provides software updates. A watch can have an appealing specification sheet and still be frustrating if the app is unreliable. 6. Compare the total value Compare the final……"
+    },
+    {
+      "id": "article:choose-android-apps-safely",
+      "type": "article",
+      "title": "A quick safety checklist before installing an app",
+      "url": "guides/choose-android-apps-safely.html",
+      "description": "A useful app should solve a problem without asking you to ignore obvious warning signs. Use this checklist before installing something new on your phone.",
+      "headings": [
+        "1. Check the developer",
+        "2. Read the permissions",
+        "3. Read reviews carefully",
+        "4. Review privacy and payment terms",
+        "5. Prefer trusted sources",
+        "6. Keep your phone updated",
+        "Keep learning with AH Solution"
+      ],
+      "keywords": "android app safety permissions developer reviews privacy installing mobile",
+      "text": "A useful app should solve a problem without asking you to ignore obvious warning signs. Use this checklist before installing something new on your phone. 1. Check the developer Look at the developer name, their other apps, update history, and official website if one is available. Watch for lookalike names or copied branding. 2. Read the permissions Ask whether each requested permission makes sense for the app's purpose. A photo editor may reasonably need access to selected photos; a simple calculator usually has no obvious reason to access your contacts or microphone. Review permissions again after installation if the app's behaviour changes. 3. Read reviews carefully Look for repeated, specific complaints about ads, crashes, billing, or privacy. Don't rely only on the average star rating. Be cautious of large clusters of generic reviews that say very little. 4. Review privacy and payment terms Check the privacy information, subscription price, trial conditions, and how to cancel before starting a trial. Avoid entering payment details into unexpected pop-ups or pages. 5. Prefer trusted sources Use official app stores or the developer's verified distribution channel. Be especially careful with APK files shared through random websites, messages, or file-sharing links. 6. Keep your phone updated Install security updates, use a screen lock, and remove apps you no longer need. If……"
+    },
+    {
+      "id": "article:live-wallpaper-on-pc",
+      "type": "article",
+      "title": "Before setting a video as your PC wallpaper",
+      "url": "guides/live-wallpaper-on-pc.html",
+      "description": "A moving desktop can make a PC feel more personal. Before setting a video as wallpaper, take a minute to check compatibility, performance, and how you want the desktop to behave.",
+      "headings": [
+        "1. Check the tool and its source",
+        "2. Choose a suitable video",
+        "3. Test performance before making it permanent",
+        "4. Keep your desktop practical",
+        "Watch the AH Solution walkthrough",
+        "Keep learning with AH Solution"
+      ],
+      "keywords": "live wallpaper pc video laptop windows mlwapp performance battery customization",
+      "text": "A moving desktop can make a PC feel more personal. Before setting a video as wallpaper, take a minute to check compatibility, performance, and how you want the desktop to behave. 1. Check the tool and its source Use a wallpaper app from a source you trust. Review the developer, recent update history, permissions, and user feedback before installing it. Avoid download mirrors that bundle extra installers or unrelated software. 2. Choose a suitable video Start with a short, high-quality clip that loops cleanly. Pick a resolution that suits your display rather than using an unnecessarily large file. Consider motion and brightness: a very busy wallpaper can make desktop icons harder to read. 3. Test performance before making it permanent After applying the wallpaper, check CPU and GPU usage, memory use, fan noise, and battery drain. The effect varies by application, video format, graphics hardware, and power settings. If your PC feels slower, try a shorter or lower-resolution clip, pause the wallpaper while full-screen apps are open, or return to a static background. 4. Keep your desktop practical Make sure icons and text remain visible against the wallpaper. Check how it behaves after sleep, restart, and when switching monitors. If you use a laptop, test both plugged-in and on-battery behaviour. App-specific note: This is a general setup checklist, not a guarantee that every……"
+    },
+    {
+      "id": "video:J3Q0LPCas7I",
+      "type": "video",
+      "title": "iQOO Z5 5G 📱 Unboxing & First Look 🎁 #Shorts #smartphone",
+      "url": "https://www.youtube.com/shorts/J3Q0LPCas7I",
+      "isShort": true,
+      "thumbnail": "https://i3.ytimg.com/vi/J3Q0LPCas7I/hqdefault.jpg",
+      "published": "2021-12-22T17:09:33+00:00",
+      "keywords": "",
+      "text": "iQOO Z5 5G 📱 Unboxing & First Look 🎁 #Shorts #smartphone youtube short clip"
+    },
+    {
+      "id": "video:2d3aI45xy4s",
+      "type": "video",
+      "title": "MSI GF63 Gaming Laptop Review – Worth Buying?",
+      "url": "https://www.youtube.com/watch?v=2d3aI45xy4s",
+      "isShort": false,
+      "thumbnail": "https://i3.ytimg.com/vi/2d3aI45xy4s/hqdefault.jpg",
+      "published": "2021-11-06T06:55:21+00:00",
+      "keywords": "",
+      "text": "MSI GF63 Gaming Laptop Review – Worth Buying? youtube video tutorial walkthrough"
+    },
+    {
+      "id": "video:MMWnwjDwdbw",
+      "type": "video",
+      "title": "HP Pavilion Gaming Ryzen 5 3550H Unboxing & Review | Flipkart & Amazon",
+      "url": "https://www.youtube.com/watch?v=MMWnwjDwdbw",
+      "isShort": false,
+      "thumbnail": "https://i2.ytimg.com/vi/MMWnwjDwdbw/hqdefault.jpg",
+      "published": "2021-10-04T07:18:51+00:00",
+      "keywords": "",
+      "text": "HP Pavilion Gaming Ryzen 5 3550H Unboxing & Review | Flipkart & Amazon youtube video tutorial walkthrough"
+    },
+    {
+      "id": "video:iyHKLgdU2Rs",
+      "type": "video",
+      "title": "🔥 HP Pavilion Ryzen 5 Laptop Unboxing Coming Soon! 💻 #shorts",
+      "url": "https://www.youtube.com/shorts/iyHKLgdU2Rs",
+      "isShort": true,
+      "thumbnail": "https://i2.ytimg.com/vi/iyHKLgdU2Rs/hqdefault.jpg",
+      "published": "2021-08-22T16:59:05+00:00",
+      "keywords": "",
+      "text": "🔥 HP Pavilion Ryzen 5 Laptop Unboxing Coming Soon! 💻 #shorts youtube short clip"
+    },
+    {
+      "id": "video:5cE8kPFWE7U",
+      "type": "video",
+      "title": "How to Take DSLR-Like Night Photos on ANY Android! 🌙 | Long Exposure",
+      "url": "https://www.youtube.com/watch?v=5cE8kPFWE7U",
+      "isShort": false,
+      "thumbnail": "https://i2.ytimg.com/vi/5cE8kPFWE7U/hqdefault.jpg",
+      "published": "2021-07-09T09:35:41+00:00",
+      "keywords": "",
+      "text": "How to Take DSLR-Like Night Photos on ANY Android! 🌙 | Long Exposure youtube video tutorial walkthrough"
+    },
+    {
+      "id": "video:TSajmI9B0Lc",
+      "type": "video",
+      "title": "AQFIT W15 Smartwatch Unboxing & Review ⌚ | Best Smartwatch Under ₹3,000?",
+      "url": "https://www.youtube.com/watch?v=TSajmI9B0Lc",
+      "isShort": false,
+      "thumbnail": "https://i1.ytimg.com/vi/TSajmI9B0Lc/hqdefault.jpg",
+      "published": "2021-06-24T16:34:44+00:00",
+      "keywords": "aqfit w15 smartwatch unboxing review wearable youtube watch",
+      "text": "AQFIT W15 Smartwatch Unboxing & Review ⌚ | Best Smartwatch Under ₹3,000? youtube video tutorial walkthrough aqfit w15 smartwatch unboxing review wearable youtube watch"
+    },
+    {
+      "id": "video:StUH6IwFz-k",
+      "type": "video",
+      "title": "5 Unique Android Apps You Should Try! 🤯 Cool Apps + Bonus App",
+      "url": "https://www.youtube.com/watch?v=StUH6IwFz-k",
+      "isShort": false,
+      "thumbnail": "https://i4.ytimg.com/vi/StUH6IwFz-k/hqdefault.jpg",
+      "published": "2021-05-12T05:30:02+00:00",
+      "keywords": "",
+      "text": "5 Unique Android Apps You Should Try! 🤯 Cool Apps + Bonus App youtube video tutorial walkthrough"
+    },
+    {
+      "id": "video:JcPIuXo7RtM",
+      "type": "video",
+      "title": "8 Amazing Android Apps You Should Try! 🔥 Best Free Alternatives",
+      "url": "https://www.youtube.com/watch?v=JcPIuXo7RtM",
+      "isShort": false,
+      "thumbnail": "https://i3.ytimg.com/vi/JcPIuXo7RtM/hqdefault.jpg",
+      "published": "2021-04-23T04:58:15+00:00",
+      "keywords": "",
+      "text": "8 Amazing Android Apps You Should Try! 🔥 Best Free Alternatives youtube video tutorial walkthrough"
+    },
+    {
+      "id": "video:qaO7ty3FbJ0",
+      "type": "video",
+      "title": "Brave vs Chrome 🔥 Which Browser Is Better? | Privacy & Speed Test",
+      "url": "https://www.youtube.com/watch?v=qaO7ty3FbJ0",
+      "isShort": false,
+      "thumbnail": "https://i2.ytimg.com/vi/qaO7ty3FbJ0/hqdefault.jpg",
+      "published": "2021-03-31T04:30:05+00:00",
+      "keywords": "",
+      "text": "Brave vs Chrome 🔥 Which Browser Is Better? | Privacy & Speed Test youtube video tutorial walkthrough"
+    },
+    {
+      "id": "video:V54qm71s0r0",
+      "type": "video",
+      "title": "10 Amazing Windows 10/11 Keyboard Shortcuts You Must Know! 💻🔥",
+      "url": "https://www.youtube.com/watch?v=V54qm71s0r0",
+      "isShort": false,
+      "thumbnail": "https://i3.ytimg.com/vi/V54qm71s0r0/hqdefault.jpg",
+      "published": "2021-03-15T13:42:09+00:00",
+      "keywords": "",
+      "text": "10 Amazing Windows 10/11 Keyboard Shortcuts You Must Know! 💻🔥 youtube video tutorial walkthrough"
+    },
+    {
+      "id": "video:GVZDxvv6Ew0",
+      "type": "video",
+      "title": "How to Set Live Wallpaper on PC Using MLWApp 🔥 | Any Video as Wallpaper",
+      "url": "https://www.youtube.com/watch?v=GVZDxvv6Ew0",
+      "isShort": false,
+      "thumbnail": "https://i4.ytimg.com/vi/GVZDxvv6Ew0/hqdefault.jpg",
+      "published": "2020-12-16T04:02:39+00:00",
+      "keywords": "live wallpaper pc video tutorial youtube mlwapp watch",
+      "text": "How to Set Live Wallpaper on PC Using MLWApp 🔥 | Any Video as Wallpaper youtube video tutorial walkthrough live wallpaper pc video tutorial youtube mlwapp watch"
+    },
+    {
+      "id": "video:9hh3g5ffsIw",
+      "type": "video",
+      "title": "Make Your Computer Welcome You Like JARVIS! 🤖 | Windows Startup Voice",
+      "url": "https://www.youtube.com/watch?v=9hh3g5ffsIw",
+      "isShort": false,
+      "thumbnail": "https://i2.ytimg.com/vi/9hh3g5ffsIw/hqdefault.jpg",
+      "published": "2020-09-09T17:03:09+00:00",
+      "keywords": "",
+      "text": "Make Your Computer Welcome You Like JARVIS! 🤖 | Windows Startup Voice youtube video tutorial walkthrough"
+    },
+    {
+      "id": "video:POFUUEFMCJQ",
+      "type": "video",
+      "title": "How to Read Deleted WhatsApp Messages! 😱 | WAMR App Tutorial",
+      "url": "https://www.youtube.com/watch?v=POFUUEFMCJQ",
+      "isShort": false,
+      "thumbnail": "https://i1.ytimg.com/vi/POFUUEFMCJQ/hqdefault.jpg",
+      "published": "2020-07-31T17:27:04+00:00",
+      "keywords": "",
+      "text": "How to Read Deleted WhatsApp Messages! 😱 | WAMR App Tutorial youtube video tutorial walkthrough"
+    },
+    {
+      "id": "video:1AYjQKX4_KM",
+      "type": "video",
+      "title": "THOP TV|| Free NETFILX , FREE AMAZON PRIME , FREE ULLU, Free Free Free !!!!!",
+      "url": "https://www.youtube.com/watch?v=1AYjQKX4_KM",
+      "isShort": false,
+      "thumbnail": "https://i2.ytimg.com/vi/1AYjQKX4_KM/hqdefault.jpg",
+      "published": "2020-07-19T06:34:19+00:00",
+      "keywords": "",
+      "text": "THOP TV|| Free NETFILX , FREE AMAZON PRIME , FREE ULLU, Free Free Free !!!!! youtube video tutorial walkthrough"
+    },
+    {
+      "id": "video:_P-m_QS2334",
+      "type": "video",
+      "title": "Welcome to AH SOLUTION 🚀 | Tech Tips, Tricks & Tutorials",
+      "url": "https://www.youtube.com/watch?v=_P-m_QS2334",
+      "isShort": false,
+      "thumbnail": "https://i4.ytimg.com/vi/_P-m_QS2334/hqdefault.jpg",
+      "published": "2020-07-12T16:40:03+00:00",
+      "keywords": "",
+      "text": "Welcome to AH SOLUTION 🚀 | Tech Tips, Tricks & Tutorials youtube video tutorial walkthrough"
+    }
+  ]
+}

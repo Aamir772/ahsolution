@@ -5,20 +5,31 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Before setting a video as your PC wallpaper | AH Solution</title>
 <meta name="description" content="A practical checklist for using a video as a Windows desktop wallpaper, including setup, performance, and battery considerations.">
-<meta name="theme-color" content="#050505">
+<meta name="theme-color" content="#08080B">
 <link rel="canonical" href="https://ahsolution.live/guides/live-wallpaper-on-pc.html">
 <meta property="og:type" content="article">
 <meta property="og:site_name" content="AH Solution">
 <meta property="og:title" content="Before setting a video as your PC wallpaper | AH Solution">
 <meta property="og:description" content="A practical checklist for using a video as a Windows desktop wallpaper, including setup, performance, and battery considerations.">
 <meta property="og:url" content="https://ahsolution.live/guides/live-wallpaper-on-pc.html">
-<meta property="og:image" content="https://images.unsplash.com/photo-1496181133206-80ce9b88a853?auto=format&fit=crop&w=1200&q=80">
+<meta property="og:image" content="https://ahsolution.live/assets/img/og-default.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:type" content="image/jpeg">
 <meta name="twitter:card" content="summary_large_image">
-<link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="../assets/img/favicon.ico" sizes="any">
+<link rel="icon" type="image/svg+xml" href="../assets/img/favicon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="../assets/img/favicon-16x16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="../assets/img/apple-touch-icon.png">
+<link rel="manifest" href="../site.webmanifest">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap">
+<link rel="stylesheet" href="../assets/css/tokens.css">
 <link rel="stylesheet" href="../assets/css/styles.css">
+<link rel="stylesheet" href="../assets/css/device.css">
+<noscript><style>.boot{display:none !important}.device-shell{opacity:1 !important}</style></noscript>
 <script type="application/ld+json">
 {"@context":"https://schema.org","@graph":[
 {"@type":"Article","@id":"https://ahsolution.live/guides/live-wallpaper-on-pc.html#article","headline":"Before setting a video as your PC wallpaper","description":"A practical checklist for using a video as a Windows desktop wallpaper, including setup, performance, and battery considerations.","image":"https://images.unsplash.com/photo-1496181133206-80ce9b88a853?auto=format&fit=crop&w=1200&q=80","datePublished":"2026-10-11","dateModified":"2026-10-11","articleSection":"PC & software","author":{"@type":"Organization","name":"AH Solution"},"publisher":{"@id":"https://ahsolution.live/#organization"},"mainEntityOfPage":{"@type":"WebPage","@id":"https://ahsolution.live/guides/live-wallpaper-on-pc.html"}},
@@ -27,6 +38,33 @@
 </script>
 </head>
 <body>
+
+<!-- AH startup screen -->
+<div class="boot" data-boot aria-hidden="true">
+  <div class="boot-inner">
+    <div class="boot-emblem">
+      <svg class="boot-ring" viewBox="0 0 128 128" aria-hidden="true" focusable="false">
+        <defs>
+          <linearGradient id="ahBootGrad" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#F0445E"></stop>
+            <stop offset="1" stop-color="#3B82F6"></stop>
+          </linearGradient>
+        </defs>
+        <circle class="boot-ring-track" cx="64" cy="64" r="56"></circle>
+        <circle class="boot-ring-arc" cx="64" cy="64" r="56" stroke="url(#ahBootGrad)"></circle>
+      </svg>
+      <img class="boot-logo" src="../assets/img/logo.svg" alt="AH Solution" width="216" height="57" decoding="async">
+      <span class="boot-wordmark" aria-hidden="true">AH SOLUTION</span>
+    </div>
+    <div class="boot-bar" aria-hidden="true"><span></span></div>
+    <p class="boot-text">Starting AH Solution</p>
+    <noscript><p class="boot-note">JavaScript is off &mdash; <a href="../index.html">continue to the site</a>.</p></noscript>
+  </div>
+</div>
+
+<!-- Device world -->
+<div class="device-shell" data-device-shell>
+  <div class="device-screen" data-device-screen>
 <div class="reading-progress" aria-hidden="true"></div>
 <a class="skip-link" href="#main">Skip to content</a>
 
@@ -39,12 +77,16 @@
 
 <header class="site-header">
   <div class="container nav">
-    <a class="brand" href="../index.html" aria-label="AH Solution home"><img src="../assets/img/logo.svg" alt="AH Solution" width="162" height="43"></a>
+    <a class="brand" href="../index.html" aria-label="AH Solution — home">
+      <img class="brand-logo" src="../assets/img/logo.svg" alt="AH Solution" width="152" height="40" decoding="async">
+    </a>
     <nav class="nav-links" id="primary-nav" aria-label="Main navigation">
+      <span class="nav-pill" aria-hidden="true"></span>
       <a href="../index.html">Home</a>
       <a href="../vlogs.html">Videos</a>
-      <a class="active" href="../blog.html" aria-current="page">Blog</a>
-      <a href="../tutorials.html">Tutorials</a>
+      <a href="../vlogs.html#shorts">Shorts</a>
+      <a href="../blog.html">Blog</a>
+      <a href="../index.html#categories">Categories</a>
       <a href="../about.html">About</a>
       <a href="../contact.html">Contact</a>
     </nav>
@@ -61,7 +103,7 @@
 <div class="search-modal" data-search-modal role="dialog" aria-modal="true" aria-label="Site search">
   <div class="search-panel">
     <div class="search-field">
-      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#a1a1aa" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#A5A5B0" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
       <input type="search" placeholder="Search tutorials, guides and pages…" aria-label="Search">
       <button class="icon-btn" data-search-close aria-label="Close search">✕</button>
     </div>
@@ -159,29 +201,32 @@
   <div class="container">
     <div class="footer-top">
       <div class="footer-brand">
-        <a href="../index.html" aria-label="AH Solution home"><img src="../assets/img/logo.svg" alt="AH Solution" width="156" height="41"></a>
+        <a class="brand" href="../index.html" aria-label="AH Solution — home">
+          <img class="brand-logo brand-logo--sm" src="../assets/img/logo.svg" alt="AH Solution" width="129" height="34" decoding="async">
+        </a>
         <p>Simple solutions for everyday tech problems. Practical tutorials, digital tools, and honest discoveries made easier to understand.</p>
       </div>
       <div class="footer-col">
         <strong>Explore</strong>
         <a href="../vlogs.html">Videos</a>
+        <a href="../vlogs.html#shorts">Shorts</a>
         <a href="../blog.html">Blog &amp; guides</a>
-        <a href="../tutorials.html">Tutorial explorer</a>
-        <a href="../about.html">About AH Solution</a>
+        <a href="../index.html#categories">Categories</a>
+      </div>
+      <div class="footer-col">
+        <strong>Company</strong>
+        <a href="../about.html">About</a>
+        <a href="../contact.html">Contact</a>
+        <a href="../tutorials.html">Tutorials</a>
+        <a href="../privacy.html">Privacy Policy</a>
+        <a href="../terms.html#disclaimer">Disclaimer</a>
       </div>
       <div class="footer-col">
         <strong>Connect</strong>
         <a href="https://www.youtube.com/channel/UC_LdZmWha8cvotco41D77fw" target="_blank" rel="noopener noreferrer">YouTube ↗</a>
         <a href="https://www.instagram.com/ahsolutions01/" target="_blank" rel="noopener noreferrer">Instagram ↗</a>
         <a href="https://www.facebook.com/ahsolutions001" target="_blank" rel="noopener noreferrer">Facebook ↗</a>
-        <a href="mailto:official.ahsolution@gmail.com">Email AH Solution ↗</a>
-      </div>
-      <div class="footer-col">
-        <strong>Company</strong>
-        <a href="../contact.html">Contact</a>
-        <a href="../privacy.html">Privacy notice</a>
-        <a href="../terms.html">Terms &amp; conditions</a>
-        <a href="../sitemap.xml">Sitemap</a>
+        <a href="mailto:official.ahsolution@gmail.com">official.ahsolution@gmail.com ↗</a>
       </div>
     </div>
     <div class="footer-bottom">
@@ -189,13 +234,24 @@
       <div class="footer-socials">
         <a href="../privacy.html">Privacy</a>
         <a href="../terms.html">Terms</a>
+        <a href="../terms.html#disclaimer">Disclaimer</a>
         <a href="../contact.html">Contact</a>
-        <a href="https://www.youtube.com/channel/UC_LdZmWha8cvotco41D77fw" target="_blank" rel="noopener noreferrer">YouTube ↗</a>
       </div>
     </div>
   </div>
 </footer>
 
+  </div><!-- /device-screen -->
+  <div class="device-chrome" aria-hidden="true">
+    <span class="device-cam" aria-hidden="true"></span>
+    <span class="device-stand" aria-hidden="true"></span>
+  </div>
+  <button class="device-toggle" data-device-toggle type="button" aria-pressed="false" aria-label="Toggle full-width view">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 3H5a2 2 0 0 0-2 2v3M16 3h3a2 2 0 0 1 2 2v3M16 21h3a2 2 0 0 0 2-2v-3M8 21H5a2 2 0 0 1-2-2v-3"/></svg>
+    <span data-device-toggle-label>Full width</span>
+  </button>
+</div><!-- /device-shell -->
+<script src="../assets/js/device.js" defer></script>
 <script src="../assets/js/main.js" defer></script>
 </body>
 </html>

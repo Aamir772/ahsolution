@@ -1,5 +1,7 @@
 [build]
+  command = "node scripts/build-ai-index.mjs"
   publish = "."
+  functions = "netlify/functions"
 
 # Custom 404 page (Netlify serves 404.html automatically)
 [[headers]]
@@ -8,7 +10,7 @@
     X-Content-Type-Options = "nosniff"
     X-Frame-Options = "SAMEORIGIN"
     Referrer-Policy = "strict-origin-when-cross-origin"
-    Permissions-Policy = "camera=(), microphone=(), geolocation=()"
+    Permissions-Policy = "camera=(), microphone=(self), geolocation=()"
 
 # Long-cache static assets (hashed filenames are not used, so keep this moderate)
 [[headers]]
@@ -25,3 +27,37 @@
   for = "/assets/js/*"
   [headers.values]
     Cache-Control = "public, max-age=604800"
+
+# The admin panel must never be indexed and must not be cached
+[[headers]]
+  for = "/admin/*"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+    Cache-Control = "no-store"
+
+# Clean article URLs served by the public CMS
+[[redirects]]
+  from = "/article"
+  to = "/article.html"
+  status = 200
+
+[[redirects]]
+  from = "/article/*"
+  to = "/article.html?slug=:splat"
+  status = 200
+
+# Handy admin entry points
+[[redirects]]
+  from = "/admin"
+  to = "/admin/login.html"
+  status = 200
+
+[[redirects]]
+  from = "/admin/dashboard"
+  to = "/admin/dashboard.html"
+  status = 200
+
+[[redirects]]
+  from = "/admin/editor"
+  to = "/admin/editor.html"
+  status = 200

@@ -1,0 +1,71 @@
+ .env.example                                   |   66 [32m++[m
+ 404.html                                       |  101 [32m++[m[31m-[m
+ README.md                                      |  Bin [31m3723[m -> [32m17008[m bytes
+ about.html                                     |   96 [32m++[m[31m-[m
+ admin/README.md                                |   44 [32m+[m
+ admin/admin.css                                |  198 [32m+++++[m
+ admin/admin.js                                 |  200 [32m+++++[m
+ admin/dashboard.html                           |  179 [32m++++[m
+ admin/editor.html                              |  405 [32m++++++++++[m
+ admin/login.html                               |  172 [32m++++[m
+ admin/reset-password.html                      |  161 [32m++++[m
+ article.html                                   |  226 [32m++++++[m
+ assets/css/ai.css                              |  241 [32m++++++[m
+ assets/css/device.css                          |  393 [32m+++++++++[m
+ assets/css/styles.css                          | 1035 [32m+++++++++++++++++[m[31m-------[m
+ assets/css/tokens.css                          |  148 [32m++++[m
+ assets/data/ai-index.json                      |  393 [32m+++++++++[m
+ assets/data/videos.json                        |  212 [32m+++++[m
+ assets/img/android-chrome-192x192.png          |  Bin [31m0[m -> [32m3094[m bytes
+ assets/img/android-chrome-512x512.png          |  Bin [31m0[m -> [32m9150[m bytes
+ assets/img/apple-touch-icon.png                |  Bin [31m0[m -> [32m3134[m bytes
+ assets/img/deco/admin-backdrop.svg             |    1 [32m+[m
+ assets/img/deco/crimson-glow.svg               |    1 [32m+[m
+ assets/img/deco/divider-wave.svg               |    1 [32m+[m
+ assets/img/deco/grid-fine.svg                  |    1 [32m+[m
+ assets/img/deco/network.svg                    |    1 [32m+[m
+ assets/img/deco/waves-dark.svg                 |    1 [32m+[m
+ assets/img/favicon-16x16.png                   |  Bin [31m0[m -> [32m418[m bytes
+ assets/img/favicon-32x32.png                   |  Bin [31m0[m -> [32m580[m bytes
+ assets/img/favicon-48x48.png                   |  Bin [31m0[m -> [32m871[m bytes
+ assets/img/favicon.ico                         |  Bin [31m0[m -> [32m1923[m bytes
+ assets/img/og-default.jpg                      |  Bin [31m0[m -> [32m40282[m bytes
+ assets/js/ai.js                                |  555 [32m+++++++++++++[m
+ assets/js/cms.js                               |  249 [32m++++++[m
+ assets/js/device.js                            |  191 [32m+++++[m
+ assets/js/globe.js                             |  712 [32m++++++++++++++++[m
+ assets/js/main.js                              |  598 [32m++++++++[m[31m------[m
+ assets/vendor/three.module.min.js              |    6 [32m+[m
+ blog.html                                      |  115 [32m++[m[31m-[m
+ contact.html                                   |   94 [32m++[m[31m-[m
+ favicon.ico                                    |  Bin [31m0[m -> [32m1923[m bytes
+ guides/budget-smartwatch-checklist.html        |   94 [32m++[m[31m-[m
+ guides/choose-android-apps-safely.html         |   94 [32m++[m[31m-[m
+ guides/live-wallpaper-on-pc.html               |   94 [32m++[m[31m-[m
+ index.html                                     |  472 [32m+++++++[m[31m----[m
+ netlify.toml                                   |   38 [32m+[m[31m-[m
+ netlify/functions/_shared/ai-index.json        |  393 [32m+++++++++[m
+ netlify/functions/_shared/supabase-rest.cjs    |  334 [32m++++++++[m
+ netlify/functions/admin-auth/admin-auth.js     |  181 [32m+++++[m
+ netlify/functions/articles/articles.js         |  168 [32m++++[m
+ netlify/functions/init-admin/init-admin.js     |   84 [32m++[m
+ netlify/functions/solution-ai-chat.js          |  421 [32m++++++++++[m
+ netlify/functions/upload-cover/upload-cover.js |   79 [32m++[m
+ package.json                                   |   19 [32m+[m[31m-[m
+ privacy.html                                   |   92 [32m++[m[31m-[m
+ scripts/ai-function-test.mjs                   |  156 [32m++++[m
+ scripts/ai-qa.cjs                              |  329 [32m++++++++[m
+ scripts/build-ai-index.mjs                     |  188 [32m+++++[m
+ scripts/build-deco.mjs                         |  207 [32m+++++[m
+ scripts/fetch-videos.mjs                       |  138 [32m++++[m
+ scripts/qa-admin.cjs                           |  487 [32m+++++++++++[m
+ scripts/qa-device.cjs                          |  164 [32m++++[m
+ scripts/qa-lib.cjs                             |  106 [32m+++[m
+ scripts/qa-pages.cjs                           |  119 [32m+++[m
+ scripts/qa-scroll.cjs                          |  231 [32m++++++[m
+ site.webmanifest                               |   16 [32m+[m
+ supabase/migrations/001-articles.sql           |  150 [32m++++[m
+ terms.html                                     |   96 [32m++[m[31m-[m
+ tutorials.html                                 |  117 [32m++[m[31m-[m
+ vlogs.html                                     |  145 [32m++[m[31m--[m
+ 70 files changed, 11024 insertions(+), 984 deletions(-)

@@ -1,0 +1,16 @@
+{
+  "name": "AH Solution — Technology Made Simple",
+  "short_name": "AH Solution",
+  "description": "Practical Android tips, Windows & PC tutorials, app guides, gadget first looks, and video walkthroughs.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#08080B",
+  "theme_color": "#08080B",
+  "lang": "en",
+  "icons": [
+    { "src": "/assets/img/android-chrome-192x192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/assets/img/android-chrome-512x512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/assets/img/apple-touch-icon.png", "sizes": "180x180", "type": "image/png", "purpose": "any" }
+  ]
+}
