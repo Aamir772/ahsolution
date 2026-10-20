@@ -125,7 +125,7 @@
     </div>
   </section>
 
-  <section class="section">
+  <section class="section" data-videos-library>
     <div class="container">
       <div class="section-head reveal">
         <div>
@@ -133,6 +133,27 @@
           <h2>Watch the <span class="text-gradient">walkthrough.</span></h2>
         </div>
         <p>New videos are added here as the channel grows. For the latest uploads and complete playlists, visit YouTube.</p>
+      </div>
+      <div class="video-toolbar reveal">
+        <div class="video-chips" role="group" aria-label="Filter videos by category">
+          <button class="video-chip is-active" type="button" data-video-filter="all" aria-pressed="true">All videos</button>
+          <button class="video-chip" type="button" data-video-filter="reviews" aria-pressed="false">Reviews</button>
+          <button class="video-chip" type="button" data-video-filter="android" aria-pressed="false">Android</button>
+          <button class="video-chip" type="button" data-video-filter="windows" aria-pressed="false">Windows &amp; PC</button>
+          <button class="video-chip" type="button" data-video-filter="photography" aria-pressed="false">Photography</button>
+          <button class="video-chip" type="button" data-video-filter="smartwatch" aria-pressed="false">Smartwatches</button>
+          <button class="video-chip" type="button" data-video-filter="tips" aria-pressed="false">Tips &amp; Tricks</button>
+          <button class="video-chip" type="button" data-video-filter="unboxing" aria-pressed="false">Unboxing</button>
+          <button class="video-chip" type="button" data-video-filter="guides" aria-pressed="false">Guides</button>
+        </div>
+        <div class="video-sort">
+          <label class="video-sort-label" for="videoSort">Sort by</label>
+          <select class="video-sort-select" id="videoSort" data-video-sort>
+            <option value="latest">Latest first</option>
+            <option value="oldest">Oldest first</option>
+            <option value="views">Most viewed</option>
+          </select>
+        </div>
       </div>
       <div class="video-grid" data-latest-videos data-limit="12"></div>
       <p class="source-note" data-video-status aria-live="polite">Loading the latest videos from the AH Solution channel…</p>

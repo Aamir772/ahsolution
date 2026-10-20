@@ -281,6 +281,21 @@
     const shortSvg = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M10 8l6 4-6 4V8z"/><rect x="3" y="3" width="18" height="18" rx="5" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>';
 
     const fmtViews = (n) => n == null ? null : n >= 1e6 ? (n / 1e6).toFixed(1).replace(/\.0$/, '') + 'M' : n >= 1e3 ? (n / 1e3).toFixed(1).replace(/\.0$/, '') + 'K' : String(n);
+    /* Category classifier for the Videos-page filter chips. Keyword first-match
+       wins; smartwatch/photography are checked before unboxing so "...Watch
+       Unboxing" lands on Smartwatches, and unboxing before reviews so
+       "...Unboxing & Review" lands on Unboxing. */
+    const catOf = (v) => {
+      const t = (v.title || '').toLowerCase();
+      if (/smartwatch|aqfit|\bwatch\b/.test(t)) return 'smartwatch';
+      if (/night photo|long exposure|photography|\bphoto/.test(t)) return 'photography';
+      if (/unbox|first look/.test(t)) return 'unboxing';
+      if (/tips|trick/.test(t)) return 'tips';
+      if (/windows|\bpc\b|laptop|chrome|remote desktop|mirror android|keyboard/.test(t)) return 'windows';
+      if (/\bapp/.test(t)) return 'android';
+      if (/review/.test(t)) return 'reviews';
+      return 'guides';
+    };
     const fmtDur = (s) => {
       if (s == null) return null;
       const h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), sec = s % 60;
@@ -306,7 +321,7 @@
         `<span class="facade-play" aria-hidden="true">${playSvg}</span></button>`;
     };
 
-    const latestCard = (v, delay) => `<div class="video-card reveal" data-delay="${delay || 0}">` +
+    const latestCard = (v, delay) => `<div class="video-card reveal" data-delay="${delay || 0}" data-video-cat="${catOf(v)}" data-video-published="${esc(v.published || '')}" data-video-views="${v.views ?? 0}">` +
       facade(v, 'video-facade') +
       `<div class="video-info"><h3>${esc(v.title)}</h3>${meta(v, v.isShort ? 'Short' : '')}</div></div>`;
 
@@ -388,7 +403,56 @@
       append();
     }
 
+    /* Videos-page filter + sort state. The toolbar only exists on the Videos
+       page; on pages without chips/sorting this stays untouched and the latest
+       grid renders in the feed's default (newest-first) order. */
+    let lastData = null;
+    let activeCat = 'all';
+    let activeSort = 'latest';
+
+    function applyLatest() {
+      if (!lastData) return;
+      const videos = (lastData.videos || []).filter(v => v && v.id);
+      const byViews = [...videos].sort((a, b) => (b.views ?? 0) - (a.views ?? 0));
+      const top = byViews[0];
+      const liked = videos.filter(v => v.likes != null).sort((a, b) => b.likes - a.likes)[0];
+      const trending = videos
+        .filter(v => v.id !== top?.id && v.id !== liked?.id)
+        .sort((a, b) => ((b.views ?? 0) / days(b)) - ((a.views ?? 0) / days(a)))[0];
+      const hlIds = new Set([top, trending, liked].filter(Boolean).map(v => v.id));
+      let latest = videos.filter(v => !v.isShort && !hlIds.has(v.id));
+      if (activeSort === 'latest') latest = [...latest].sort((a, b) => new Date(b.published) - new Date(a.published));
+      else if (activeSort === 'oldest') latest = [...latest].sort((a, b) => new Date(a.published) - new Date(b.published));
+      else if (activeSort === 'views') latest = [...latest].sort((a, b) => (b.views ?? 0) - (a.views ?? 0));
+      if (activeCat !== 'all') latest = latest.filter(v => catOf(v) === activeCat);
+      const emptyMsg = activeCat === 'all'
+        ? 'No published long-form videos were found in the current feed.'
+        : 'No long-form videos in this category yet — try another filter.';
+      containers.latest.forEach(el => {
+        const first = Number(el.dataset.limit) || 12;
+        chunked(el, latest, (v, k) => latestCard(v, (k % 3) + 1), first, 12, emptyMsg);
+      });
+    }
+
+    const chipBtns = $$('[data-video-filter]');
+    chipBtns.forEach(btn => btn.addEventListener('click', () => {
+      activeCat = btn.dataset.videoFilter || 'all';
+      chipBtns.forEach(b => {
+        const on = b === btn;
+        b.classList.toggle('is-active', on);
+        b.setAttribute('aria-pressed', on ? 'true' : 'false');
+      });
+      applyLatest();
+    }));
+    $$('[data-video-sort]').forEach(sel => sel.addEventListener('change', () => {
+      activeSort = sel.value || 'latest';
+      applyLatest();
+    }));
+
     function render(data, cached) {
+      lastData = data;
+      applyLatest();
+
       const videos = (data.videos || []).filter(v => v && v.id);
       const byViews = [...videos].sort((a, b) => (b.views ?? 0) - (a.views ?? 0));
       const top = byViews[0];
@@ -403,13 +467,6 @@
       containers.highlights.forEach(el => {
         el.innerHTML = hlPicks.map(([kind, v]) => highlightCard(kind, v, highlightDefs[kind].rule)).join('');
         if (window.ahReveal) window.ahReveal(el);
-      });
-
-      const latest = videos.filter(v => !v.isShort && !hlIds.has(v.id));
-      containers.latest.forEach(el => {
-        const first = Number(el.dataset.limit) || 12;
-        chunked(el, latest, (v, k) => latestCard(v, (k % 3) + 1), first, 12,
-          'No published long-form videos were found in the current feed.');
       });
 
       const shorts = videos.filter(v => v.isShort);
