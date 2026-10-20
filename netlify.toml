@@ -28,6 +28,13 @@
   [headers.values]
     Cache-Control = "public, max-age=604800"
 
+# JSON data endpoints must revalidate quickly — they carry live video
+# statistics and the AI index. (Placed after /assets/* so this wins there.)
+[[headers]]
+  for = "/assets/data/*.json"
+  [headers.values]
+    Cache-Control = "public, max-age=300, must-revalidate"
+
 # The admin panel must never be indexed and must not be cached
 [[headers]]
   for = "/admin/*"
@@ -53,6 +60,12 @@
 [[redirects]]
   from = "/article"
   to = "/article.html"
+  status = 200
+
+# Live video data — server-side YouTube feed (videos-fresh function)
+[[redirects]]
+  from = "/api/videos"
+  to = "/.netlify/functions/videos-fresh"
   status = 200
 
 [[redirects]]

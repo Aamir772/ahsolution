@@ -203,6 +203,7 @@
         var img = document.createElement('img');
         img.className = 'article-cover';
         img.src = a.cover_image_url;
+        img.onerror = function () { img.onerror = null; img.src = FALLBACK_COVER; };
         img.alt = a.title;
         img.decoding = 'async';
         img.loading = 'eager';

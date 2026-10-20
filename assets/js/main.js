@@ -481,8 +481,29 @@
 
     fetch(base + 'assets/data/videos.json', { cache: 'no-cache' })
       .then(r => { if (!r.ok) throw new Error(r.status); return r.json(); })
-      .then(data => render(data, data.source === 'cached-snapshot'))
-      .catch(() => render(FALLBACK, true));
+      .then(data => { render(data, data.source === 'cached-snapshot'); tryLive(data); })
+      .catch(() => { render(FALLBACK, true); tryLive(FALLBACK); });
+
+    /* Live refresh: the snapshot above renders instantly (and works offline),
+       then the server-side feed function may deliver fresher channel data.
+       Only a newer payload replaces the current one — on any failure the last
+       successful dataset stays on screen. One attempt per page load. */
+    function tryLive(current) {
+      let ctrl = null;
+      try { if (typeof AbortController === 'function') ctrl = new AbortController(); } catch { /* old browsers */ }
+      const timer = ctrl ? setTimeout(() => ctrl.abort(), 6000) : null;
+      const url = base ? base.replace(/\/$/, '') + '/api/videos' : 'api/videos';
+      fetch(url, { cache: 'no-cache', signal: ctrl ? ctrl.signal : undefined })
+        .then(r => { if (!r.ok) throw new Error(r.status); return r.json(); })
+        .then(live => {
+          if (!live || !Array.isArray(live.videos) || !live.videos.length) return;
+          const snapAt = Date.parse(current && current.generatedAt || '') || 0;
+          const liveAt = Date.parse(live.generatedAt || '') || 0;
+          if (liveAt > snapAt + 1000) render(live, false);
+        })
+        .catch(() => { /* snapshot stays */ })
+        .finally(() => { if (timer) clearTimeout(timer); });
+    }
   })();
 
   /* ------------------------------------------------------------------ *

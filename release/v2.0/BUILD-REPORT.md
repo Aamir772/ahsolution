@@ -15,6 +15,14 @@
 - SHA-256: `d3d70a72b100dd7ed7b4c5b79317280e0bbbc7503127f3d57db04ca1d9e7ac74`
 - Contents at archive root (no enclosing folder); opens and extracts cleanly; extraction is byte-identical to `site/` (file-by-file SHA-256 comparison)
 
+## ZIP fingerprint (V2.0.1 refresh — live video data, 2026-10-20)
+
+- Size: **3,599,724 bytes** (3.43 MB)
+- SHA-256: `8d2f1eaf9a30e61ef45694feaf1b5e7dbb04c1097f959bd32950606228e8578f`
+- Changes vs the fingerprint above: `assets/js/main.js` (live-refresh hook + videos-page filter/sort), `assets/css/styles.css` (compact videos-page grid), `vlogs.html` (filter toolbar), `assets/data/videos.json` (re-fetched 2026-10-20 feed), `assets/data/ai-index.json`, refreshed `netlify.toml` in the archive, `_redirects` gained `/api/videos → /.netlify/functions/videos-fresh  200`, `_headers` gained `Cache-Control: public, max-age=300, must-revalidate` for `/assets/data/*.json`.
+- The archive is now written with `tar -a -c` (forward-slash entry names; the previous Compress-Archive archive stored backslash paths). Verification: 172 entries, 0 backslash paths, updated markers byte-confirmed inside the zip.
+- Note for Drop uploads: `_redirects` maps `/api/videos` to a Netlify Function; on a static Drop (no Functions) that request 404s and the frontend silently keeps the in-bundle snapshot — videos still render with the 2026-10-20 counts, so the page is correct either way.
+
 ## Commands executed (all real, all green)
 
 ```
@@ -79,3 +87,23 @@ ZIP verify                 → 9/0
 
 - None for the static release. Optional follow-ups (outside this build's mandate): perform the Drop onto the existing site (operator-approved step), and, if dynamic admin/AI features are wanted immediately on the live domain, restore the normal Netlify deploy with Functions and environment variables — then drop uploads are no longer the mechanism (they would replace functions).
 - Known cosmetic note: sitemap uses date-only `<lastmod>` (W3C-valid). No drafts, admin pages, schema templates, dev URLs or duplicates included.
+
+## Live video-data update (2026-10-20 — function `videos-fresh`)
+
+Root cause of stale Shorts/counts (confirmed before any change):
+1. `assets/data/videos.json` is a **build-time snapshot** (feed of the 15 newest uploads), refreshed only when someone runs `npm run fetch:videos` and redeploys; the shipped snapshot was generated 2026-10-12.
+2. `_headers`/`netlify.toml` served `/assets/*` — including that JSON — with `Cache-Control: public, max-age=604800`, so browser **and** CDN could keep a snapshot up to 7 days old on top of the build-time age. Result: visitors could see view counts 1–2 weeks behind YouTube Studio. Shorts classification came from the RSS `/shorts/` URL (evidence-based) and was missing brand-new uploads beyond the 15-item feed window only if >15 newer items existed.
+
+Fixes shipped:
+- **New server-side function** `netlify/functions/videos-fresh/videos-fresh.js` (also mounted at `/api/videos` via `netlify.toml` rewrite): fetches the public channel RSS at request time and, when `YT_API_KEY` is configured, enriches it with YouTube Data API statistics/contentDetails. Shorts classification keeps the `/shorts/` URI evidence (duration fallback only for titles that self-claim `#short`). In-process TTL cache (`VIDEOS_CACHE_TTL_SECONDS`, default 900s) protects quota; on upstream failure the last good payload is served (`X-Fresh-Cache: STALE`), with 503 only if there is no cached payload. The API key never appears in any response, log, or error message.
+- **Frontend** (`assets/js/main.js`): snapshot renders immediately as before, then one attempt fetches `/api/videos`; a strictly newer `generatedAt` replaces the render, any failure keeps the last successful dataset (never a blank page). Status line badges distinguish `Live channel data` vs `Cached snapshot`.
+- **Cache policy**: `/assets/data/*.json` now `Cache-Control: public, max-age=300, must-revalidate` (netlify.toml + release `_headers`); the function response itself carries the same 5-minute policy. Browser re-request after ≤5 min; CDN revalidates; no permanent freeze.
+- Manual refresh: intentionally **not** exposed publicly — anonymous visitors can only wait for the ≤15-min TTL cache; refreshing is via redeploy/cron as with the rest of the build pipeline.
+- Fresh environment without a key: RSS stats only (verified live 2026-10-20: 15 videos, 2 Shorts, current views like the new `J3Q0LPCas7I` at 1,751). With `YT_API_KEY` set in the Netlify dashboard the same function adds exact API counts/durations with no other change.
+
+Test results for this update (all real runs):
+- Function: harness 1 (200 MISS → today's RSS, 15 videos/2 shorts, no key in body, HIT dedupe same `generatedAt`), harness 2 (upstream outage with no cache → 503 JSON; recovery → 200 MISS; outage again inside TTL → 200 with cached payload), harness 3 (`TTL=0` → outage after success → **200 STALE**, 15 videos kept).
+- Frontend: live-sync Playwright suite **11/11** — newer `/api/videos` payload re-renders the grid (stub video + `data-video-views=200` present), status badge `Live channel data`, 9 filter chips, 12 thumbnails loaded, 0 page errors; dead `/api/videos` (503) → snapshot cards survive (11) with real published counts, 0 page errors; homepage untouched (2-up grid, full feed, 2 Shorts).
+- Regression: `qa-pages.cjs` 22/0, `qa-scroll.cjs` 33/0, `qa-blog.cjs` 322/0; `node --check` clean on the function and `main.js`; `serve.cjs` now mirrors the production `/api/videos` rewrite locally.
+
+Remaining delay (confirmed): after a redeploy the first visitor within ~5 min may get a ≤5-min-old cached response; after that, data is at most 15 minutes old (TTL). Without redeploying, the *snapshot-based* pages keep working, so the in-bundle snapshot can age until someone redeploys to refresh `videos.json` — the live-function path covers the gap end-to-end.

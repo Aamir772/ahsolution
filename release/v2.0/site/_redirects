@@ -3,3 +3,4 @@
 /admin              /admin/login.html            200
 /admin/dashboard    /admin/dashboard.html        200
 /admin/editor       /admin/editor.html           200
+/api/videos         /.netlify/functions/videos-fresh    200

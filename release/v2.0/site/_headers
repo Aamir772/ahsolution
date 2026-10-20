@@ -13,6 +13,9 @@
 /assets/js/*
   Cache-Control: public, max-age=604800
 
+/assets/data/*.json
+  Cache-Control: public, max-age=300, must-revalidate
+
 /admin/*
   X-Robots-Tag: noindex, nofollow
   Cache-Control: no-store
@@ -22,3 +25,4 @@
 
 /article.html
   X-Robots-Tag: noindex, nofollow
+

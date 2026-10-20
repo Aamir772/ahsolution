@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-14T07:23:10.175Z",
+  "generatedAt": "2026-10-20T15:15:37.438Z",
   "site": "AH Solution",
   "source": "build-ai-index",
   "counts": {
@@ -73,19 +73,19 @@
       "text": "Mobile Tips. Everyday tips for the phone you own. mobile phone android tips"
     },
     {
-      "id": "page:blog-html-category-apps",
+      "id": "page:blog-html-category-android",
       "type": "page",
       "title": "Android Apps",
-      "url": "blog.html?category=apps",
+      "url": "blog.html?category=android",
       "description": "Useful and safe app recommendations",
       "keywords": "apps android software recommendations",
       "text": "Android Apps. Useful and safe app recommendations. apps android software recommendations"
     },
     {
-      "id": "page:blog-html-category-pc",
+      "id": "page:blog-html-category-windows",
       "type": "page",
       "title": "PC & Windows",
-      "url": "blog.html?category=pc",
+      "url": "blog.html?category=windows",
       "description": "Customisation and everyday PC tasks",
       "keywords": "pc windows computer laptop",
       "text": "PC & Windows. Customisation and everyday PC tasks. pc windows computer laptop"

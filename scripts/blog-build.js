@@ -374,7 +374,7 @@ function articlePage(row, mdPath, all) {
   <section class="section">
     <div class="container article-wrap">
       <article class="article-main">
-        <img class="article-cover" src="${esc(cover)}" alt="${esc(row.image_alt_text || row.article_title)}" width="1200" height="630" decoding="async">
+        <img class="article-cover" src="${esc(cover)}" alt="${esc(row.image_alt_text || row.article_title)}" width="1200" height="630" decoding="async" onerror="this.onerror=null;this.src='/assets/img/og-default.jpg'">
         <div class="article-body" data-article-content>
 ${videoJsonDiv(row)}
 ${bodyHtml}

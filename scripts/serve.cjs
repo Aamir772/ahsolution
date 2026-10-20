@@ -50,6 +50,18 @@ const MIME = {
 const server = http.createServer(function (req, res) {
   try {
     const url = decodeURIComponent((req.url || '/').split('?')[0]);
+    // Mirrors the production /api/videos rewrite (netlify.toml): the local
+    // dev server stands in for the videos-fresh function with the current
+    // snapshot, so QA never logs spurious 404s for the live-data fetch.
+    if (url === '/api/videos') {
+      const feed = path.join(ROOT, 'assets', 'data', 'videos.json');
+      res.writeHead(200, {
+        'Content-Type': 'application/json; charset=utf-8',
+        'Cache-Control': 'no-store'
+      });
+      res.end(fs.existsSync(feed) ? fs.readFileSync(feed) : JSON.stringify({ error: 'feed unavailable' }));
+      return;
+    }
     let file = path.normalize(path.join(ROOT, url));
     if (!file.startsWith(ROOT)) { res.writeHead(403); res.end('forbidden'); return; }
 
