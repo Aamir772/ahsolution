@@ -15,43 +15,96 @@
     reduce = !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
   } catch (e) {}
 
-  /* 1. Startup screen ------------------------------------------------------
-     Shown on every full load / refresh (~2.5s minimum). Internal anchor
-     navigation does not reload the page, so it is naturally skipped.      */
-  var logo = document.querySelector(".boot-logo");
-  if (logo) {
-    logo.addEventListener("error", function () {
-      var inner = logo.closest(".boot-inner");
-      if (inner) inner.classList.add("boot--nologo");
-    });
+  /* 1. Startup intro -------------------------------------------------------
+     Session-scoped: an inline <head> script sets the "ah-intro" sessionStorage
+     flag BEFORE first paint and tags the document with either
+       html.booted      → returning page in this tab (intro skipped, no flash)
+       html.boot-intro  → first entry in this tab (intro plays below)
+     so the ~1s intro only ever plays once per tab session. Storage failures
+     fall back to showing the intro, and the page stays usable regardless.   */
+  var QUOTES = [
+    "Work smarter, not just harder.",
+    "Big progress starts with small fixes.",
+    "Curiosity first, confusion second.",
+    "Learn it. Try it. Make it yours.",
+    "Every click teaches you something.",
+    "Solve once, reuse forever.",
+    "Consistency beats intensity.",
+    "Turn questions into skills.",
+    "Small daily wins stack up.",
+    "Understand the why, not just the how.",
+    "Practical beats perfect.",
+    "One good tweak at a time.",
+    "Tools serve you — stay in charge.",
+    "Knowledge grows when it is shared.",
+    "Keep it simple, keep it sharp."
+  ];
+
+  var introMode = html.classList.contains("boot-intro") && !html.classList.contains("booted");
+
+  var MIN_BOOT = 1000;  // ~1s intended visual intro (max), not a fake-complete claim
+  var FALLBACK = 2000;  // hard reveal even if a timer is delayed; CSS auto-hides at 2.2s too
+
+  function pickBootQuote() {
+    var slot = document.querySelector("[data-boot-quote]");
+    if (!slot || !QUOTES.length) return;
+    var last = -1;
+    try { last = parseInt(sessionStorage.getItem("ah-quote"), 10); } catch (e) {}
+    var next = Math.floor(Math.random() * QUOTES.length);
+    if (QUOTES.length > 1 && last === next) next = (next + 1 + Math.floor(Math.random() * (QUOTES.length - 1))) % QUOTES.length;
+    slot.textContent = QUOTES[next];
+    try { sessionStorage.setItem("ah-quote", String(next)); } catch (e) {}
   }
 
-  var MIN_BOOT = 2500;     // keep the loading animation on screen at least this long
-  var FALLBACK = 5000;     // hard reveal even if something hangs
-  var bootStart = nowFn();
-  var bootDone = false;
-
-  function revealBoot() {
-    if (bootDone) return;
-    bootDone = true;
-    html.classList.remove("booting");
-    html.classList.add("booted");
-    if (reduce) {
-      html.classList.add("device-settled");
-    } else {
-      html.classList.add("device-enter");
-      window.setTimeout(function () { html.classList.add("device-settled"); }, 1500);
+  if (introMode) {
+    html.classList.add("booting");
+    var logo = document.querySelector(".boot-logo");
+    if (logo) {
+      logo.addEventListener("error", function () {
+        var inner = logo.closest(".boot-inner");
+        if (inner) inner.classList.add("boot--nologo");
+      });
     }
+    pickBootQuote();
+
+    var bootStart = nowFn();
+    var bootDone = false;
+
+    function revealBoot() {
+      if (bootDone) return;
+      bootDone = true;
+      html.classList.remove("booting");
+      html.classList.add("booted");
+      if (reduce) {
+        html.classList.add("device-settled");
+      } else {
+        html.classList.add("device-enter");
+        window.setTimeout(function () { html.classList.add("device-settled"); }, 1500);
+      }
+    }
+
+    html.addEventListener("animationend", function (e) {
+      if (e.animationName === "deviceEnter") html.classList.add("device-settled");
+    });
+
+    var elapsed = nowFn() - bootStart;
+    /* Reveal via rAF: setTimeout callbacks scheduled during document load can be
+       deferred by the renderer until the load settles, which would stretch the
+       intro well past the one-second target on slow networks. rAF is frame
+       driven and fires reliably; the timeouts remain as backstops. */
+    var rafTick = function () {
+      if (bootDone) return;
+      if (nowFn() - bootStart >= MIN_BOOT) revealBoot();
+      else window.requestAnimationFrame(rafTick);
+    };
+    window.requestAnimationFrame(rafTick);
+    window.setTimeout(revealBoot, Math.max(0, MIN_BOOT - elapsed));
+    window.setTimeout(revealBoot, FALLBACK);
+  } else {
+    /* Returning page in this tab: no intro, no replay on refresh/Back/Forward,
+       and skip the device-frame entrance animation so content appears fast. */
+    html.classList.add("booted", "device-settled");
   }
-
-  html.classList.add("booting");
-  var elapsed = nowFn() - bootStart;
-  window.setTimeout(revealBoot, Math.max(0, MIN_BOOT - elapsed));
-  window.setTimeout(revealBoot, FALLBACK);
-
-  html.addEventListener("animationend", function (e) {
-    if (e.animationName === "deviceEnter") html.classList.add("device-settled");
-  });
 
   /* 2. Full-width toggle --------------------------------------------------- */
   var toggle = document.querySelector("[data-device-toggle]");

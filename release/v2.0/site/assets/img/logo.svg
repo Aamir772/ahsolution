@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="220" height="58" viewBox="0 0 220 58" role="img" aria-labelledby="title">
+  <title id="title">AH Solution</title>
+  <rect x="1" y="1" width="56" height="56" rx="14" fill="#E50914"/>
+  <path d="M14 39 25 17h7l11 22h-8l-2-5H23l-2 5Zm12-11h5l-2.5-6Z" fill="#fff"/>
+  <path d="M37 17h6v8h7v-8h6v22h-6v-9h-7v9h-6Z" fill="#fff" opacity=".92"/>
+  <text x="70" y="28" fill="#F5F5F5" font-family="Arial,Helvetica,sans-serif" font-size="20" font-weight="800" letter-spacing="1.2">AH</text>
+  <text x="70" y="47" fill="#E50914" font-family="Arial,Helvetica,sans-serif" font-size="15" font-weight="700" letter-spacing="2.5">SOLUTION</text>
+</svg>

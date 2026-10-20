@@ -38,6 +38,16 @@
   --c-primary-soft:rgba(230,41,70,.14);
   --c-primary-line:rgba(230,41,70,.42);
 
+  /* holographic AI core (cinematic centrepiece accent) — electric blue system */
+  --c-void:#050A12;              /* deep void navy (core backdrop / canvas)       */
+  --c-blue:#00A8FF;              /* electric blue (primary geometry)              */
+  --c-cyan:#48E5FF;              /* plasma cyan (circuitry / nodes / trails)      */
+  --c-ice:#D8F8FF;               /* ice-white (highlights, core light, monogram)  */
+  --c-steel:#16456B;             /* deep steel blue (struts / frames)             */
+  --c-crimson:#FF183D;           /* restricted crimson (intensity ticks)          */
+  --c-blue-soft:rgba(0,168,255,.14);
+  --c-cyan-line:rgba(72,229,255,.42);
+
   /* status (used by admin toasts + forms) */
   --c-success:#3FBF7F;
   --c-warning:#E9B949;
@@ -95,6 +105,8 @@
   --shadow-lg:0 30px 90px rgba(0,0,0,.58);
   --shadow-primary:0 12px 32px rgba(230,41,70,.30);
   --shadow-primary-hi:0 18px 44px rgba(230,41,70,.42);
+  --shadow-core:0 12px 34px rgba(0,168,255,.28);
+  --shadow-core-hi:0 18px 46px rgba(72,229,255,.38);
 
   /* --------------------------------------------------------------- spacing */
   --sp-1:4px;

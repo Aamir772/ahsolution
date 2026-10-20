@@ -46,12 +46,18 @@
     return String(html || '').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
   }
 
-  /* Categories in the CMS are human labels; the blog filter chips use keys. */
+  /* Categories in the CMS are human labels; the blog filter chips use keys.
+     Must stay in sync with filterKey() in scripts/blog-md.js.
+     Chip keys: android · windows · gadgets · photography · privacy · remote · about */
   function filterKey(cat) {
     var c = String(cat || '').toLowerCase();
-    if (/android|apps/.test(c)) return 'apps';
-    if (/pc|windows/.test(c)) return 'pc';
-    if (/gadget|watch|wear/.test(c)) return 'gadgets';
+    if (/photograph|camera|night photo/.test(c)) return 'photography';
+    if (/privacy|browser|streaming|safety|whatsapp|wamr/.test(c)) return 'privacy';
+    if (/remote/.test(c)) return 'remote';
+    if (/android|apps|connectivity/.test(c)) return 'android';
+    if (/pc|windows|laptop|gaming/.test(c)) return 'windows';
+    if (/gadget|watch|wear|smartphone|phone/.test(c)) return 'gadgets';
+    if (/about|welcome/.test(c)) return 'about';
     return '';
   }
 
@@ -65,6 +71,7 @@
     var mins = a.reading_minutes || 1;
     var text = [a.title, a.excerpt, a.category, a.tags].join(' ');
     return '<a class="content-card tilt" data-tilt="6" data-blog-card' +
+      ' data-slug="' + esc(a.slug) + '"' +
       ' data-category="' + esc(filterKey(cat)) + '"' +
       ' data-search="' + esc(text.toLowerCase()) + '"' +
       ' data-cms-card href="' + esc(articleUrl(a.slug)) + '">' +
@@ -84,7 +91,12 @@
     var grid = document.querySelector('[data-cms-grid]');
     if (!grid) return;
     return getJSON(ENDPOINT + qs({ action: 'list', limit: 6 })).then(function (res) {
-      var list = (res && res.articles) || [];
+      /* Never render a card for an article already present as a static card
+         (the manifest-built listing). Prevents the same article appearing
+         twice on the main Blog page. */
+      var have = {};
+      grid.querySelectorAll('[data-slug]').forEach(function (el) { have[el.getAttribute('data-slug')] = true; });
+      var list = ((res && res.articles) || []).filter(function (a) { return a.slug && !have[a.slug]; });
       if (!list.length) return;
       grid.insertAdjacentHTML('afterbegin', list.map(cardHTML).join(''));
       document.dispatchEvent(new CustomEvent('ah:blog:refresh'));
@@ -116,22 +128,50 @@
 
     var old = document.getElementById('cms-ld');
     if (old) old.remove();
+
+    /* VideoObject is only emitted when the body carries verified video
+       metadata (data-ah-video written by scripts/blog-import-drafts.cjs).
+       Nothing about the video is guessed. */
+    var graph = [];
+    var post = {
+      '@type': 'BlogPosting',
+      headline: a.title,
+      description: a.seo_description || a.excerpt || '',
+      inLanguage: 'en-IN',
+      articleSection: a.category || undefined,
+      keywords: a.tags || undefined,
+      author: { '@type': 'Organization', name: 'AH Solution Editorial Team' },
+      publisher: { '@type': 'Organization', name: 'AH Solution', url: 'https://ahsolution.live/' },
+      mainEntityOfPage: { '@type': 'WebPage', '@id': canonical }
+    };
+    if (a.cover_image_url) post.image = [a.cover_image_url];
+    if (a.published_at) post.datePublished = a.published_at;
+    if (a.updated_at) post.dateModified = a.updated_at;
+    graph.push(post);
+
+    var vd = document.body.querySelector('[data-ah-video]');
+    if (vd) {
+      try {
+        var v = JSON.parse(vd.getAttribute('data-ah-video'));
+        if (v && v.id && v.title) {
+          graph.push({
+            '@type': 'VideoObject',
+            name: v.title,
+            description: a.seo_description || a.excerpt || undefined,
+            thumbnailUrl: v.thumbnail ? [v.thumbnail] : undefined,
+            duration: v.duration || undefined,
+            uploadDate: v.datePublished || undefined,
+            contentUrl: 'https://www.youtube.com/watch?v=' + v.id,
+            embedUrl: 'https://www.youtube-nocookie.com/embed/' + v.id
+          });
+        }
+      } catch (e) { /* malformed metadata — omit rather than invent */ }
+    }
+
     var ld = document.createElement('script');
     ld.type = 'application/ld+json';
     ld.id = 'cms-ld';
-    ld.textContent = JSON.stringify({
-      '@context': 'https://schema.org',
-      '@type': 'Article',
-      headline: a.title,
-      description: a.seo_description || a.excerpt || '',
-      image: a.cover_image_url || undefined,
-      datePublished: a.published_at || undefined,
-      dateModified: a.updated_at || a.published_at || undefined,
-      articleSection: a.category || undefined,
-      author: { '@type': 'Organization', name: 'AH Solution' },
-      publisher: { '@type': 'Organization', name: 'AH Solution', url: 'https://ahsolution.live/' },
-      mainEntityOfPage: { '@type': 'WebPage', '@id': canonical }
-    });
+    ld.textContent = JSON.stringify({ '@context': 'https://schema.org', '@graph': graph });
     document.head.appendChild(ld);
   }
 

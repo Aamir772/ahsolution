@@ -1,7 +1,8 @@
 /* ==========================================================================
    qa-device.cjs — device-world QA
-   Boot timing (the 2.5s loading-animation requirement), boot overlay cleanup,
-   monitor scroll lock, full-width escape hatch, carousel and reduced motion.
+   Boot timing (the ~1s first-entry intro), session-only replay behaviour,
+   boot overlay cleanup, monitor scroll lock, full-width escape hatch,
+   carousel and reduced motion.
    Run: npm run qa:device      (site must be served on http://localhost:8000)
    ========================================================================== */
 'use strict';
@@ -55,10 +56,11 @@ const c = counter();
   const at = (n) => { const e = bootLog.find((x) => x.c === n); return e ? e.t : null; };
   const bootingAt = at('booting'), bootedAt = at('booted'), settledAt = at('settled');
   c.ok(bootingAt !== null, 'booting class applied as soon as the page starts', JSON.stringify(bootLog));
-  c.ok(bootedAt !== null && bootedAt - bootingAt >= 2200, 'loading animation stays on screen ~2.5s (' + (bootedAt - bootingAt) + 'ms on the page clock)');
-  /* upper bound is generous: the software renderer used in CI can delay the
-     timer callback, but the boot screen must still clear on its own */
-  c.ok(bootedAt !== null && bootedAt - bootingAt <= 12000, 'loading screen is not stuck (' + (bootedAt - bootingAt) + 'ms)');
+  c.ok(bootedAt !== null && bootedAt - bootingAt >= 700, 'loading animation stays on screen ~1s (' + (bootedAt - bootingAt) + 'ms on the page clock)');
+  /* the intro is capped at ~1s by device.js (rAF-driven reveal); headless QA
+     browsers can defer work until the load event, so allow env jank but the
+     loader must NEVER be stuck (previous hard-fallback was 5s, CSS 2.2s) */
+  c.ok(bootedAt !== null && bootedAt - bootingAt <= 6000, 'intro clears near the one-second target (' + (bootedAt - bootingAt) + 'ms, incl. QA-env load deferral)');
   /* device-settled fires 1500ms after boot; the same software-renderer timer
      delay can stretch it, so the bound checks it still lands soon-ish */
   c.ok(settledAt !== null && settledAt - bootedAt <= 9000, 'device enters its settled state right after boot (' + (settledAt - bootedAt) + 'ms after boot, ' + (settledAt - bootingAt) + 'ms total)');
@@ -75,6 +77,56 @@ const c = counter();
   c.ok(/booted/.test(bootState.cls) && /device-settled/.test(bootState.cls), 'booted + device-settled applied', bootState.cls);
   c.ok(bootState.pointer === 'none', 'boot overlay no longer intercepts clicks', bootState.pointer);
   await page.screenshot({ path: OUT + '/device-boot-done.png' });
+
+  /* --- intro only on first entry (session-scoped) ------------------------ */
+  const firstQuote = await page.evaluate(() => {
+    const q = document.querySelector('[data-boot-quote]');
+    return q ? q.textContent : null;
+  });
+  c.ok(!!firstQuote, 'intro shows a productivity quote', firstQuote);
+
+  const reloadState = await page.evaluate(() => { location.reload(); });
+  void reloadState;
+  await page.waitForTimeout(1500);
+  const replay = await page.evaluate(() => ({
+    booted: document.documentElement.classList.contains('booted'),
+    bootingNow: document.documentElement.classList.contains('booting'),
+    flag: (() => { try { return sessionStorage.getItem('ah-intro'); } catch (e) { return 'err'; } })()
+  }));
+  c.ok(replay.flag === '1' && replay.booted && !replay.bootingNow, 'refresh does not replay the intro in the same tab', JSON.stringify(replay));
+
+  /* a fresh tab (new session) picks a different quote than the previous one */
+  const ctx2 = await browser.newContext({ viewport: { width: 1440, height: 900 } });
+  await ctx2.addInitScript(() => {
+    window.__quoteEarly = null;
+    document.addEventListener('DOMContentLoaded', () => {
+      const q = document.querySelector('[data-boot-quote]');
+      window.__quoteEarly = q ? q.textContent : '!missing';
+    }, { once: true });
+  });
+  const page2 = await ctx2.newPage();
+  const errors2 = collectErrors(page2);
+  await page2.goto(BASE + '/index.html', { waitUntil: 'load', timeout: 30000 });
+  const quote2 = await page2.evaluate(() => window.__quoteEarly);
+  c.ok(quote2 && quote2 !== firstQuote, 'a new tab session picks a different quote than the previous one', quote2 + ' vs ' + firstQuote);
+  c.ok(errors2.filter((e) => /pageerror/.test(e)).length === 0, 'no uncaught page errors (second tab)');
+  await ctx2.close();
+
+  /* --- logo centered inside the loader ring ------------------------------ */
+  const geo = await page.evaluate(() => {
+    const emblem = document.querySelector('.boot-emblem');
+    const logo = document.querySelector('.boot-logo');
+    if (!emblem || !logo) return null;
+    const e = emblem.getBoundingClientRect(), l = logo.getBoundingClientRect();
+    return {
+      dx: Math.abs((l.left + l.width / 2) - (e.left + e.width / 2)),
+      dy: Math.abs((l.top + l.height / 2) - (e.top + e.height / 2)),
+      fits: l.width <= e.width && l.height <= e.height
+    };
+  });
+  c.ok(geo && geo.dx < 2 && geo.dy < 2 && geo.fits,
+    'boot logo is centered in the ring (dx=' + (geo ? geo.dx.toFixed(1) : '?') + 'px, dy=' + (geo ? geo.dy.toFixed(1) : '?') + 'px)');
+  void geo;
 
   /* --- device shell + scroll lock --------------------------------------- */
   const shell = await page.evaluate(() => {

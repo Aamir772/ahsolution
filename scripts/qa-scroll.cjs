@@ -35,7 +35,22 @@ const c = counter();
   c.ok(before.revealed < before.reveals, 'reveals start hidden below the fold');
   c.ok(!before.scrolled, 'header is not in the scrolled state at the top');
 
-  for (let i = 1; i <= 5; i++) { await scrollTo(page, i / 5); await page.waitForTimeout(450); }
+  // fine sweep to the bottom: the reveal observer needs 12% visibility with an
+  // -8% bottom inset, so coarse jumps (and layout growth) can leave stragglers
+  for (let i = 1; i <= 20; i++) { await scrollTo(page, i / 20); await page.waitForTimeout(220); }
+  for (let i = 0; i < 3; i++) {
+    await page.evaluate(() => {
+      const s = document.querySelector('.device-screen');
+      if (s && s.scrollHeight > s.clientHeight + 2) s.scrollTop = s.scrollHeight;
+      else window.scrollTo(0, document.body.scrollHeight);
+    });
+    await page.waitForTimeout(400);
+  }
+  // headless animation timing varies — wait for the observers to settle
+  await page.waitForFunction(() => {
+    const t = document.querySelectorAll('.reveal').length;
+    return t > 0 && document.querySelectorAll('.reveal.in').length === t;
+  }, null, { timeout: 4000 }).catch(() => {});
   const after = await page.evaluate(() => ({
     revealed: document.querySelectorAll('.reveal.in').length,
     total: document.querySelectorAll('.reveal').length,
@@ -58,7 +73,11 @@ const c = counter();
   await page.evaluate(() => { const s = document.querySelector('.device-screen'); if (s) s.scrollTop = 0; });
   await page.waitForTimeout(300);
   await page.click('[data-search-open]');
-  await page.waitForTimeout(700);
+  // wait for the panel transition to settle (headless timing varies)
+  const panelSettled = await page.waitForFunction(() => {
+    const p = document.querySelector('[data-search-modal] .search-panel');
+    return !!p && parseFloat(getComputedStyle(p).opacity) >= 0.999;
+  }, null, { timeout: 2500 }).then(() => true).catch(() => false);
   const open = await page.evaluate(() => {
     const m = document.querySelector('[data-search-modal]');
     const p = m.querySelector('.search-panel');
@@ -71,7 +90,7 @@ const c = counter();
     };
   });
   c.ok(open.open && open.shown, 'search modal opens with the staged motion classes');
-  c.ok(open.opacity === '1', 'search panel finishes at full opacity', open.opacity);
+  c.ok(panelSettled, 'search panel finishes at full opacity', open.opacity);
   c.ok(open.focused, 'search input receives focus on open');
   c.ok(open.locked, 'page scroll is locked behind the modal');
 
@@ -143,7 +162,7 @@ const c = counter();
   }));
   c.ok(blogAll.total > 0 && blogAll.visible === blogAll.total, 'all blog cards start visible (' + blogAll.total + ')');
 
-  await page.click('[data-filter="apps"]');
+  await page.click('[data-filter="android"]');
   await page.waitForTimeout(300);
   const filtered = await page.evaluate(() => ({
     visible: [...document.querySelectorAll('[data-blog-card]')].filter((el) => !el.classList.contains('hidden')).length,
@@ -151,7 +170,7 @@ const c = counter();
     emptyHidden: document.querySelector('[data-empty-state]').classList.contains('hidden')
   }));
   c.ok(filtered.visible > 0 && filtered.visible < blogAll.total, 'category filter narrows the list (' + filtered.visible + ')');
-  c.ok(filtered.active === 'apps', 'active chip reflects the chosen category', filtered.active);
+  c.ok(filtered.active === 'android', 'active chip reflects the chosen category', filtered.active);
   c.ok(filtered.emptyHidden, 'empty state stays hidden while results exist');
 
   await page.fill('[data-blog-search]', 'zzzz-no-such-guide');
@@ -170,12 +189,17 @@ const c = counter();
   /* ---------------- article reading progress ---------------- */
   await page.goto(BASE + '/guides/live-wallpaper-on-pc.html', { waitUntil: 'load', timeout: 30000 });
   await waitBooted(page, 12000);
+  await waitSettled(page, 12000);
   await page.waitForTimeout(500);
   const startW = await page.evaluate(() => document.querySelector('.reading-progress').style.width);
   await scrollTo(page, 0.55);
-  await page.waitForTimeout(400);
+  const progress = await page.waitForFunction((start) => {
+    const w = parseFloat(document.querySelector('.reading-progress').style.width || '0');
+    return w > parseFloat(start || '0');
+  }, startW || '0%', { timeout: 3000 }).then(() => true).catch(() => false);
+  await page.waitForTimeout(200);
   const midW = await page.evaluate(() => document.querySelector('.reading-progress').style.width);
-  c.ok(parseFloat(midW || '0') > parseFloat(startW || '0'), 'reading progress advances while scrolling (' + startW + ' -> ' + midW + ')');
+  c.ok(progress, 'reading progress advances while scrolling (' + startW + ' -> ' + midW + ')');
 
   const copy = await page.evaluate(() => {
     const b = document.querySelector('[data-copy-link]');

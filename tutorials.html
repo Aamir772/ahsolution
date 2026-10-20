@@ -2,7 +2,10 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
+<script>/* AH session boot flag: set BEFORE first paint so the intro plays once per tab */(function(){var h=document.documentElement,skip=false;try{skip=sessionStorage.getItem("ah-intro")==="1";}catch(e){skip=false;}if(skip){h.classList.add("booted");}else{h.classList.add("boot-intro");try{sessionStorage.setItem("ah-intro","1");}catch(e){}}})();</script>
 <meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="google-adsense-account" content="ca-pub-1564978792055470">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1564978792055470" crossorigin="anonymous"></script>
 <title>Tutorials | AH Solution — Interactive Tutorial Explorer</title>
 <meta name="description" content="Explore AH Solution tutorials: PC customization, Android safety, gadget buying checklists, and video walkthroughs. Filter by category and find the steps you need.">
 <meta name="theme-color" content="#08080B">
@@ -55,6 +58,7 @@
     </div>
     <div class="boot-bar" aria-hidden="true"><span></span></div>
     <p class="boot-text">Starting AH Solution</p>
+    <p class="boot-quote" data-boot-quote>Work smarter, not just harder.</p>
     <noscript><p class="boot-note">JavaScript is off &mdash; <a href="index.html">continue to the site</a>.</p></noscript>
   </div>
 </div>
@@ -66,7 +70,7 @@
 
 <div class="announcement">
   <div class="container">
-    <span><i class="ann-dot"></i><strong>AH SOLUTION</strong> &nbsp; TECHNOLOGY MADE SIMPLE</span>
+    <span><i class="ann-dot"></i><strong>AH SOLUTION</strong> &nbsp; TIPS, TRICKS AND TECHNIQUES</span>
     <span>Tips · Tutorials · Digital discoveries</span>
   </div>
 </div>

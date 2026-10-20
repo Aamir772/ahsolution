@@ -27,6 +27,37 @@
   const scrollRoot = deviceScreen || window;
 
   /* ------------------------------------------------------------------ *
+   * 0. Active navigation state (route + hash aware, single source)
+   *    Static per-page classes stay as a fallback for JS-off rendering;
+   *    JS refines the choice so e.g. vlogs.html#shorts highlights Shorts,
+   *    vlogs.html highlights Videos, and article pages highlight Blog.
+   * ------------------------------------------------------------------ */
+  (function markActiveNav() {
+    const nav = $('.nav-links');
+    if (!nav) return;
+    const norm = (p) => (p || '').toLowerCase().replace(/\/index\.html$/, '/').replace(/\/+$/, '') || '/';
+    const path = norm(location.pathname);
+    const hash = (location.hash || '').toLowerCase().replace(/^#/, '');
+    const links = $$('a', nav);
+    let match = null;
+    links.forEach((a) => {
+      const href = a.getAttribute('href') || '';
+      if (href.startsWith('http')) return;
+      const parts = href.split('#');
+      const h = (parts[1] || '').toLowerCase();
+      const hOk = h ? h === hash : hash === '';
+      if (norm(parts[0]) === path && hOk) match = a;
+    });
+    if (!match && path.indexOf('/article') === 0) {
+      match = links.find(a => (a.getAttribute('href') || '').indexOf('blog') !== -1) || null;
+    }
+    if (!match) return; /* keep the page's static choice when no route matches */
+    links.forEach(a => { a.classList.remove('active'); a.removeAttribute('aria-current'); });
+    match.classList.add('active');
+    match.setAttribute('aria-current', 'page');
+  })();
+
+  /* ------------------------------------------------------------------ *
    * 1. Mobile navigation
    * ------------------------------------------------------------------ */
   const toggle = $('.menu-toggle');
@@ -268,8 +299,10 @@
 
     const facade = (v, cls) => {
       const t = esc(v.title);
+      const d = fmtDur(v.durationSeconds);
       return `<button class="${cls}" data-video-id="${esc(v.id)}" data-video-title="${t}" aria-label="Play: ${t}">` +
         `<img src="${esc(v.thumbnail)}" alt="" loading="lazy" decoding="async" width="480" height="360" onerror="this.onerror=null;this.src='https://i.ytimg.com/vi/${esc(v.id)}/mqdefault.jpg'">` +
+        (d ? `<span class="facade-dur">${esc(d)}</span>` : '') +
         `<span class="facade-play" aria-hidden="true">${playSvg}</span></button>`;
     };
 
@@ -301,8 +334,10 @@
 
     const shortCard = (v) => {
       const t = esc(v.title);
+      const d = fmtDur(v.durationSeconds);
       return `<a class="short-card" href="${esc(v.url)}" target="_blank" rel="noopener noreferrer" aria-label="Watch Short: ${t}">` +
         `<img src="${esc(v.thumbnail)}" alt="" loading="lazy" decoding="async" width="480" height="360" onerror="this.onerror=null;this.src='https://i.ytimg.com/vi/${esc(v.id)}/mqdefault.jpg'">` +
+        (d ? `<span class="facade-dur facade-dur--corner">${esc(d)}</span>` : '') +
         `<span class="short-badge">${shortSvg} Short</span>` +
         `<span class="short-play" aria-hidden="true">${playSvg}</span>` +
         `<span class="short-info"><h3>${t}</h3>${meta(v, null)}</span></a>`;
@@ -313,6 +348,44 @@
         el.innerHTML = '<span class="data-badge' + (cached ? ' is-cache' : '') + '"><span class="dot"></span>' +
           (cached ? 'Cached snapshot' : 'Live channel data') + '</span><span>' + esc(text) + '</span>';
       });
+    }
+
+    /* Chunked stream renderer: paints the first batch immediately, then
+       appends further batches as a sentinel scrolls into view. Keeps the
+       site responsive with a 100+ item video library (lazy images stay
+       lazy; reveal observers are (re)armed per batch). */
+    function chunked(el, items, makeCard, first, step, emptyMsg) {
+      el.innerHTML = '';
+      if (!items.length) { el.innerHTML = '<p class="muted">' + emptyMsg + '</p>'; return; }
+      let i = 0;
+      const sentinel = document.createElement('div');
+      sentinel.className = 'rail-sentinel';
+      sentinel.setAttribute('role', 'status');
+      sentinel.setAttribute('aria-label', 'Loading more videos');
+      const io = ('IntersectionObserver' in window) ? new IntersectionObserver((entries) => {
+        if (entries.some(e => e.isIntersecting)) append();
+      }, { rootMargin: '320px 0px' }) : null;
+      const done = () => { if (io) io.disconnect(); sentinel.remove(); };
+      const append = () => {
+        const tpl = document.createElement('template');
+        tpl.innerHTML = items.slice(i, i + step).map((v, k) => makeCard(v, i + k)).join('');
+        el.insertBefore(tpl.content, sentinel);
+        i += step;
+        if (window.ahReveal) window.ahReveal(el);
+        if (i >= items.length) { done(); return; }
+        /* keep streaming while the sentinel is already within range (tall
+           viewports); the observer covers scrolling from further away */
+        requestAnimationFrame(() => {
+          if (i < items.length && sentinel.isConnected) {
+            const r = sentinel.getBoundingClientRect();
+            if (r.top < window.innerHeight + 320) append();
+          }
+        });
+      };
+      el.appendChild(sentinel);
+      if (io) io.observe(sentinel);
+      else sentinel.addEventListener('click', append);
+      append();
     }
 
     function render(data, cached) {
@@ -334,16 +407,15 @@
 
       const latest = videos.filter(v => !v.isShort && !hlIds.has(v.id));
       containers.latest.forEach(el => {
-        const limit = Number(el.dataset.limit) || latest.length;
-        el.innerHTML = latest.slice(0, limit).map((v, i) => latestCard(v, (i % 3) + 1)).join('')
-          || '<p class="muted">No published long-form videos were found in the current feed.</p>';
-        if (window.ahReveal) window.ahReveal(el);
+        const first = Number(el.dataset.limit) || 12;
+        chunked(el, latest, (v, k) => latestCard(v, (k % 3) + 1), first, 12,
+          'No published long-form videos were found in the current feed.');
       });
 
       const shorts = videos.filter(v => v.isShort);
       containers.shorts.forEach(el => {
-        el.innerHTML = shorts.map(shortCard).join('')
-          || '<p class="muted">No Shorts were found in the current feed.</p>';
+        chunked(el, shorts, (v) => shortCard(v), Math.min(8, Number(el.dataset.limit) || 8), 8,
+          'No Shorts were found in the current feed.');
       });
 
       const when = data.generatedAt ? new Date(data.generatedAt).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' }) : 'unknown date';
@@ -363,6 +435,10 @@
   const chips = $$('[data-filter]');
   if ($('[data-blog-card]')) {
     let activeFilter = 'all';
+    const grid = $('[data-cms-grid]');
+    const sortSel = $('[data-blog-sort]');
+    const countEl = $('[data-blog-count]');
+    const emptyState = $('[data-empty-state]');
     const run = () => {
       const cards = $$('[data-blog-card]');
       const query = (blogSearch?.value || '').trim().toLowerCase();
@@ -374,22 +450,57 @@
         card.classList.toggle('hidden', !show);
         if (show) shown++;
       });
-      $('[data-empty-state]')?.classList.toggle('hidden', shown !== 0);
+      emptyState?.classList.toggle('hidden', shown !== 0);
+      if (countEl) countEl.textContent = 'Showing ' + shown + ' of ' + cards.length + ' articles';
+      applyLayout();
+    };
+    /* Editorial grid sizing: the first visible card is the feature, the next
+       two are compact, the rest a regular 3-up rhythm. Driven by DOM order so
+       it survives sorting, filtering and CMS cards. Hand-written guides
+       (data-static) never lead. */
+    const applyLayout = () => {
+      if (!grid) return;
+      let feature = false, compact = 0;
+      $$('[data-blog-card]', grid).forEach(c => {
+        if (c.classList.contains('hidden')) { c.classList.remove('is-feature', 'is-compact'); return; }
+        if (c.dataset.static) { c.classList.remove('is-feature', 'is-compact'); return; }
+        c.classList.remove('is-feature', 'is-compact');
+        if (!feature) { c.classList.add('is-feature'); feature = true; }
+        else if (compact < 2) { c.classList.add('is-compact'); compact++; }
+      });
+    };
+    const applySort = () => {
+      if (!sortSel || !grid) return;
+      const mode = sortSel.value;
+      const list = $$('[data-blog-card]', grid);
+      list.sort((a, b) => {
+        if (mode === 'title') return (a.dataset.title || '').localeCompare(b.dataset.title || '');
+        if (mode === 'time') return (Number(a.dataset.min) || Infinity) - (Number(b.dataset.min) || Infinity);
+        return (Number(a.dataset.order) || Infinity) - (Number(b.dataset.order) || Infinity);
+      });
+      list.forEach(card => emptyState ? grid.insertBefore(card, emptyState) : grid.appendChild(card));
+      applyLayout();
     };
     blogSearch?.addEventListener('input', run);
+    sortSel?.addEventListener('change', applySort);
     chips.forEach(chip => chip.addEventListener('click', () => {
       activeFilter = (chip.dataset.filter || 'all').toLowerCase();
       chips.forEach(c => c.classList.toggle('active', c === chip));
       run();
     }));
-    document.addEventListener('ah:blog:refresh', run);
+    $$('[data-filter-reset]').forEach(btn => btn.addEventListener('click', () => {
+      if (blogSearch) blogSearch.value = '';
+      const all = chips.find(c => (c.dataset.filter || '').toLowerCase() === 'all');
+      if (all) all.click(); else { activeFilter = 'all'; run(); }
+    }));
+    document.addEventListener('ah:blog:refresh', () => { applySort(); run(); });
     const params = new URLSearchParams(location.search);
     if (blogSearch && params.get('q')) blogSearch.value = params.get('q');
     const cat = (params.get('category') || '').toLowerCase();
     if (cat) {
       const chip = chips.find(c => (c.dataset.filter || '').toLowerCase() === cat);
       if (chip) chip.click(); else run();
-    } else if (blogSearch?.value) {
+    } else {
       run();
     }
   }
@@ -419,15 +530,15 @@
     const input = $('input', modal);
     const results = $('[data-search-results]', modal);
     const INDEX = [
-      { t: 'Home', d: 'AH Solution — Technology made simple', u: 'index.html', k: 'home start technology made simple' },
+      { t: 'Home', d: 'AH Solution — Tips, tricks and techniques', u: 'index.html', k: 'home start tips tricks and techniques' },
       { t: 'Videos', d: 'Watch practical tech tutorials and first looks', u: 'vlogs.html', k: 'videos youtube watch tutorials library' },
       { t: 'Shorts', d: 'Short vertical clips and quick first looks', u: 'vlogs.html#shorts', k: 'shorts vertical quick clips reels' },
       { t: 'Blog', d: 'Written guides, checklists and explainers', u: 'blog.html', k: 'blog articles guides read' },
       { t: 'Categories', d: 'Browse every topic on AH Solution', u: 'index.html#categories', k: 'categories topics browse explore' },
       { t: 'Tutorials', d: 'Interactive tutorial explorer', u: 'tutorials.html', k: 'tutorials how to explore' },
       { t: 'Mobile Tips', d: 'Everyday tips for the phone you own', u: 'tutorials.html?category=mobile', k: 'mobile phone android tips' },
-      { t: 'Android Apps', d: 'Useful and safe app recommendations', u: 'blog.html?category=apps', k: 'apps android software recommendations' },
-      { t: 'PC & Windows', d: 'Customisation and everyday PC tasks', u: 'blog.html?category=pc', k: 'pc windows computer laptop' },
+      { t: 'Android Apps', d: 'Useful and safe app recommendations', u: 'blog.html?category=android', k: 'apps android software recommendations' },
+      { t: 'PC & Windows', d: 'Customisation and everyday PC tasks', u: 'blog.html?category=windows', k: 'pc windows computer laptop' },
       { t: 'Software Guides', d: 'Written guides and explainers', u: 'tutorials.html?category=guides', k: 'software guides written explainers' },
       { t: 'Gadgets', d: 'First looks and gadget checklists', u: 'blog.html?category=gadgets', k: 'gadgets smartwatch laptop review' },
       { t: 'About', d: 'The AH Solution mission', u: 'about.html', k: 'about mission brand' },

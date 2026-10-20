@@ -38,9 +38,15 @@ body::after{
   position:fixed;inset:0;z-index:3000;
   display:grid;place-items:center;overflow:hidden;
   background:radial-gradient(120% 92% at 50% 40%,#140a0e 0%,#08080b 54%,#000 100%);
-  opacity:1;visibility:visible;
+  /* Hidden by default so returning pages never flash the intro. The intro is
+     only revealed for the first entry in a tab (html.boot-intro set by an
+     inline head script before first paint). */
+  opacity:0;visibility:hidden;pointer-events:none;
   transition:opacity .55s ease,visibility .55s ease;
-  animation:bootAutoHide .45s ease 6s forwards; /* hard fallback if JS stalls */
+}
+html.boot-intro:not(.booted) .boot{
+  opacity:1;visibility:visible;pointer-events:auto;
+  animation:bootAutoHide .5s ease 2.2s forwards; /* CSS fallback if JS stalls */
 }
 .boot::before{
   content:"";position:absolute;inset:0;pointer-events:none;
@@ -48,26 +54,31 @@ body::after{
 }
 .boot-inner{
   position:relative;z-index:1;
-  display:flex;flex-direction:column;align-items:center;gap:30px;
+  display:flex;flex-direction:column;align-items:center;gap:22px;
   padding:24px;text-align:center;
 }
-.boot-emblem{position:relative;display:grid;place-items:center;width:min(300px,76vw);height:min(300px,76vw)}
+/* Emblem: the logo is centered by the grid itself (never absolute offsets),
+   sized against the actual ring container so it cannot drift or overlap. */
+.boot-emblem{
+  position:relative;display:grid;place-items:center;
+  width:min(9.5rem,40vw);aspect-ratio:1;
+}
 .boot-ring{
   position:absolute;inset:0;width:100%;height:100%;
   transform:rotate(-90deg);
-  animation:dwSpin 2.5s linear infinite;
+  animation:dwSpin 2s linear infinite;
 }
 .boot-ring-track{fill:none;stroke:rgba(255,255,255,.09);stroke-width:4}
 .boot-ring-arc{
   fill:none;stroke:url(#ahBootGrad);stroke-width:4;stroke-linecap:round;
   stroke-dasharray:78 274;
-  animation:dwDash 1.7s ease-in-out infinite;
+  animation:dwDash 1.6s ease-in-out infinite;
 }
 .boot-logo{
-  position:relative;z-index:1;
-  width:min(206px,52vw);height:auto;
-  filter:drop-shadow(0 16px 44px rgba(0,0,0,.65)) drop-shadow(0 0 30px rgba(240,68,94,.35));
-  animation:bootFloat 3.4s ease-in-out infinite;
+  position:relative;z-index:1;display:block;
+  width:56%;height:auto;
+  filter:drop-shadow(0 10px 28px rgba(0,0,0,.6)) drop-shadow(0 0 22px rgba(240,68,94,.32));
+  animation:bootPulse 1s ease-in-out infinite; /* scale keeps it dead-center */
 }
 .boot-wordmark{
   position:absolute;z-index:0;display:none;color:#F5F5F7;
@@ -77,23 +88,28 @@ body::after{
 .boot--nologo .boot-logo{display:none}
 .boot--nologo .boot-wordmark{display:block}
 .boot-bar{
-  position:relative;width:min(240px,64vw);height:5px;border-radius:99px;overflow:hidden;
+  position:relative;width:min(210px,60vw);height:4px;border-radius:99px;overflow:hidden;
   background:linear-gradient(90deg,rgba(240,68,94,.16),rgba(59,130,246,.16));
   box-shadow:inset 0 0 0 1px rgba(255,255,255,.06);
 }
 .boot-bar span{
   position:absolute;top:0;left:-45%;width:45%;height:100%;border-radius:99px;
   background:linear-gradient(90deg,#B21F35,#F0445E 42%,#7aa2ff,#3B82F6);
-  animation:bootSweep 1.35s cubic-bezier(.55,.05,.45,.95) infinite;
+  animation:bootSweep 1s cubic-bezier(.55,.05,.45,.95) infinite;
 }
-.boot-text{margin:0;color:#A5A5B0;font-size:12px;font-weight:600;letter-spacing:.22em;text-transform:uppercase}
+.boot-text{margin:0;color:#A5A5B0;font-size:11px;font-weight:600;letter-spacing:.22em;text-transform:uppercase}
+.boot-quote{
+  margin:0;max-width:min(520px,88vw);
+  color:#B7B8C4;font-style:italic;font-size:clamp(13px,1.7vw,15px);
+  line-height:1.55;min-height:1.5em;opacity:.95;
+}
 .boot-note{color:#A5A5B0;font-size:13px;margin:14px 0 0}
 .boot-note a{color:var(--red-2);text-decoration:underline}
 
 @keyframes dwSpin{from{transform:rotate(-90deg)}to{transform:rotate(270deg)}}
 @keyframes dwDash{0%{stroke-dashoffset:0}50%{stroke-dashoffset:-118}100%{stroke-dashoffset:-352}}
 @keyframes bootSweep{0%{left:-45%}100%{left:100%}}
-@keyframes bootFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+@keyframes bootPulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(.965);opacity:.92}}
 @keyframes bootAutoHide{to{opacity:0;visibility:hidden;pointer-events:none}}
 
 html.booted .boot{opacity:0;visibility:hidden;pointer-events:none}
@@ -235,15 +251,15 @@ html.device-settled .device-shell{animation:none;transform:none;opacity:1}
 html.is-locked .device-screen{overflow:hidden}
 
 /* ------------------------------------------------------------
-   Ambient two-tone light bloom layered behind the orbital globe
-   (first child of .hero-visual, so it always sits under the planet)
+   Ambient blue light bloom layered behind the holographic core
+   (first child of .hero-visual, so it always sits under the core)
    ------------------------------------------------------------ */
 .hero-visual::before{
   content:"";position:absolute;left:50%;top:50%;width:118%;aspect-ratio:1;
   transform:translate(-50%,-50%);border-radius:50%;pointer-events:none;
   background:
-    radial-gradient(closest-side at 32% 34%,rgba(22,168,255,.22),transparent 72%),
-    radial-gradient(closest-side at 70% 66%,rgba(245,34,69,.24),transparent 74%);
+    radial-gradient(closest-side at 32% 34%,rgba(216,248,255,.20),transparent 72%),
+    radial-gradient(closest-side at 70% 66%,rgba(0,168,255,.26),transparent 74%);
   filter:blur(26px);
 }
 
@@ -387,7 +403,8 @@ html.device-wide .device-shell{opacity:1;transform:none;animation:none !importan
    ------------------------------------------------------------ */
 @media (prefers-reduced-motion:reduce){
   .boot,.boot-bar span,.boot-logo,.boot-ring,.boot-ring-arc{animation:none !important;transition:none !important}
-  .hero-core-ring,.hero-core-fallback,.globe-chips__orbit,.globe-chip>span{animation:none !important}
+  html.boot-intro:not(.booted) .boot{animation:bootAutoHide 0s ease 2.2s forwards} /* JS-stall safety stays on */
+  .hero-core-fallback{animation:none !important}
   html.device-enter .device-shell{animation:none !important}
   .device-toggle,.ah-card,.ah-card__thumb img{transition:none}
 }

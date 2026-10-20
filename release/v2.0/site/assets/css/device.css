@@ -1,0 +1,410 @@
+/* ============================================================
+   AH SOLUTION — Device World Experience
+   Startup screen, desktop monitor frame, mobile phone frame,
+   3D identity and the looping tutorial carousel.
+   Loaded AFTER styles.css. No build step. Content stays static.
+   ============================================================ */
+
+:root{
+  --dw-world:#050507;
+  --dw-metal:#16161d;
+  --dw-metal-hi:rgba(255,255,255,.12);
+  --dw-bezel:22px;
+  --dw-radius:34px;
+  --dw-screen-radius:12px;
+  --dw-world-x:3.2vw;
+  --dw-world-t:3.6vh;
+  --dw-world-b:10vh;
+  --dw-phone-b:12px;
+  --dw-mx:0px;
+  --dw-my:0px;
+  --dw-blue:#3B82F6;
+}
+
+/* Ambient world light behind the device (body::before already owns -2) */
+body::after{
+  content:"";
+  position:fixed;inset:0;z-index:-1;pointer-events:none;
+  background:
+    radial-gradient(60% 46% at 50% 6%,rgba(240,68,94,.15),transparent 62%),
+    radial-gradient(42% 50% at 6% 88%,rgba(109,18,32,.18),transparent 60%),
+    radial-gradient(50% 42% at 94% 82%,rgba(59,130,246,.10),transparent 62%);
+}
+
+/* ------------------------------------------------------------
+   Startup / boot screen
+   ------------------------------------------------------------ */
+.boot{
+  position:fixed;inset:0;z-index:3000;
+  display:grid;place-items:center;overflow:hidden;
+  background:radial-gradient(120% 92% at 50% 40%,#140a0e 0%,#08080b 54%,#000 100%);
+  /* Hidden by default so returning pages never flash the intro. The intro is
+     only revealed for the first entry in a tab (html.boot-intro set by an
+     inline head script before first paint). */
+  opacity:0;visibility:hidden;pointer-events:none;
+  transition:opacity .55s ease,visibility .55s ease;
+}
+html.boot-intro:not(.booted) .boot{
+  opacity:1;visibility:visible;pointer-events:auto;
+  animation:bootAutoHide .5s ease 2.2s forwards; /* CSS fallback if JS stalls */
+}
+.boot::before{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(46% 40% at 50% 44%,rgba(240,68,94,.22),transparent 70%);
+}
+.boot-inner{
+  position:relative;z-index:1;
+  display:flex;flex-direction:column;align-items:center;gap:22px;
+  padding:24px;text-align:center;
+}
+/* Emblem: the logo is centered by the grid itself (never absolute offsets),
+   sized against the actual ring container so it cannot drift or overlap. */
+.boot-emblem{
+  position:relative;display:grid;place-items:center;
+  width:min(9.5rem,40vw);aspect-ratio:1;
+}
+.boot-ring{
+  position:absolute;inset:0;width:100%;height:100%;
+  transform:rotate(-90deg);
+  animation:dwSpin 2s linear infinite;
+}
+.boot-ring-track{fill:none;stroke:rgba(255,255,255,.09);stroke-width:4}
+.boot-ring-arc{
+  fill:none;stroke:url(#ahBootGrad);stroke-width:4;stroke-linecap:round;
+  stroke-dasharray:78 274;
+  animation:dwDash 1.6s ease-in-out infinite;
+}
+.boot-logo{
+  position:relative;z-index:1;display:block;
+  width:56%;height:auto;
+  filter:drop-shadow(0 10px 28px rgba(0,0,0,.6)) drop-shadow(0 0 22px rgba(240,68,94,.32));
+  animation:bootPulse 1s ease-in-out infinite; /* scale keeps it dead-center */
+}
+.boot-wordmark{
+  position:absolute;z-index:0;display:none;color:#F5F5F7;
+  font-family:Manrope,'DM Sans',system-ui,sans-serif;
+  font-weight:800;font-size:clamp(24px,7vw,40px);line-height:1;letter-spacing:.16em;
+}
+.boot--nologo .boot-logo{display:none}
+.boot--nologo .boot-wordmark{display:block}
+.boot-bar{
+  position:relative;width:min(210px,60vw);height:4px;border-radius:99px;overflow:hidden;
+  background:linear-gradient(90deg,rgba(240,68,94,.16),rgba(59,130,246,.16));
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.06);
+}
+.boot-bar span{
+  position:absolute;top:0;left:-45%;width:45%;height:100%;border-radius:99px;
+  background:linear-gradient(90deg,#B21F35,#F0445E 42%,#7aa2ff,#3B82F6);
+  animation:bootSweep 1s cubic-bezier(.55,.05,.45,.95) infinite;
+}
+.boot-text{margin:0;color:#A5A5B0;font-size:11px;font-weight:600;letter-spacing:.22em;text-transform:uppercase}
+.boot-quote{
+  margin:0;max-width:min(520px,88vw);
+  color:#B7B8C4;font-style:italic;font-size:clamp(13px,1.7vw,15px);
+  line-height:1.55;min-height:1.5em;opacity:.95;
+}
+.boot-note{color:#A5A5B0;font-size:13px;margin:14px 0 0}
+.boot-note a{color:var(--red-2);text-decoration:underline}
+
+@keyframes dwSpin{from{transform:rotate(-90deg)}to{transform:rotate(270deg)}}
+@keyframes dwDash{0%{stroke-dashoffset:0}50%{stroke-dashoffset:-118}100%{stroke-dashoffset:-352}}
+@keyframes bootSweep{0%{left:-45%}100%{left:100%}}
+@keyframes bootPulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(.965);opacity:.92}}
+@keyframes bootAutoHide{to{opacity:0;visibility:hidden;pointer-events:none}}
+
+html.booted .boot{opacity:0;visibility:hidden;pointer-events:none}
+html.booting{overflow:hidden}
+html.booting body{overflow:hidden}
+
+/* ------------------------------------------------------------
+   Device shell (monitor / phone)
+   ------------------------------------------------------------ */
+.device-shell{position:fixed;inset:var(--dw-world-t) var(--dw-world-x) var(--dw-world-b);z-index:1}
+.device-screen{
+  position:absolute;inset:var(--dw-bezel);
+  border-radius:var(--dw-screen-radius);
+  overflow:auto;overflow-x:hidden;
+  background:var(--bg);
+  overscroll-behavior:contain;
+  scroll-padding-top:92px;
+  scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.18) transparent;
+  /* clearly readable boundary: black seam + hairline light + screen vignette */
+  box-shadow:
+    inset 0 0 0 1px rgba(0,0,0,.9),
+    inset 0 0 0 2px rgba(255,255,255,.055),
+    inset 0 0 40px rgba(0,0,0,.5);
+}
+.device-screen::-webkit-scrollbar{width:10px;height:10px}
+.device-screen::-webkit-scrollbar-thumb{background:rgba(255,255,255,.16);border-radius:99px;border:2px solid transparent;background-clip:content-box}
+.device-screen::-webkit-scrollbar-thumb:hover{background:rgba(240,68,94,.55);background-clip:content-box}
+
+.device-chrome{
+  position:absolute;inset:0;z-index:40;pointer-events:none;
+  border:var(--dw-bezel) solid #101015;
+  border-radius:var(--dw-radius);
+  background:transparent;
+  box-shadow:
+    0 54px 140px rgba(0,0,0,.88),
+    0 0 0 1px rgba(255,255,255,.09),
+    0 0 90px rgba(245,34,69,.06),
+    0 0 120px rgba(22,168,255,.05);
+}
+/* Bezel ring: brushed metal, curvature shading, crimson/blue edge light.
+   The mask knocks out the content (screen) box so only the bezel ring shows. */
+.device-chrome::before{
+  content:"";position:absolute;inset:calc(-1 * var(--dw-bezel));
+  padding:var(--dw-bezel);
+  border-radius:var(--dw-radius);
+  background:
+    repeating-linear-gradient(112deg,
+      rgba(255,255,255,.05) 0 1px,
+      rgba(255,255,255,0) 1px 3px,
+      rgba(0,0,0,.30) 3px 4px,
+      rgba(255,255,255,0) 4px 8px),
+    linear-gradient(180deg,
+      rgba(255,255,255,.24) 0%,
+      rgba(255,255,255,.07) 5%,
+      rgba(255,255,255,0) 15%,
+      rgba(0,0,0,.34) 82%,
+      rgba(255,255,255,.05) 95%,
+      rgba(255,255,255,.13) 100%),
+    linear-gradient(96deg,
+      rgba(245,34,69,.34) 0%,
+      rgba(245,34,69,.06) 7%,
+      rgba(0,0,0,0) 27%,
+      rgba(0,0,0,0) 73%,
+      rgba(22,168,255,.07) 93%,
+      rgba(22,168,255,.34) 100%),
+    linear-gradient(160deg,#23252f 0%,#14151b 44%,#0c0d11 100%);
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+  -webkit-mask-composite:xor;
+  mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+  mask-composite:exclude;
+  pointer-events:none;
+}
+/* Glass reflection over the screen area only (very subtle, never over text) */
+.device-chrome::after{
+  content:"";position:absolute;inset:0;z-index:1;pointer-events:none;
+  border-radius:calc(var(--dw-radius) - var(--dw-bezel));
+  background:
+    linear-gradient(122deg,rgba(255,255,255,.05) 0 17%,rgba(255,255,255,0) 33%),
+    radial-gradient(150% 55% at 6% -12%,rgba(255,255,255,.055),transparent 44%);
+}
+.device-cam{
+  position:absolute;top:50%;left:calc(-1 * var(--dw-bezel) / 2);transform:translate(-50%,-50%);
+  width:8px;height:8px;border-radius:50%;background:#0d0d12;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.20),0 0 8px rgba(240,68,94,.5);
+}
+.device-stand{
+  position:absolute;left:50%;bottom:calc(-1 * (var(--dw-world-b) - 6px));transform:translateX(-50%);
+  width:24%;height:calc(var(--dw-world-b) - 8px);min-height:46px;
+  background:
+    linear-gradient(90deg,rgba(255,255,255,0) 0%,rgba(255,255,255,.10) 15%,rgba(255,255,255,0) 34%,rgba(0,0,0,.40) 78%,rgba(255,255,255,.06) 100%),
+    linear-gradient(180deg,#24252d 0%,#14151a 48%,#0a0b0f 100%);
+  border:1px solid rgba(255,255,255,.07);border-top:0;border-radius:0 0 16px 16px;
+  box-shadow:0 34px 66px rgba(0,0,0,.78),inset 0 -8px 16px rgba(0,0,0,.6);
+}
+.device-stand::before{ /* soft contact shadow where the base meets the desk */
+  content:"";position:absolute;left:50%;bottom:-3px;transform:translateX(-50%);
+  width:360%;height:26px;border-radius:50%;
+  background:radial-gradient(ellipse at center,rgba(0,0,0,.8) 0%,rgba(0,0,0,.44) 42%,rgba(0,0,0,0) 72%);
+  pointer-events:none;
+}
+.device-stand::after{ /* weighted metal base plate */
+  content:"";position:absolute;left:50%;bottom:-5px;transform:translateX(-50%);
+  width:250%;height:15px;border-radius:50% / 72%;
+  background:linear-gradient(180deg,#2a2b33 0%,#14151a 55%,#0a0b0f 100%);
+  box-shadow:0 14px 28px rgba(0,0,0,.72),inset 0 1px 0 rgba(255,255,255,.16);
+}
+
+/* Full-width escape hatch button */
+.device-toggle{
+  position:absolute;z-index:70;
+  right:calc(var(--dw-bezel) + 12px);bottom:calc(var(--dw-bezel) + 12px);
+  display:inline-flex;align-items:center;gap:8px;cursor:pointer;
+  padding:9px 14px;border-radius:99px;
+  border:1px solid rgba(255,255,255,.16);
+  background:rgba(15,15,20,.74);
+  -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);
+  color:#F5F5F7;font:600 12.5px/1 var(--font-body);letter-spacing:.02em;
+  transition:border-color .25s,color .25s,background .25s,transform .25s;
+}
+.device-toggle:hover{border-color:var(--red-2);color:#fff;background:rgba(240,68,94,.16);transform:translateY(-1px)}
+.device-toggle svg{width:15px;height:15px}
+
+/* Entrance: shell revealed once the boot screen clears */
+@media (min-width:768px){
+  html.device-enter:not(.device-settled) .device-shell{animation:deviceEnter 1.05s cubic-bezier(.22,1,.36,1) both}
+}
+@media (max-width:767.98px){
+  html.device-enter:not(.device-settled) .device-shell{animation:deviceEnterFade .7s ease both}
+}
+html.device-settled .device-shell{animation:none;transform:none;opacity:1}
+@keyframes deviceEnterFade{0%{opacity:0}100%{opacity:1}}
+@keyframes deviceEnter{
+  0%{opacity:0;transform:perspective(1700px) rotateX(10deg) translateY(30px) scale(.955)}
+  55%{opacity:1}
+  100%{opacity:1;transform:perspective(1700px) rotateX(0deg) translateY(0) scale(1)}
+}
+
+/* Search modal scroll-lock mirror (main.js locks body, not the screen) */
+html.is-locked .device-screen{overflow:hidden}
+
+/* ------------------------------------------------------------
+   Ambient blue light bloom layered behind the holographic core
+   (first child of .hero-visual, so it always sits under the core)
+   ------------------------------------------------------------ */
+.hero-visual::before{
+  content:"";position:absolute;left:50%;top:50%;width:118%;aspect-ratio:1;
+  transform:translate(-50%,-50%);border-radius:50%;pointer-events:none;
+  background:
+    radial-gradient(closest-side at 32% 34%,rgba(216,248,255,.20),transparent 72%),
+    radial-gradient(closest-side at 70% 66%,rgba(0,168,255,.26),transparent 74%);
+  filter:blur(26px);
+}
+
+/* ------------------------------------------------------------
+   Continuous tutorial carousel
+   ------------------------------------------------------------ */
+.ah-carousel{position:relative;perspective:1400px}
+.ah-carousel__head{display:flex;align-items:center;justify-content:flex-end;gap:10px;margin-bottom:6px}
+.ah-carousel__btn{
+  width:42px;height:42px;border-radius:50%;display:grid;place-items:center;cursor:pointer;
+  background:rgba(15,15,20,.8);border:1px solid rgba(255,255,255,.14);color:#F5F5F7;
+  transition:border-color .25s,color .25s,background .25s,transform .25s;
+}
+.ah-carousel__btn:hover{border-color:var(--red-2);color:#fff;background:rgba(240,68,94,.16);transform:translateY(-1px)}
+.ah-carousel__btn svg{width:18px;height:18px}
+.ah-carousel__viewport{
+  overflow-x:auto;overflow-y:hidden;
+  scrollbar-width:none;-ms-overflow-style:none;
+  -webkit-overflow-scrolling:touch;
+  padding:14px 4px 22px;
+}
+.ah-carousel__viewport::-webkit-scrollbar{display:none}
+.ah-carousel__track{display:flex;gap:16px;width:max-content;margin:0;padding:0;list-style:none}
+.ah-carousel__item{flex:0 0 clamp(232px,64vw,286px);list-style:none}
+.ah-card{
+  display:flex;flex-direction:column;height:100%;border-radius:16px;overflow:hidden;
+  background:linear-gradient(180deg,#141419,#0d0d12);
+  border:1px solid rgba(255,255,255,.08);
+  box-shadow:0 18px 40px rgba(0,0,0,.45);
+  transform:translateZ(0);
+  transition:transform .32s cubic-bezier(.2,.7,.3,1),box-shadow .32s,border-color .32s;
+}
+.ah-card:hover,.ah-card:focus-visible{
+  transform:translateY(-7px);
+  border-color:rgba(240,68,94,.45);
+  box-shadow:0 26px 54px rgba(0,0,0,.55),0 0 0 1px rgba(240,68,94,.25);
+}
+.ah-card:focus-visible{outline:2px solid var(--cyan);outline-offset:3px}
+.ah-carousel__btn:focus-visible{outline:2px solid var(--cyan);outline-offset:3px}
+.ah-card__thumb{position:relative;aspect-ratio:16/9;overflow:hidden;background:#0a0a0e}
+.ah-card__thumb img{width:100%;height:100%;object-fit:cover;transition:transform .5s ease}
+.ah-card:hover .ah-card__thumb img{transform:scale(1.05)}
+.ah-card__badge{
+  position:absolute;top:10px;left:10px;padding:4px 9px;border-radius:99px;
+  font:700 10px/1 var(--font-body);letter-spacing:.08em;text-transform:uppercase;
+  background:rgba(8,8,11,.72);border:1px solid rgba(255,255,255,.14);color:#F5F5F7;
+  -webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);
+}
+.ah-card__badge--video{border-color:rgba(240,68,94,.5);color:#ffd0d6}
+.ah-card__body{padding:14px 15px 16px;display:flex;flex-direction:column;gap:6px;flex:1}
+.ah-card__body h3{margin:0;font-size:15px;line-height:1.32;font-family:Manrope,'DM Sans',system-ui,sans-serif;font-weight:700;color:#F5F5F7}
+.ah-card__meta{margin:0;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.ah-card__go{margin-top:auto;font-size:12.5px;font-weight:700;color:var(--red-2)}
+
+/* ------------------------------------------------------------
+   Desktop / laptop / tablet: nested-scroll monitor (>=768px)
+   ------------------------------------------------------------ */
+@media (min-width:768px){
+  html,body{height:100%;overflow:hidden}
+  .reading-progress{
+    left:calc(var(--dw-world-x) + var(--dw-bezel));
+    right:calc(var(--dw-world-x) + var(--dw-bezel));
+    top:calc(var(--dw-world-t) + var(--dw-bezel));
+    width:auto;z-index:45;
+  }
+}
+@media (min-width:768px) and (max-width:1199.98px){
+  :root{--dw-bezel:16px;--dw-radius:28px;--dw-world-x:2.4vw;--dw-world-b:8vh}
+}
+
+/* ------------------------------------------------------------
+   Mobile: real body scroll inside a fixed phone frame (<768px)
+   ------------------------------------------------------------ */
+@media (max-width:767.98px){
+  .device-shell{position:static;inset:auto;z-index:auto}
+  .device-screen{
+    position:static;inset:auto;overflow:visible;height:auto;
+    border-radius:0;box-shadow:none;background:transparent;
+    padding:var(--dw-phone-b);
+  }
+  .device-chrome{
+    position:fixed;inset:0;z-index:60;
+    border:0;border-radius:42px;background:transparent;
+    box-shadow:
+      inset 0 0 0 var(--dw-phone-b) #0b0b0f,
+      inset 0 0 0 calc(var(--dw-phone-b) + 1px) rgba(255,255,255,.10),
+      inset var(--dw-phone-b) var(--dw-phone-b) 26px -14px rgba(255,255,255,.08),
+      inset 0 0 60px rgba(0,0,0,.5);
+  }
+  /* side rails: crimson on the left, electric blue on the right (bezel ring only) */
+  .device-chrome::before{
+    display:block;
+    inset:0;padding:var(--dw-phone-b);border-radius:42px;
+    background:
+      linear-gradient(90deg,rgba(245,34,69,.22) 0,rgba(245,34,69,0) calc(var(--dw-phone-b) * 2),rgba(0,0,0,0) 50%,rgba(22,168,255,0) calc(100% - var(--dw-phone-b) * 2),rgba(22,168,255,.22) 100%),
+      repeating-linear-gradient(180deg,rgba(255,255,255,.04) 0 1px,rgba(255,255,255,0) 1px 3px,rgba(0,0,0,.28) 3px 4px,rgba(255,255,255,0) 4px 7px);
+    -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+    -webkit-mask-composite:xor;
+    mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+    mask-composite:exclude;
+    pointer-events:none;
+  }
+  /* Speaker + camera detail inside the notch */
+  .device-cam{
+    top:calc(var(--dw-phone-b) + 1px);left:50%;transform:translateX(-50%);
+    width:96px;height:22px;border-radius:0 0 15px 15px;background:#050507;box-shadow:none;
+  }
+  .device-cam::before{
+    content:"";position:absolute;top:50%;right:12px;transform:translateY(-50%);
+    width:7px;height:7px;border-radius:50%;
+    background:radial-gradient(circle at 35% 30%,#2b3b63,#060608 70%);
+    border:1px solid rgba(255,255,255,.10);
+  }
+  .device-cam::after{
+    content:"";position:absolute;top:50%;left:14px;transform:translateY(-50%);
+    width:34px;height:4px;border-radius:99px;background:#141419;
+    box-shadow:inset 0 0 0 1px rgba(255,255,255,.06);
+  }
+  .device-stand{display:none}
+  .device-toggle{display:none}
+  .site-header{top:var(--dw-phone-b)}
+  html.is-locked,html.is-locked body{overflow:hidden}
+}
+@media (max-width:420px){
+  :root{--dw-phone-b:8px}
+}
+
+/* ------------------------------------------------------------
+   Full-width mode: remove the frame, use the whole viewport
+   ------------------------------------------------------------ */
+html.device-wide .device-shell{position:static;inset:auto;z-index:auto}
+html.device-wide .device-screen{position:static;inset:auto;overflow:visible;height:auto;border-radius:0;box-shadow:none;background:transparent}
+html.device-wide .device-chrome,html.device-wide .device-stand{display:none}
+html.device-wide{overflow:auto}
+html.device-wide,html.device-wide body{height:auto;overflow-y:auto}
+html.device-wide .device-toggle{position:fixed;top:auto;left:auto;right:16px;bottom:16px;z-index:200}
+html.device-wide .device-shell{opacity:1;transform:none;animation:none !important}
+
+/* ------------------------------------------------------------
+   Reduced motion
+   ------------------------------------------------------------ */
+@media (prefers-reduced-motion:reduce){
+  .boot,.boot-bar span,.boot-logo,.boot-ring,.boot-ring-arc{animation:none !important;transition:none !important}
+  html.boot-intro:not(.booted) .boot{animation:bootAutoHide 0s ease 2.2s forwards} /* JS-stall safety stays on */
+  .hero-core-fallback{animation:none !important}
+  html.device-enter .device-shell{animation:none !important}
+  .device-toggle,.ah-card,.ah-card__thumb img{transition:none}
+}

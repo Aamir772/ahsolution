@@ -1,0 +1,5 @@
+/article            /article.html                200
+/article/*          /article.html?slug=:splat    200
+/admin              /admin/login.html            200
+/admin/dashboard    /admin/dashboard.html        200
+/admin/editor       /admin/editor.html           200

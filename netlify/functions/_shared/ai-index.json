@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-14T07:23:10.175Z",
+  "generatedAt": "2026-10-20T13:10:39.750Z",
   "site": "AH Solution",
   "source": "build-ai-index",
   "counts": {
@@ -14,9 +14,9 @@
       "type": "page",
       "title": "Home",
       "url": "index.html",
-      "description": "AH Solution — Technology made simple",
-      "keywords": "home start technology made simple",
-      "text": "Home. AH Solution — Technology made simple. home start technology made simple"
+      "description": "AH Solution — Tips, tricks and techniques",
+      "keywords": "home start tips tricks and techniques",
+      "text": "Home. AH Solution — Tips, tricks and techniques. home start tips tricks and techniques"
     },
     {
       "id": "page:vlogs-html",
@@ -73,19 +73,19 @@
       "text": "Mobile Tips. Everyday tips for the phone you own. mobile phone android tips"
     },
     {
-      "id": "page:blog-html-category-apps",
+      "id": "page:blog-html-category-android",
       "type": "page",
       "title": "Android Apps",
-      "url": "blog.html?category=apps",
+      "url": "blog.html?category=android",
       "description": "Useful and safe app recommendations",
       "keywords": "apps android software recommendations",
       "text": "Android Apps. Useful and safe app recommendations. apps android software recommendations"
     },
     {
-      "id": "page:blog-html-category-pc",
+      "id": "page:blog-html-category-windows",
       "type": "page",
       "title": "PC & Windows",
-      "url": "blog.html?category=pc",
+      "url": "blog.html?category=windows",
       "description": "Customisation and everyday PC tasks",
       "keywords": "pc windows computer laptop",
       "text": "PC & Windows. Customisation and everyday PC tasks. pc windows computer laptop"

@@ -35,6 +35,20 @@
     X-Robots-Tag = "noindex, nofollow"
     Cache-Control = "no-store"
 
+# The runtime article shell (/article, /article.html) is a renderer, not a
+# page — never index it. NOTE: this must NOT cover /article/* subpaths, thin
+# draft pages there carry their own meta robots, and approved articles become
+# real static files that must stay indexable.
+[[headers]]
+  for = "/article"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+
+[[headers]]
+  for = "/article.html"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+
 # Clean article URLs served by the public CMS
 [[redirects]]
   from = "/article"

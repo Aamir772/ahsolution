@@ -1,0 +1,160 @@
+/* ==========================================================================
+   AH SOLUTION — design tokens (v5)
+   Single source of truth for colour, type, radii, borders, shadows, spacing
+   and motion. Loaded FIRST by every public page and by the admin panel, so
+   the website, admin login, dashboard, editor, dialogs and notifications all
+   share one system.
+
+   Palette direction (Realtime-Colors-style roles):
+     background / surface / text / muted  -> neutral frame
+     primary / highlight                  -> crimson action + emphasis
+   Every value below was checked for WCAG contrast against the surfaces it is
+   used on (see README "Design tokens" notes).
+   ========================================================================== */
+
+:root{
+  /* ---------------------------------------------------------------- colour */
+  /* surfaces */
+  --c-bg:#08080B;                /* main background            (18.6:1 vs text) */
+  --c-bg-2:#0C0C11;              /* recessed band              */
+  --c-surface:#17171D;           /* secondary surface / cards  */
+  --c-surface-2:#1E1E26;         /* elevated surface / inputs  */
+  --c-surface-3:#26262F;         /* hover surface              */
+  --c-overlay:rgba(4,4,6,.76);   /* dialog backdrop            */
+
+  /* text */
+  --c-text:#F5F5F7;              /* primary text               (18.5:1 on bg)  */
+  --c-muted:#92929F;             /* muted text                 (6.5:1 on bg,
+                                    5.8:1 on surface)                          */
+  --c-muted-2:#8A8A97;           /* small labels               (5.9:1 on bg)   */
+  --c-on-primary:#FFFFFF;        /* text on crimson fills      (5.0:1)         */
+
+  /* crimson action system */
+  --c-primary:#E62946;           /* primary crimson: borders, fills, large type */
+  --c-primary-strong:#D8203E;    /* solid button fill (white text >= 5:1)       */
+  --c-primary-deep:#A5142B;      /* button fill gradient end / pressed          */
+  --c-highlight:#FF526B;         /* highlight crimson: links, labels, focus
+                                    (6.3:1 on bg, 5.7:1 on surface)             */
+  --c-primary-soft:rgba(230,41,70,.14);
+  --c-primary-line:rgba(230,41,70,.42);
+
+  /* holographic AI core (cinematic centrepiece accent) — electric blue system */
+  --c-void:#050A12;              /* deep void navy (core backdrop / canvas)       */
+  --c-blue:#00A8FF;              /* electric blue (primary geometry)              */
+  --c-cyan:#48E5FF;              /* plasma cyan (circuitry / nodes / trails)      */
+  --c-ice:#D8F8FF;               /* ice-white (highlights, core light, monogram)  */
+  --c-steel:#16456B;             /* deep steel blue (struts / frames)             */
+  --c-crimson:#FF183D;           /* restricted crimson (intensity ticks)          */
+  --c-blue-soft:rgba(0,168,255,.14);
+  --c-cyan-line:rgba(72,229,255,.42);
+
+  /* status (used by admin toasts + forms) */
+  --c-success:#3FBF7F;
+  --c-warning:#E9B949;
+  --c-danger:#FF526B;
+  --c-info:#8FB8FF;
+
+  /* lines */
+  --c-line:rgba(255,255,255,.09);
+  --c-line-strong:rgba(255,255,255,.17);
+
+  /* metallic accents (device frame / brand) */
+  --c-metal:#16161D;
+  --c-metal-hi:rgba(255,255,255,.12);
+
+  /* ------------------------------------------------------------ typography */
+  --font-display:'Manrope','DM Sans',system-ui,-apple-system,Segoe UI,sans-serif;
+  --font-body:'DM Sans',system-ui,-apple-system,Segoe UI,sans-serif;
+  --font-mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+
+  --fw-regular:400;
+  --fw-medium:500;
+  --fw-semibold:600;
+  --fw-bold:700;
+  --fw-extrabold:800;
+
+  /* modular-ish display scale */
+  --fs-display:clamp(38px,5.6vw,70px);
+  --fs-hero:clamp(44px,7.4vw,94px);
+  --fs-h2:clamp(28px,3.8vw,44px);
+  --fs-h3:20px;
+  --fs-body:15px;
+  --fs-small:13px;
+  --fs-label:11px;
+
+  --lh-tight:1.12;
+  --lh-body:1.62;
+  --ls-tight:-.04em;
+  --ls-label:.22em;
+
+  /* --------------------------------------------------------------- borders */
+  --bw:1px;
+  --bw-2:2px;
+
+  /* ---------------------------------------------------------------- radii */
+  --r-xs:6px;
+  --r-sm:10px;
+  --r-md:14px;
+  --r-lg:18px;
+  --r-xl:24px;
+  --r-full:999px;
+
+  /* --------------------------------------------------------------- shadows */
+  --shadow-sm:0 6px 18px rgba(0,0,0,.35);
+  --shadow-md:0 18px 44px rgba(0,0,0,.48);
+  --shadow-lg:0 30px 90px rgba(0,0,0,.58);
+  --shadow-primary:0 12px 32px rgba(230,41,70,.30);
+  --shadow-primary-hi:0 18px 44px rgba(230,41,70,.42);
+  --shadow-core:0 12px 34px rgba(0,168,255,.28);
+  --shadow-core-hi:0 18px 46px rgba(72,229,255,.38);
+
+  /* --------------------------------------------------------------- spacing */
+  --sp-1:4px;
+  --sp-2:8px;
+  --sp-3:12px;
+  --sp-4:16px;
+  --sp-5:20px;
+  --sp-6:24px;
+  --sp-7:32px;
+  --sp-8:40px;
+  --sp-9:52px;
+  --sp-10:70px;
+  --sp-11:96px;
+
+  /* ---------------------------------------------------------------- motion */
+  --dur-instant:90ms;
+  --dur-fast:150ms;
+  --dur-base:250ms;
+  --dur-slow:420ms;
+  --dur-slower:700ms;
+
+  --ease-out:cubic-bezier(.22,1,.36,1);      /* decelerate (reveals, menus)  */
+  --ease-in-out:cubic-bezier(.65,0,.35,1);   /* symmetric (dialogs)          */
+  --ease-spring:cubic-bezier(.34,1.4,.64,1); /* soft overshoot (press/hover) */
+  --ease-standard:cubic-bezier(.4,0,.2,1);   /* neutral (colour changes)     */
+
+  --stagger-1:60ms;
+  --stagger-2:120ms;
+  --stagger-3:180ms;
+  --stagger-4:240ms;
+
+  /* ----------------------------------------------------------------- layout */
+  --max:1180px;
+  --gutter:26px;
+  --header-h:72px;
+
+  /* ------------------------------------------------------- focus visibility */
+  --focus-ring:2px solid var(--c-highlight);
+  --focus-offset:3px;
+
+  /* ------------------------------------------------- reduced-motion default */
+  /* (individual sheets also set this; kept here so admin inherits it too)   */
+}
+
+@media (prefers-reduced-motion:reduce){
+  :root{
+    --dur-instant:1ms;--dur-fast:1ms;--dur-base:1ms;
+    --dur-slow:1ms;--dur-slower:1ms;
+    --stagger-1:0ms;--stagger-2:0ms;--stagger-3:0ms;--stagger-4:0ms;
+  }
+}

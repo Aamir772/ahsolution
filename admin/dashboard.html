@@ -29,6 +29,14 @@
 
     <div class="notice" data-notice hidden style="margin-bottom:18px"></div>
 
+    <section class="stats" data-stats hidden>
+      <div class="stat"><div class="stat__k">Total</div><div class="stat__v" data-stat="total">0</div></div>
+      <div class="stat stat--published"><div class="stat__k">Published</div><div class="stat__v" data-stat="published">0</div></div>
+      <div class="stat stat--drafts"><div class="stat__k">Drafts</div><div class="stat__v" data-stat="draft">0</div></div>
+      <div class="stat"><div class="stat__k">Archived</div><div class="stat__v" data-stat="archived">0</div></div>
+      <div class="stat"><div class="stat__k">Total views</div><div class="stat__v" data-stat="views">0</div></div>
+    </section>
+
     <section class="card" style="margin-bottom:22px">
       <div class="grid-2" style="align-items:end">
         <label>
@@ -81,6 +89,7 @@
       var statusEl = A.$('[data-status]');
       var countEl = A.$('[data-count]');
       var whoEl = A.$('[data-who]');
+      var statsEl = A.$('[data-stats]');
       var all = [];
 
       if (session.user && session.user.email) whoEl.textContent = session.user.email;
@@ -89,6 +98,24 @@
 
       function statusBadge(status) {
         return '<span class="status status--' + A.esc(status) + '"><span class="dot"></span>' + A.esc(status) + '</span>';
+      }
+
+      function renderStats() {
+        if (!statsEl) return;
+        var counts = { published: 0, draft: 0, archived: 0 };
+        var views = 0;
+        all.forEach(function (a) {
+          counts[a.status] = (counts[a.status] || 0) + 1;
+          views += Number(a.view_count) || 0;
+        });
+        statsEl.hidden = false;
+        statsEl.querySelector('[data-stat="total"]').textContent = String(all.length);
+        Object.keys(counts).forEach(function (k) {
+          var el = statsEl.querySelector('[data-stat="' + k + '"]');
+          if (el) el.textContent = String(counts[k]);
+        });
+        var viewsEl = statsEl.querySelector('[data-stat="views"]');
+        if (viewsEl) viewsEl.textContent = views.toLocaleString();
       }
 
       function render() {
@@ -137,6 +164,7 @@
           if (!res.body || !res.body.ok) throw new Error((res.body && res.body.error) || 'load_failed');
           all = res.body.articles || [];
           render();
+          renderStats();
           A.notice(noticeEl, 'ok', '');
         }).catch(function (err) {
           if (err.message === 'auth_required' || err.code === 'auth_required') { location.replace('login.html'); return; }

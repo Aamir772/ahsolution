@@ -1,0 +1,18 @@
+# Dependencies / logs
+node_modules/
+*.log
+npm-debug.log*
+
+# Local environment — never commit credentials
+.env
+.env.*
+!.env.example
+
+# Assistant backend local data (JSON-file storage)
+server/.data/
+
+# Editor / OS noise
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

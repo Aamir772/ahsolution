@@ -275,6 +275,24 @@ async function main() {
   c.ok(cleanSlug('Hello World!!') === 'hello-world', 'cleanSlug normalises a title');
   c.ok(SLUG_RE.test(cleanSlug('Hello World!!')), 'cleanSlug output satisfies SLUG_RE');
 
+  /* YouTube embeds are the one allowed iframe; everything else is dropped */
+  const embed = '<p>Intro</p><iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/J3Q0LPCas7I" title="iQOO Z5 &amp; friends" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" allow="accelerometer; autoplay" allowfullscreen></iframe>';
+  const embedClean = sanitizeHtml(embed);
+  c.ok(/<iframe[^>]+youtube-nocookie\.com\/embed\/J3Q0LPCas7I/.test(embedClean), 'sanitiser keeps the YouTube embed iframe', embedClean);
+  c.ok(/allowfullscreen/.test(embedClean), 'sanitiser keeps allowfullscreen on the embed');
+  c.ok(!/onload|onerror|onclick/i.test(embedClean), 'sanitiser strips event handlers from the embed');
+  const embedBad = sanitizeHtml(
+    '<iframe src="https://www.youtube.com/embed/x" onload="steal()"></iframe>' +
+    '<iframe src="https://evil.test/embed/J3Q0LPCas7I"></iframe>' +
+    '<iframe src="javascript:alert(1)"></iframe>' +
+    '<iframe src="//www.youtube-nocookie.com/embed/J3Q0LPCas7I"></iframe>' +
+    '<iframe></iframe>');
+  c.ok(!/evil\.test/.test(embedBad), 'sanitiser drops non-YouTube iframes with a youtube-looking path');
+  c.ok(!/javascript:/i.test(embedBad), 'sanitiser drops javascript: iframe src');
+  c.ok(!/\/\/www\.youtube-nocookie\.com/.test(embedBad), 'sanitiser drops protocol-relative embed srcs');
+  c.ok(!/onload/i.test(embedBad), 'sanitiser strips inline handlers even on a valid host');
+  c.ok((embedBad.match(/<iframe/g) || []).length === 0, 'only real youtube-nocookie embeds survive (drops evil.test, javascript:, protocol-relative, short-id, src-less)', embedBad);
+
   /* ---------------- 2. missing configuration ---------------- */
   console.log('\nconfiguration');
   const savedKey = process.env.SUPABASE_SERVICE_ROLE_KEY;

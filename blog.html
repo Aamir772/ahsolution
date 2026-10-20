@@ -1,8 +1,11 @@
 <!doctype html>
-<html lang="en">
+<html lang="en-IN">
 <head>
 <meta charset="utf-8">
+<script>/* AH session boot flag: set BEFORE first paint so the intro plays once per tab */(function(){var h=document.documentElement,skip=false;try{skip=sessionStorage.getItem("ah-intro")==="1";}catch(e){skip=false;}if(skip){h.classList.add("booted");}else{h.classList.add("boot-intro");try{sessionStorage.setItem("ah-intro","1");}catch(e){}}})();</script>
 <meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="google-adsense-account" content="ca-pub-1564978792055470">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1564978792055470" crossorigin="anonymous"></script>
 <title>Blog &amp; Guides | AH Solution — Practical Tech Walkthroughs</title>
 <meta name="description" content="Practical written guides from AH Solution covering PC customization, Android app safety, and gadget buying checklists — clear steps you can follow at your own pace.">
 <meta name="theme-color" content="#08080B">
@@ -28,13 +31,14 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap">
 <link rel="stylesheet" href="assets/css/tokens.css">
 <link rel="stylesheet" href="assets/css/styles.css">
+<link rel="stylesheet" href="assets/css/editorial.css">
 <link rel="stylesheet" href="assets/css/device.css">
 <noscript><style>.boot{display:none !important}.device-shell{opacity:1 !important}</style></noscript>
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"Blog","name":"AH Solution Blog","url":"https://ahsolution.live/blog.html","description":"Practical written guides and checklists for everyday technology.","isPartOf":{"@id":"https://ahsolution.live/#website"}}
 </script>
 </head>
-<body>
+<body class="theme-editorial">
 
 <!-- AH startup screen -->
 <div class="boot" data-boot aria-hidden="true">
@@ -55,6 +59,7 @@
     </div>
     <div class="boot-bar" aria-hidden="true"><span></span></div>
     <p class="boot-text">Starting AH Solution</p>
+    <p class="boot-quote" data-boot-quote>Work smarter, not just harder.</p>
     <noscript><p class="boot-note">JavaScript is off &mdash; <a href="index.html">continue to the site</a>.</p></noscript>
   </div>
 </div>
@@ -66,7 +71,7 @@
 
 <div class="announcement">
   <div class="container">
-    <span><i class="ann-dot"></i><strong>AH SOLUTION</strong> &nbsp; TECHNOLOGY MADE SIMPLE</span>
+    <span><i class="ann-dot"></i><strong>AH SOLUTION</strong> &nbsp; TIPS, TRICKS AND TECHNIQUES</span>
     <span>Tips · Tutorials · Digital discoveries</span>
   </div>
 </div>
@@ -109,40 +114,171 @@
 </div>
 
 <main id="main">
-  <section class="page-hero">
+  <section class="ed-hero">
     <div class="container">
-      <nav class="breadcrumbs" aria-label="Breadcrumb"><a href="index.html">Home</a> <span aria-hidden="true">/</span> <span aria-current="page">Blog</span></nav>
-      <div class="eyebrow">The AH Solution blog</div>
-      <h1>Good answers.<br><span class="text-gradient">Worth bookmarking.</span></h1>
-      <p>Written guides, quick checklists, and practical explainers to complement the videos. Read at your own pace and return whenever you need a reminder.</p>
+      <div class="ed-hero__grid">
+        <div class="ed-hero__text">
+          <p class="ed-kicker">The AH Solution blog</p>
+          <h1>Practical guides for the tech <em>you already own.</em></h1>
+          <p class="ed-hero__deck">Seventeen long-form walkthroughs written from the AH Solution videos — Android apps and safety, smartphone photography, Windows and PC tips, remote access, laptops and smartwatches — plus the original how-to guides. Read at your own pace, jump straight to the step you need.</p>
+          <p class="ed-hero__note">Every guide keeps its source video linked, its steps in order, and its limitations written down.</p>
+        </div>
+        <div class="ed-hero__tools">
+          <form class="ed-search" role="search" onsubmit="return false">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+            <input type="search" placeholder="Search 20 guides — shortcuts, night photo, remote desktop…" aria-label="Search blog articles" data-blog-search>
+          </form>
+          <nav class="ed-cats" aria-label="Guide categories">
+            <button class="filter-chip active" data-filter="all">All guides</button>
+            <button class="filter-chip" data-filter="android">Android</button>
+            <button class="filter-chip" data-filter="windows">Windows &amp; PC</button>
+            <button class="filter-chip" data-filter="gadgets">Gadgets</button>
+            <button class="filter-chip" data-filter="photography">Photography</button>
+            <button class="filter-chip" data-filter="privacy">Privacy</button>
+            <button class="filter-chip" data-filter="remote">Remote access</button>
+            <button class="filter-chip" data-filter="about">About</button>
+          </nav>
+        </div>
+      </div>
     </div>
   </section>
 
-  <section class="section">
+  <section class="ed-listing">
     <div class="container">
-      <div class="filter-bar">
-        <button class="filter-chip active" data-filter="all">All guides</button>
-        <button class="filter-chip" data-filter="apps">Android Apps</button>
-        <button class="filter-chip" data-filter="pc">PC &amp; Windows</button>
-        <button class="filter-chip" data-filter="gadgets">Gadgets</button>
-        <label class="search-box"><span aria-hidden="true">⌕</span><input type="search" placeholder="Search guides…" aria-label="Search blog articles" data-blog-search></label>
+      <div class="ed-toolbar">
+        <h2>Browse every guide</h2>
+        <div class="ed-toolbar__tools">
+          <p class="blog-count" data-blog-count aria-live="polite">Showing all articles</p>
+          <label class="sort-box">Sort
+            <select data-blog-sort aria-label="Sort articles">
+              <option value="editorial">Editorial order</option>
+              <option value="title">Title A–Z</option>
+              <option value="time">Reading time</option>
+            </select>
+          </label>
+        </div>
       </div>
-      <div class="grid-3" data-cms-grid>
-        <a class="content-card tilt" data-tilt="6" data-blog-card data-category="pc" data-search="live wallpaper pc video wallpaper laptop windows mlwapp performance battery customization" href="guides/live-wallpaper-on-pc.html">
+      <div class="editorial-grid" data-cms-grid>
+        <!-- Generated from blog/blog-manifest.json by scripts/blog-build.js — do not edit by hand. -->
+        <!-- BLOG:ARTICLES:START -->
+        <a class="content-card tilt is-feature" data-tilt="6" data-blog-card data-slug="control-laptop-from-android-chrome-remote-desktop" data-category="remote" data-order="1" data-min="7" data-title="Android Phone Se Laptop Control Kaise Karein: Chrome Remote Desktop" data-search="android phone se laptop control kaise karein: chrome remote desktop kabhi aap office se nikle hue hain aur zaroori file laptop par chhod aaye hain? ya chaho ke laptop par koi document edit kar lo bina laptop uthaye? chrome remote desktop ka use karke aap apne laptop ko android phone se remotely access aur control kar sakte hain. remote access &amp; productivity chrome remote desktop android remote access windows laptop phone se pc control remote desktop setup remote access &amp; productivity ah solution chrome remote desktop android remote access windows laptop phone se pc control remote desktop setup" href="/article/control-laptop-from-android-chrome-remote-desktop/">
+          <div class="card-image"><img src="/blog/assets/control-laptop-from-android-chrome-remote-desktop-thumbnail.svg" alt="Cover graphic: Android Phone Se Laptop Control Kaise Karein: Chrome Remote Desktop" loading="lazy" decoding="async" width="640" height="360" onerror="this.onerror=null;this.src='/assets/img/og-default.jpg'"><span class="card-tag">Remote Access &amp; Productivity</span></div>
+          <div class="card-body"><div class="card-meta">REMOTE ACCESS &amp; PRODUCTIVITY · 7 MIN READ</div>
+            <h3>Android Phone Se Laptop Control Kaise Karein: Chrome Remote Desktop</h3>
+            <p>Kabhi aap office se nikle hue hain aur zaroori file laptop par chhod aaye hain? Ya chaho ke laptop par koi document edit kar lo bina laptop uthaye? Chrome Remote Desktop ka use karke aap apne laptop ko Android phone se remotely access aur control kar sakte hain.</p>
+            <div class="card-bottom"><span>Read Article</span><span class="arrow">↗</span></div></div></a>
+        <a class="content-card tilt is-compact" data-tilt="6" data-blog-card data-slug="windows-10-11-keyboard-shortcuts-productivity" data-category="windows" data-order="2" data-min="8" data-title="Windows 10/11 ke 10 Keyboard Shortcuts Jo Roz Kaam Aayenge" data-search="windows 10/11 ke 10 keyboard shortcuts jo roz kaam aayenge keyboard shortcuts mouse clicks ko kam karke aapka kaam bohot fast bana sakte hain. har baar mouse uthana aur click karna time waste karta hai, jabki ek simple shortcut se wahi kaam kuch hi seconds mein ho jaata hai. windows &amp; pc tips windows 10 shortcuts pc productivity tips windows keyboard tricks computer shortcuts windows &amp; pc tips ah solution windows 10 shortcuts pc productivity tips windows keyboard tricks computer shortcuts" href="/article/windows-10-11-keyboard-shortcuts-productivity/">
+          <div class="card-image"><img src="/blog/assets/windows-10-11-keyboard-shortcuts-productivity-thumbnail.svg" alt="Cover graphic: Windows 10/11 ke 10 Keyboard Shortcuts Jo Roz Kaam Aayenge" loading="lazy" decoding="async" width="640" height="360" onerror="this.onerror=null;this.src='/assets/img/og-default.jpg'"><span class="card-tag">Windows &amp; PC Tips</span></div>
+          <div class="card-body"><div class="card-meta">WINDOWS &amp; PC TIPS · 8 MIN READ</div>
+            <h3>Windows 10/11 ke 10 Keyboard Shortcuts Jo Roz Kaam Aayenge</h3>
+            <p>Keyboard shortcuts mouse clicks ko kam karke aapka kaam bohot fast bana sakte hain. Har baar mouse uthana aur click karna time waste karta hai, jabki ek simple shortcut se wahi kaam kuch hi seconds mein ho jaata hai.</p>
+            <div class="card-bottom"><span>Read Article</span><span class="arrow">↗</span></div></div></a>
+        <a class="content-card tilt is-compact" data-tilt="6" data-blog-card data-slug="mirror-android-screen-to-tv-pc-wireless-guide" data-category="android" data-order="3" data-min="8" data-title="Android Screen TV ya PC Par Kaise Mirror Karein: Wireless Options" data-search="android screen tv ya pc par kaise mirror karein: wireless options kabhi socha hai apne phone ka screen bade tv par dikhayein ya pc par mirror karein bina kisi extra app ke? video how to mirror your android screen to tv or pc without an app! 📱➡️📺 isi topic ko cover karta hai. android &amp; connectivity android screen mirroring cast phone to tv wireless display android screen cast troubleshooting android &amp; connectivity ah solution android screen mirroring cast phone to tv wireless display android screen cast troubleshooting" href="/article/mirror-android-screen-to-tv-pc-wireless-guide/">
+          <div class="card-image"><img src="/blog/assets/mirror-android-screen-to-tv-pc-wireless-guide-thumbnail.svg" alt="Cover graphic: Android Screen TV ya PC Par Kaise Mirror Karein: Wireless Options" loading="lazy" decoding="async" width="640" height="360" onerror="this.onerror=null;this.src='/assets/img/og-default.jpg'"><span class="card-tag">Android &amp; Connectivity</span></div>
+          <div class="card-body"><div class="card-meta">ANDROID &amp; CONNECTIVITY · 8 MIN READ</div>
+            <h3>Android Screen TV ya PC Par Kaise Mirror Karein: Wireless Options</h3>
+            <p>Kabhi socha hai apne phone ka screen bade TV par dikhayein ya PC par mirror karein bina kisi extra app ke? Video &quot;How to Mirror Your Android Screen to TV or PC Without an App! 📱➡️📺&quot; isi topic ko cover karta hai.</p>
+            <div class="card-bottom"><span>Read Article</span><span class="arrow">↗</span></div></div></a>
+        <a class="content-card tilt" data-tilt="6" data-blog-card data-slug="android-night-photography-long-exposure-guide" data-category="photography" data-order="4" data-min="8" data-title="Android Phone Se DSLR-Like Night Photos Kaise Lein: Long Exposure Guide" data-search="android phone se dslr-like night photos kaise lein: long exposure guide night photography kaafi logon ke liye challenging lagti hai. ambient light kam ho to phone camera noise badha deta hai, details lose hoti hain aur shots blurry niklte hain. is guide ka focus yahi hai ki sensor upgrade se pehle technique par kaam karein. android photography android night photography dslr like mobile photos phone camera low light tips long exposure photography android photography ah solution android night photography dslr like mobile photos phone camera low light tips long exposure photography" href="/article/android-night-photography-long-exposure-guide/">
+          <div class="card-image"><img src="/blog/assets/android-night-photography-long-exposure-guide-thumbnail.svg" alt="Cover graphic: Android Phone Se DSLR-Like Night Photos Kaise Lein: Long Exposure Guide" loading="lazy" decoding="async" width="640" height="360" onerror="this.onerror=null;this.src='/assets/img/og-default.jpg'"><span class="card-tag">Android Photography</span></div>
+          <div class="card-body"><div class="card-meta">ANDROID PHOTOGRAPHY · 8 MIN READ</div>
+            <h3>Android Phone Se DSLR-Like Night Photos Kaise Lein: Long Exposure Guide</h3>
+            <p>Night photography kaafi logon ke liye challenging lagti hai. Ambient light kam ho to phone camera noise badha deta hai, details lose hoti hain aur shots blurry niklte hain. Is guide ka focus yahi hai ki sensor upgrade se pehle technique par kaam karein.</p>
+            <div class="card-bottom"><span>Read Article</span><span class="arrow">↗</span></div></div></a>
+        <a class="content-card tilt" data-tilt="6" data-blog-card data-slug="five-unique-android-apps-useful-apps-guide" data-category="android" data-order="5" data-min="8" data-title="5 Unique Android Apps: Useful Features aur Privacy Checks" data-search="5 unique android apps: useful features aur privacy checks android ecosystem mein har roz naye apps aate hain, lekin zyada tar viral apps sirf gimmick hote hain. is article ka focus hai — unique apps blindly install karne se pehle kaise evaluate karein. android apps unique android apps android apps recommendations productivity apps android android app privacy android apps ah solution unique android apps android apps recommendations productivity apps android android app privacy" href="/article/five-unique-android-apps-useful-apps-guide/">
+          <div class="card-image"><img src="/blog/assets/five-unique-android-apps-useful-apps-guide-thumbnail.svg" alt="Cover graphic: 5 Unique Android Apps: Useful Features aur Privacy Checks" loading="lazy" decoding="async" width="640" height="360" onerror="this.onerror=null;this.src='/assets/img/og-default.jpg'"><span class="card-tag">Android Apps</span></div>
+          <div class="card-body"><div class="card-meta">ANDROID APPS · 8 MIN READ</div>
+            <h3>5 Unique Android Apps: Useful Features aur Privacy Checks</h3>
+            <p>Android ecosystem mein har roz naye apps aate hain, lekin zyada tar viral apps sirf gimmick hote hain. Is article ka focus hai — &quot;unique&quot; apps blindly install karne se pehle kaise evaluate karein.</p>
+            <div class="card-bottom"><span>Read Article</span><span class="arrow">↗</span></div></div></a>
+        <a class="content-card tilt" data-tilt="6" data-blog-card data-slug="eight-android-apps-free-alternatives-guide" data-category="android" data-order="6" data-min="8" data-title="8 Android Apps aur Free Alternatives: Install Karne Se Pehle Yeh Check Karein" data-search="8 android apps aur free alternatives: install karne se pehle yeh check karein kai baar hum paid app ka free alternative dhundhte hain, lekin har free app sach mein free nahi hota — kuch freemium hote hain, kuch ads se chalte hain aur kuch data tracking se. android apps free android app alternatives android apps guide google play apps app permissions android android apps ah solution free android app alternatives android apps guide google play apps app permissions android" href="/article/eight-android-apps-free-alternatives-guide/">
+          <div class="card-image"><img src="/blog/assets/eight-android-apps-free-alternatives-guide-thumbnail.svg" alt="Cover graphic: 8 Android Apps aur Free Alternatives: Install Karne Se Pehle Yeh Check Karein" loading="lazy" decoding="async" width="640" height="360" onerror="this.onerror=null;this.src='/assets/img/og-default.jpg'"><span class="card-tag">Android Apps</span></div>
+          <div class="card-body"><div class="card-meta">ANDROID APPS · 8 MIN READ</div>
+            <h3>8 Android Apps aur Free Alternatives: Install Karne Se Pehle Yeh Check Karein</h3>
+            <p>Kai baar hum paid app ka free alternative dhundhte hain, lekin har &quot;free&quot; app sach mein free nahi hota — kuch freemium hote hain, kuch ads se chalte hain aur kuch data tracking se.</p>
+            <div class="card-bottom"><span>Read Article</span><span class="arrow">↗</span></div></div></a>
+        <a class="content-card tilt" data-tilt="6" data-blog-card data-slug="wamr-whatsapp-deleted-messages-limitations-privacy" data-category="privacy" data-order="7" data-min="8" data-title="WhatsApp Deleted Messages aur WAMR: Kaise Kaam Karta Hai?" data-search="whatsapp deleted messages aur wamr: kaise kaam karta hai? whatsapp par message aaya, aapne notification nahi dekhi, aur sender ne delete for everyone se message delete kar diya - ab wo gaya? original ah solution video (july 2020) isi frustration par hai: wamr jaise apps ka tutorial jo deleted messages dikhane ka dawa karte hain. android apps &amp; privacy whatsapp deleted messages wamr app tutorial android notification history messaging privacy android apps &amp; privacy ah solution whatsapp deleted messages wamr app tutorial android notification history messaging privacy" href="/article/wamr-whatsapp-deleted-messages-limitations-privacy/">
+          <div class="card-image"><img src="/blog/assets/wamr-whatsapp-deleted-messages-limitations-privacy-thumbnail.svg" alt="Cover graphic: WhatsApp Deleted Messages aur WAMR: Kaise Kaam Karta Hai?" loading="lazy" decoding="async" width="640" height="360" onerror="this.onerror=null;this.src='/assets/img/og-default.jpg'"><span class="card-tag">Android Apps &amp; Privacy</span></div>
+          <div class="card-body"><div class="card-meta">ANDROID APPS &amp; PRIVACY · 8 MIN READ</div>
+            <h3>WhatsApp Deleted Messages aur WAMR: Kaise Kaam Karta Hai?</h3>
+            <p>WhatsApp par message aaya, aapne notification nahi dekhi, aur sender ne &quot;Delete for Everyone&quot; se message delete kar diya - ab wo gaya? Original AH Solution video (July 2020) isi frustration par hai: WAMR jaise apps ka tutorial jo deleted messages dikhane ka dawa karte hain.</p>
+            <div class="card-bottom"><span>Read Article</span><span class="arrow">↗</span></div></div></a>
+        <a class="content-card tilt" data-tilt="6" data-blog-card data-slug="windows-startup-welcome-voice-jarvis-style" data-category="windows" data-order="8" data-min="8" data-title="Windows Startup Par JARVIS Jaisi Voice Kaise Set Karein" data-search="windows startup par jarvis jaisi voice kaise set karein movies mein jarvis jaisa ai assistant sun ke lagta hai ki kaash apna pc bhi aise welcome karta ho. original ah solution video isi idea par hai - windows startup par apni custom welcome voice set karna. windows &amp; pc tips jarvis voice pc windows startup sound pc automation windows login greeting windows &amp; pc tips ah solution jarvis voice pc windows startup sound pc automation windows login greeting" href="/article/windows-startup-welcome-voice-jarvis-style/">
+          <div class="card-image"><img src="/blog/assets/windows-startup-welcome-voice-jarvis-style-thumbnail.svg" alt="Cover graphic: Windows Startup Par JARVIS Jaisi Voice Kaise Set Karein" loading="lazy" decoding="async" width="640" height="360" onerror="this.onerror=null;this.src='/assets/img/og-default.jpg'"><span class="card-tag">Windows &amp; PC Tips</span></div>
+          <div class="card-body"><div class="card-meta">WINDOWS &amp; PC TIPS · 8 MIN READ</div>
+            <h3>Windows Startup Par JARVIS Jaisi Voice Kaise Set Karein</h3>
+            <p>Movies mein JARVIS jaisa AI assistant sun ke lagta hai ki kaash apna PC bhi aise welcome karta ho. Original AH Solution video isi idea par hai - Windows startup par apni custom welcome voice set karna.</p>
+            <div class="card-bottom"><span>Read Article</span><span class="arrow">↗</span></div></div></a>
+        <a class="content-card tilt" data-tilt="6" data-blog-card data-slug="pc-live-wallpaper-mlwapp-guide" data-category="windows" data-order="9" data-min="8" data-title="PC Par Live Wallpaper Kaise Set Karein: MLWApp Guide" data-search="pc par live wallpaper kaise set karein: mlwapp guide static wallpaper se desktop thoda boring ho jaata hai. bahut log chahte hain ki unki screen par koi animated scene chalta rahe - nature video, abstract loop ya favourite clip. windows &amp; pc tips video wallpaper windows animated desktop background pc customization live wallpaper app windows &amp; pc tips ah solution video wallpaper windows animated desktop background pc customization live wallpaper app" href="/article/pc-live-wallpaper-mlwapp-guide/">
+          <div class="card-image"><img src="/blog/assets/pc-live-wallpaper-mlwapp-guide-thumbnail.svg" alt="Cover graphic: PC Par Live Wallpaper Kaise Set Karein: MLWApp Guide" loading="lazy" decoding="async" width="640" height="360" onerror="this.onerror=null;this.src='/assets/img/og-default.jpg'"><span class="card-tag">Windows &amp; PC Tips</span></div>
+          <div class="card-body"><div class="card-meta">WINDOWS &amp; PC TIPS · 8 MIN READ</div>
+            <h3>PC Par Live Wallpaper Kaise Set Karein: MLWApp Guide</h3>
+            <p>Static wallpaper se desktop thoda boring ho jaata hai. Bahut log chahte hain ki unki screen par koi animated scene chalta rahe - nature video, abstract loop ya favourite clip.</p>
+            <div class="card-bottom"><span>Read Article</span><span class="arrow">↗</span></div></div></a>
+        <a class="content-card tilt" data-tilt="6" data-blog-card data-slug="brave-vs-chrome-privacy-speed-comparison" data-category="privacy" data-order="10" data-min="8" data-title="Brave vs Chrome: Privacy, Speed aur Daily Use Comparison" data-search="brave vs chrome: privacy, speed aur daily use comparison aaj kal hum sab online kaafi time spend karte hain. har click, har search aur har website visit ke saath humara data collect hota hai. yahi wajah hai ki browser choose karte waqt sirf speed nahi, balki privacy bhi ek important factor ban chuka hai. browsers &amp; privacy brave browser privacy google chrome browser browser speed comparison android browser privacy browsers &amp; privacy ah solution brave browser privacy google chrome browser browser speed comparison android browser privacy" href="/article/brave-vs-chrome-privacy-speed-comparison/">
+          <div class="card-image"><img src="/blog/assets/brave-vs-chrome-privacy-speed-comparison-thumbnail.svg" alt="Cover graphic: Brave vs Chrome: Privacy, Speed aur Daily Use Comparison" loading="lazy" decoding="async" width="640" height="360" onerror="this.onerror=null;this.src='/assets/img/og-default.jpg'"><span class="card-tag">Browsers &amp; Privacy</span></div>
+          <div class="card-body"><div class="card-meta">BROWSERS &amp; PRIVACY · 8 MIN READ</div>
+            <h3>Brave vs Chrome: Privacy, Speed aur Daily Use Comparison</h3>
+            <p>Aaj kal hum sab online kaafi time spend karte hain. Har click, har search aur har website visit ke saath humara data collect hota hai. Yahi wajah hai ki browser choose karte waqt sirf speed nahi, balki privacy bhi ek important factor ban chuka hai.</p>
+            <div class="card-bottom"><span>Read Article</span><span class="arrow">↗</span></div></div></a>
+        <a class="content-card tilt" data-tilt="6" data-blog-card data-slug="thop-tv-free-streaming-apps-legal-security-risks" data-category="privacy" data-order="11" data-min="8" data-title="THOP TV aur Free Streaming Apps: Legal aur Security Risks Samjhein" data-search="thop tv aur free streaming apps: legal aur security risks samjhein 2020 mein viral hue kai aise short clips ne bina license ke content free dene wale apps ka hype create kiya tha. isi context se related video thop tv|| free netfilx , free amazon prime , free ullu, free free free !!!!! ne ek trend ko highlight kiya tha. streaming &amp; digital safety free streaming apps safety streaming app security legal streaming alternatives apk security streaming &amp; digital safety ah solution free streaming apps safety streaming app security legal streaming alternatives apk security" href="/article/thop-tv-free-streaming-apps-legal-security-risks/">
+          <div class="card-image"><img src="/blog/assets/thop-tv-free-streaming-apps-legal-security-risks-thumbnail.svg" alt="Cover graphic: THOP TV aur Free Streaming Apps: Legal aur Security Risks Samjhein" loading="lazy" decoding="async" width="640" height="360" onerror="this.onerror=null;this.src='/assets/img/og-default.jpg'"><span class="card-tag">Streaming &amp; Digital Safety</span></div>
+          <div class="card-body"><div class="card-meta">STREAMING &amp; DIGITAL SAFETY · 8 MIN READ</div>
+            <h3>THOP TV aur Free Streaming Apps: Legal aur Security Risks Samjhein</h3>
+            <p>2020 mein viral hue kai aise short clips ne bina license ke content free dene wale apps ka hype create kiya tha. Isi context se related video &quot;THOP TV|| Free NETFILX , FREE AMAZON PRIME , FREE ULLU, Free Free Free !!!!!&quot; ne ek trend ko highlight kiya tha.</p>
+            <div class="card-bottom"><span>Read Article</span><span class="arrow">↗</span></div></div></a>
+        <a class="content-card tilt" data-tilt="6" data-blog-card data-slug="hp-pavilion-ryzen-5-laptop-unboxing-short" data-category="windows" data-order="12" data-min="8" data-title="HP Pavilion Ryzen 5 Laptop Unboxing: Kya Check Karna Chahiye?" data-search="hp pavilion ryzen 5 laptop unboxing: kya check karna chahiye? naya laptop milte hi box khulta hai aur windows setup shuru ho jaata hai — lekin isi rush mein kai checks chhut jaate hain. seal intact hai ya nahi, charger sahi wattage ka hai ya nahi, invoice ka model number box se match karta hai ya nahi — yeh cheezein baad mein yaad… laptops &amp; gaming hp pavilion laptop ryzen 5 laptop laptop unboxing checklist hp laptop first look laptops &amp; gaming ah solution hp pavilion laptop ryzen 5 laptop laptop unboxing checklist hp laptop first look" href="/article/hp-pavilion-ryzen-5-laptop-unboxing-short/">
+          <div class="card-image"><img src="/blog/assets/hp-pavilion-ryzen-5-laptop-unboxing-short-thumbnail.svg" alt="Cover graphic: HP Pavilion Ryzen 5 Laptop Unboxing: Kya Check Karna Chahiye?" loading="lazy" decoding="async" width="640" height="360" onerror="this.onerror=null;this.src='/assets/img/og-default.jpg'"><span class="card-tag">Laptops &amp; Gaming</span></div>
+          <div class="card-body"><div class="card-meta">LAPTOPS &amp; GAMING · 8 MIN READ</div>
+            <h3>HP Pavilion Ryzen 5 Laptop Unboxing: Kya Check Karna Chahiye?</h3>
+            <p>Naya laptop milte hi box khulta hai aur Windows setup shuru ho jaata hai — lekin isi rush mein kai checks chhut jaate hain. Seal intact hai ya nahi, charger sahi wattage ka hai ya nahi, invoice ka model number box se match karta hai ya nahi — yeh cheezein baad mein yaad…</p>
+            <div class="card-bottom"><span>Read Article</span><span class="arrow">↗</span></div></div></a>
+        <a class="content-card tilt" data-tilt="6" data-blog-card data-slug="iqoo-z5-5g-unboxing-first-look" data-category="gadgets" data-order="13" data-min="8" data-title="iQOO Z5 5G Unboxing: Design, Display aur Key Features" data-search="iqoo z5 5g unboxing: design, display aur key features december 2021 mein ah solution par ek 13-second ka short aaya tha jisme iqoo z5 5g ka unboxing aur first look dikhaya gaya. itna chhota format hota hai ki clip khatam hi ho jaati hai — na box ke har accessory par time milta hai, na koi verdict. smartphones iqoo z5 specifications snapdragon 778g phone 120hz smartphone iqoo phone review smartphones ah solution iqoo z5 specifications snapdragon 778g phone 120hz smartphone iqoo phone review" href="/article/iqoo-z5-5g-unboxing-first-look/">
+          <div class="card-image"><img src="/blog/assets/iqoo-z5-5g-unboxing-first-look-thumbnail.svg" alt="Cover graphic: iQOO Z5 5G Unboxing: Design, Display aur Key Features" loading="lazy" decoding="async" width="640" height="360" onerror="this.onerror=null;this.src='/assets/img/og-default.jpg'"><span class="card-tag">Smartphones</span></div>
+          <div class="card-body"><div class="card-meta">SMARTPHONES · 8 MIN READ</div>
+            <h3>iQOO Z5 5G Unboxing: Design, Display aur Key Features</h3>
+            <p>December 2021 mein AH Solution par ek 13-second ka Short aaya tha jisme iQOO Z5 5G ka unboxing aur first look dikhaya gaya. Itna chhota format hota hai ki clip khatam hi ho jaati hai — na box ke har accessory par time milta hai, na koi verdict.</p>
+            <div class="card-bottom"><span>Read Article</span><span class="arrow">↗</span></div></div></a>
+        <a class="content-card tilt" data-tilt="6" data-blog-card data-slug="aqfit-w15-smartwatch-review-buying-guide" data-category="gadgets" data-order="14" data-min="8" data-title="AQFIT W15 Smartwatch Review: Features, Fit aur Buying Advice" data-search="aqfit w15 smartwatch review: features, fit aur buying advice budget smartwatches un logon ke liye popular hain jo basic fitness tracking aur notifications chahte hain bina heavy investment ke. aqfit w15 isi category ka 2021 ka model hai. smartwatches &amp; wearables aqfit w15 unboxing budget smartwatch india smartwatch buying guide aqfit watch smartwatches &amp; wearables ah solution aqfit w15 unboxing budget smartwatch india smartwatch buying guide aqfit watch" href="/article/aqfit-w15-smartwatch-review-buying-guide/">
+          <div class="card-image"><img src="/blog/assets/aqfit-w15-smartwatch-review-buying-guide-thumbnail.svg" alt="Cover graphic: AQFIT W15 Smartwatch Review: Features, Fit aur Buying Advice" loading="lazy" decoding="async" width="640" height="360" onerror="this.onerror=null;this.src='/assets/img/og-default.jpg'"><span class="card-tag">Smartwatches &amp; Wearables</span></div>
+          <div class="card-body"><div class="card-meta">SMARTWATCHES &amp; WEARABLES · 8 MIN READ</div>
+            <h3>AQFIT W15 Smartwatch Review: Features, Fit aur Buying Advice</h3>
+            <p>Budget smartwatches un logon ke liye popular hain jo basic fitness tracking aur notifications chahte hain bina heavy investment ke. AQFIT W15 isi category ka 2021 ka model hai.</p>
+            <div class="card-bottom"><span>Read Article</span><span class="arrow">↗</span></div></div></a>
+        <a class="content-card tilt" data-tilt="6" data-blog-card data-slug="msi-gf63-gaming-laptop-review-buying-guide" data-category="windows" data-order="15" data-min="8" data-title="MSI GF63 Gaming Laptop Review: Kharidne Se Pehle Kya Check Karein?" data-search="msi gf63 gaming laptop review: kharidne se pehle kya check karein? november 2021 mein publish hone wale ah solution review ka title tha msi gf63 gaming laptop review – worth buying? — aur yeh wahi daur tha jab festive sale (big billion days wale offers) apne peak par tha. laptops &amp; gaming msi gf63 laptop gaming laptop buying guide msi laptop review gaming laptop specifications laptops &amp; gaming ah solution msi gf63 laptop gaming laptop buying guide msi laptop review gaming laptop specifications" href="/article/msi-gf63-gaming-laptop-review-buying-guide/">
+          <div class="card-image"><img src="/blog/assets/msi-gf63-gaming-laptop-review-buying-guide-thumbnail.svg" alt="Cover graphic: MSI GF63 Gaming Laptop Review: Kharidne Se Pehle Kya Check Karein?" loading="lazy" decoding="async" width="640" height="360" onerror="this.onerror=null;this.src='/assets/img/og-default.jpg'"><span class="card-tag">Laptops &amp; Gaming</span></div>
+          <div class="card-body"><div class="card-meta">LAPTOPS &amp; GAMING · 8 MIN READ</div>
+            <h3>MSI GF63 Gaming Laptop Review: Kharidne Se Pehle Kya Check Karein?</h3>
+            <p>November 2021 mein publish hone wale AH Solution review ka title tha &quot;MSI GF63 Gaming Laptop Review – Worth Buying?&quot; — aur yeh wahi daur tha jab festive sale (Big Billion Days wale offers) apne peak par tha.</p>
+            <div class="card-bottom"><span>Read Article</span><span class="arrow">↗</span></div></div></a>
+        <a class="content-card tilt" data-tilt="6" data-blog-card data-slug="hp-pavilion-gaming-ryzen-5-3550h-review" data-category="windows" data-order="16" data-min="8" data-title="HP Pavilion Gaming Ryzen 5 3550H Review: Specs aur Buying Checklist" data-search="hp pavilion gaming ryzen 5 3550h review: specs aur buying checklist october 2021 mein ah solution ne hp pavilion gaming laptop par ek unboxing-review video publish kiya — title tha hp pavilion gaming ryzen 5 3550h unboxing &amp; review | flipkart &amp; amazon. laptops &amp; gaming hp pavilion gaming laptop review ryzen 5 3550h laptop hp gaming laptop used gaming laptop buying tips laptops &amp; gaming ah solution hp pavilion gaming laptop review ryzen 5 3550h laptop hp gaming laptop used gaming laptop buying tips" href="/article/hp-pavilion-gaming-ryzen-5-3550h-review/">
+          <div class="card-image"><img src="/blog/assets/hp-pavilion-gaming-ryzen-5-3550h-review-thumbnail.svg" alt="Cover graphic: HP Pavilion Gaming Ryzen 5 3550H Review: Specs aur Buying Checklist" loading="lazy" decoding="async" width="640" height="360" onerror="this.onerror=null;this.src='/assets/img/og-default.jpg'"><span class="card-tag">Laptops &amp; Gaming</span></div>
+          <div class="card-body"><div class="card-meta">LAPTOPS &amp; GAMING · 8 MIN READ</div>
+            <h3>HP Pavilion Gaming Ryzen 5 3550H Review: Specs aur Buying Checklist</h3>
+            <p>October 2021 mein AH Solution ne HP Pavilion Gaming laptop par ek unboxing-review video publish kiya — title tha &quot;HP Pavilion Gaming Ryzen 5 3550H Unboxing &amp; Review | Flipkart &amp; Amazon&quot;.</p>
+            <div class="card-bottom"><span>Read Article</span><span class="arrow">↗</span></div></div></a>
+        <a class="content-card tilt" data-tilt="6" data-blog-card data-slug="welcome-to-ah-solution-tech-tips-tutorials" data-category="about" data-order="17" data-min="7" data-title="Welcome to AH Solution: Tech Tips, Tutorials aur Digital Guides" data-search="welcome to ah solution: tech tips, tutorials aur digital guides technology kabhi itni fast nahi rahi jitni aaj hai – naye phones, naye apps, windows updates, gadgets har roz nikalte hain. isi simple idea ke saath ah solution shuru hua tha: technology ko complicated na banayein, balki aam user ke level par samjhaayein. about ah solution ah solution youtube tech tips hindi android tutorials windows guides about ah solution ah solution ah solution youtube tech tips hindi android tutorials windows guides" href="/article/welcome-to-ah-solution-tech-tips-tutorials/">
+          <div class="card-image"><img src="/blog/assets/welcome-to-ah-solution-tech-tips-tutorials-thumbnail.svg" alt="Cover graphic: Welcome to AH Solution: Tech Tips, Tutorials aur Digital Guides" loading="lazy" decoding="async" width="640" height="360" onerror="this.onerror=null;this.src='/assets/img/og-default.jpg'"><span class="card-tag">About AH Solution</span></div>
+          <div class="card-body"><div class="card-meta">ABOUT AH SOLUTION · 7 MIN READ</div>
+            <h3>Welcome to AH Solution: Tech Tips, Tutorials aur Digital Guides</h3>
+            <p>Technology kabhi itni fast nahi rahi jitni aaj hai – naye phones, naye apps, Windows updates, gadgets har roz nikalte hain. Isi simple idea ke saath AH Solution shuru hua tha: technology ko complicated na banayein, balki aam user ke level par samjhaayein.</p>
+            <div class="card-bottom"><span>Read Article</span><span class="arrow">↗</span></div></div></a>
+<!-- BLOG:ARTICLES:END -->
+        <a class="content-card tilt" data-tilt="6" data-blog-card data-static="1" data-category="windows" data-order="97" data-min="4" data-title="Before setting a video as your PC wallpaper" data-search="live wallpaper pc video wallpaper laptop windows mlwapp performance battery customization" href="guides/live-wallpaper-on-pc.html">
           <div class="card-image"><img src="https://images.unsplash.com/photo-1496181133206-80ce9b88a853?auto=format&fit=crop&w=900&q=80" alt="Laptop computer on a desk" loading="lazy" decoding="async" width="900" height="600"><span class="card-tag">PC &amp; software</span></div>
           <div class="card-body"><div class="card-meta">HOW-TO · 4 MIN READ</div><h3>Before setting a video as your PC wallpaper</h3><p>A practical checklist for setup, performance, and keeping your desktop usable.</p><div class="card-bottom"><span>Read guide</span><span class="arrow">↗</span></div></div>
         </a>
-        <a class="content-card tilt" data-tilt="6" data-blog-card data-category="apps" data-search="android app safety permissions developer reviews privacy installing mobile" href="guides/choose-android-apps-safely.html">
+        <a class="content-card tilt" data-tilt="6" data-blog-card data-static="1" data-category="android" data-order="98" data-min="3" data-title="A quick safety checklist before installing an app" data-search="android app safety permissions developer reviews privacy installing mobile" href="guides/choose-android-apps-safely.html">
           <div class="card-image"><img src="https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=900&q=80" alt="Smartphone in hand" loading="lazy" decoding="async" width="900" height="600"><span class="card-tag">Mobile safety</span></div>
           <div class="card-body"><div class="card-meta">CHECKLIST · 3 MIN READ</div><h3>A quick safety checklist before installing an app</h3><p>Check the developer, permissions, privacy details, reviews, and source.</p><div class="card-bottom"><span>Read guide</span><span class="arrow">↗</span></div></div>
         </a>
-        <a class="content-card tilt" data-tilt="6" data-blog-card data-category="gadgets" data-search="budget smartwatch buying checklist battery compatibility notifications fitness review aqfit w15" href="guides/budget-smartwatch-checklist.html">
+        <a class="content-card tilt" data-tilt="6" data-blog-card data-static="1" data-category="gadgets" data-order="99" data-min="4" data-title="What to check before buying a budget smartwatch" data-search="budget smartwatch buying checklist battery compatibility notifications fitness review aqfit w15" href="guides/budget-smartwatch-checklist.html">
           <div class="card-image"><img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=900&q=80" alt="Watch product close-up" loading="lazy" decoding="async" width="900" height="600"><span class="card-tag">Buying guides</span></div>
           <div class="card-body"><div class="card-meta">BUYING GUIDE · 4 MIN READ</div><h3>What to check before buying a budget smartwatch</h3><p>Compare what matters in daily use — not only the number of features on the box.</p><div class="card-bottom"><span>Read guide</span><span class="arrow">↗</span></div></div>
         </a>
-        <div class="empty-state hidden" data-empty-state>No guides match your search. Try another keyword or category.</div>
+        <div class="empty-state hidden" data-empty-state>No guides match your search. Try another keyword or category. <button class="filter-chip" type="button" data-filter-reset>Reset filters</button></div>
       </div>
-      <div class="notice">More topics — Android tips, WhatsApp and useful apps, smartphone photography, Windows customization, remote desktop, live wallpapers, software tutorials, reviews, and AI tools — will be added here as full guides are published.</div>
+      <div class="notice">Seventeen full guides — Android apps and safety, smartphone photography, Windows and PC tips, remote access, laptops and gaming, smartwatches — are listed above from the editorial manifest, alongside the original how-to guides. Use the filters, sort or search to find one.</div>
     </div>
   </section>
 

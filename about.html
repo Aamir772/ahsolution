@@ -2,8 +2,9 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
+<script>/* AH session boot flag: set BEFORE first paint so the intro plays once per tab */(function(){var h=document.documentElement,skip=false;try{skip=sessionStorage.getItem("ah-intro")==="1";}catch(e){skip=false;}if(skip){h.classList.add("booted");}else{h.classList.add("boot-intro");try{sessionStorage.setItem("ah-intro","1");}catch(e){}}})();</script>
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>About | AH Solution — Technology Made Simple</title>
+<title>About | AH Solution — Tips, Tricks and Techniques</title>
 <meta name="description" content="Learn about AH Solution: practical mobile tips, PC tutorials, helpful digital tools, and guides written for everyday users who want technology to feel simple.">
 <meta name="theme-color" content="#08080B">
 <link rel="canonical" href="https://ahsolution.live/about.html">
@@ -55,6 +56,7 @@
     </div>
     <div class="boot-bar" aria-hidden="true"><span></span></div>
     <p class="boot-text">Starting AH Solution</p>
+    <p class="boot-quote" data-boot-quote>Work smarter, not just harder.</p>
     <noscript><p class="boot-note">JavaScript is off &mdash; <a href="index.html">continue to the site</a>.</p></noscript>
   </div>
 </div>
@@ -66,7 +68,7 @@
 
 <div class="announcement">
   <div class="container">
-    <span><i class="ann-dot"></i><strong>AH SOLUTION</strong> &nbsp; TECHNOLOGY MADE SIMPLE</span>
+    <span><i class="ann-dot"></i><strong>AH SOLUTION</strong> &nbsp; TIPS, TRICKS AND TECHNIQUES</span>
     <span>Tips · Tutorials · Digital discoveries</span>
   </div>
 </div>
@@ -126,6 +128,7 @@
         <h2>Clear steps. <span class="text-gradient">Useful outcomes.</span></h2>
         <p>AH Solution brings together practical video tutorials and written guides for people who want to get more from their phones, PCs, apps, and everyday digital tools.</p>
         <p>The goal is to make each piece of content easy to follow, useful in real life, and simple to return to when you need it again.</p>
+        <p><strong>How content is checked:</strong> every written guide is built from its original AH Solution video, cross-checked against the steps shown on screen, and reviewed by the AH Solution Editorial Team before it goes live. Anything that could not be verified while writing — a link, an app listing, a setting name — is held out of the guide instead of being published on trust. Article pages carry a live reading time, the true source-video date, and a visible draft banner until they are approved for publishing.</p>
         <div class="principles">
           <div class="principle"><div class="principle-icon">✦</div><div><strong>Practical first</strong><span>Focus on a real question or task — not technology for its own sake.</span></div></div>
           <div class="principle"><div class="principle-icon">↗</div><div><strong>Video + written guides</strong><span>Watch the process or read the steps, depending on what suits you.</span></div></div>

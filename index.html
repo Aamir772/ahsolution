@@ -2,8 +2,11 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
+<script>/* AH session boot flag: set BEFORE first paint so the intro plays once per tab */(function(){var h=document.documentElement,skip=false;try{skip=sessionStorage.getItem("ah-intro")==="1";}catch(e){skip=false;}if(skip){h.classList.add("booted");}else{h.classList.add("boot-intro");try{sessionStorage.setItem("ah-intro","1");}catch(e){}}})();</script>
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>AH Solution | Technology. Simplified. — Tutorials, Guides &amp; Videos</title>
+<meta name="google-adsense-account" content="ca-pub-1564978792055470">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1564978792055470" crossorigin="anonymous"></script>
+<title>AH Solution | Tips, Tricks and Techniques — Tutorials, Guides &amp; Videos</title>
 <meta name="description" content="AH Solution makes technology simple with practical Android tips, Windows & PC tutorials, app guides, gadget first looks, and video walkthroughs you can actually follow.">
 <meta name="theme-color" content="#08080B">
 <meta name="author" content="AH Solution">
@@ -63,6 +66,7 @@
     </div>
     <div class="boot-bar" aria-hidden="true"><span></span></div>
     <p class="boot-text">Starting AH Solution</p>
+    <p class="boot-quote" data-boot-quote>Work smarter, not just harder.</p>
     <noscript><p class="boot-note">JavaScript is off &mdash; <a href="index.html">continue to the site</a>.</p></noscript>
   </div>
 </div>
@@ -74,7 +78,7 @@
 
 <div class="announcement">
   <div class="container">
-    <span><i class="ann-dot"></i><strong>AH SOLUTION</strong> &nbsp; TECHNOLOGY MADE SIMPLE</span>
+    <span><i class="ann-dot"></i><strong>AH SOLUTION</strong> &nbsp; TIPS, TRICKS AND TECHNIQUES</span>
     <span>Tips · Tutorials · Digital discoveries</span>
   </div>
 </div>
@@ -141,7 +145,22 @@
       <div class="hero-visual">
         <div class="hero-core" data-hero-core>
           <div class="hero-core-fallback" aria-hidden="true"></div>
-          <canvas role="img" aria-label="Rotating three-dimensional orbital planet"></canvas>
+          <canvas role="img" aria-label="Interactive three-dimensional holographic mechanical construct"></canvas>
+          <div class="core-identity" aria-hidden="true">
+            <span class="core-reticle core-reticle--outer"></span>
+            <span class="core-reticle core-reticle--inner"></span>
+            <svg class="hero-core-mark" viewBox="0 0 120 120" aria-hidden="true" focusable="false">
+              <defs>
+                <linearGradient id="ahMarkGrad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0" stop-color="#FFFFFF"></stop>
+                  <stop offset="0.55" stop-color="#D8F8FF"></stop>
+                  <stop offset="1" stop-color="#8FE3FF"></stop>
+                </linearGradient>
+              </defs>
+              <text x="60" y="60" text-anchor="middle" dominant-baseline="central" font-size="46" font-weight="800" letter-spacing="2" fill="url(#ahMarkGrad)">AH</text>
+            </svg>
+            <span class="core-status"><b></b>CORE 01 · SYSTEM ONLINE</span>
+          </div>
           <button type="button" class="ai-core" data-ai-open aria-label="Open SOLUTION AI" aria-haspopup="dialog" aria-expanded="false" aria-controls="ai-panel">
             <span class="ai-core__ripple" aria-hidden="true"></span>
             <span class="ai-core__ring" aria-hidden="true"></span>
@@ -159,6 +178,10 @@
             <div class="ai-panel__id">
               <strong id="ai-panel-title">SOLUTION AI</strong>
               <span class="ai-panel__status" data-ai-status>Ready</span>
+              <span class="ai-agent-chip" data-agent-chip hidden title="Local PC agent">
+                <span class="ai-agent-chip__dot" aria-hidden="true"></span>
+                <span data-agent-chip-label>PC agent</span>
+              </span>
             </div>
             <button type="button" class="ai-icon-btn ai-panel__close" data-ai-close aria-label="Close SOLUTION AI">
               <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
@@ -173,6 +196,12 @@
               <button type="button" class="ai-icon-btn" data-ai-mic aria-label="Start voice input" aria-pressed="false" hidden>
                 <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>
               </button>
+              <button type="button" class="ai-icon-btn ai-icon-btn--voice" data-ai-voice aria-label="Start voice conversation" aria-pressed="false" hidden>
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v18M8 7v10M4 11v2M16 6v12M20 9v6"/></svg>
+              </button>
+              <button type="button" class="ai-icon-btn" data-ai-voice-mute aria-label="Mute microphone" aria-pressed="false" hidden>
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5a3 3 0 0 1 6 0v4M9 9v3a3 3 0 0 0 4.6 2.5M5 11a7 7 0 0 0 11 5.5M12 18v3M4 4l16 16"/></svg>
+              </button>
               <button type="button" class="ai-icon-btn" data-ai-speak aria-label="Read answers aloud" aria-pressed="false">
                 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M16.5 8.5a5 5 0 0 1 0 7M19 6a9 9 0 0 1 0 12"/></svg>
               </button>
@@ -183,6 +212,7 @@
                   <option value="hi">हिं</option>
                 </select>
               </label>
+              <span class="ai-voice-state" data-ai-voice-state hidden></span>
               <span class="ai-composer__spacer"></span>
               <button type="submit" class="ai-send" data-ai-send aria-label="Send message">
                 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12l16-8-6 16-3-6-7-2z"/></svg>
@@ -193,6 +223,7 @@
             <span data-ai-note>Answers use AH Solution content, with a light AI assist when available.</span>
             <button type="button" class="ai-text-btn" data-ai-clear>Clear chat</button>
           </div>
+          <audio class="ai-voice-audio" data-ai-voice-audio autoplay playsinline aria-hidden="true"></audio>
         </div>
       </div>
     </div>
@@ -224,7 +255,7 @@
               </a>
             </li>
             <li class="ah-carousel__item ah-carousel__item--cat">
-              <a class="cat-card" href="blog.html?category=apps">
+              <a class="cat-card" href="blog.html?category=android">
                 <img src="https://images.unsplash.com/photo-1510557880182-3d4d3cba35a5?auto=format&amp;fit=crop&amp;w=800&amp;q=80" alt="" loading="lazy" decoding="async" width="800" height="500">
                 <span class="cat-card__ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/></svg></span>
                 <span class="cat-card__title">Android Apps</span>
@@ -232,7 +263,7 @@
               </a>
             </li>
             <li class="ah-carousel__item ah-carousel__item--cat">
-              <a class="cat-card" href="blog.html?category=pc">
+              <a class="cat-card" href="blog.html?category=windows">
                 <img src="https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&amp;fit=crop&amp;w=800&amp;q=80" alt="" loading="lazy" decoding="async" width="800" height="500">
                 <span class="cat-card__ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="13" rx="2"/><path d="M8 21h8M12 17v4"/></svg></span>
                 <span class="cat-card__title">PC &amp; Windows</span>
@@ -478,7 +509,7 @@
 </div><!-- /device-shell -->
 <script src="assets/js/device.js" defer></script>
 <script src="assets/js/main.js" defer></script>
-<script type="module" src="assets/js/globe.js"></script>
+<script src="assets/js/globe.js" defer></script>
 <script src="assets/js/ai.js" defer></script>
 </body>
 </html>

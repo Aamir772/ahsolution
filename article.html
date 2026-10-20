@@ -2,9 +2,11 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
+<script>/* AH session boot flag: set BEFORE first paint so the intro plays once per tab */(function(){var h=document.documentElement,skip=false;try{skip=sessionStorage.getItem("ah-intro")==="1";}catch(e){skip=false;}if(skip){h.classList.add("booted");}else{h.classList.add("boot-intro");try{sessionStorage.setItem("ah-intro","1");}catch(e){}}})();</script>
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Article | AH Solution</title>
 <meta name="description" content="A published article from the AH Solution blog — practical tech guides, checklists and explainers.">
+<meta name="robots" content="noindex, nofollow">
 <meta name="theme-color" content="#08080B">
 <link rel="canonical" href="https://ahsolution.live/article.html">
 <meta property="og:type" content="article">
@@ -52,6 +54,7 @@
     </div>
     <div class="boot-bar" aria-hidden="true"><span></span></div>
     <p class="boot-text">Starting AH Solution</p>
+    <p class="boot-quote" data-boot-quote>Work smarter, not just harder.</p>
     <noscript><p class="boot-note">JavaScript is off &mdash; <a href="index.html">continue to the site</a>.</p></noscript>
   </div>
 </div>
@@ -64,7 +67,7 @@
 
 <div class="announcement">
   <div class="container">
-    <span><i class="ann-dot"></i><strong>AH SOLUTION</strong> &nbsp; TECHNOLOGY MADE SIMPLE</span>
+    <span><i class="ann-dot"></i><strong>AH SOLUTION</strong> &nbsp; TIPS, TRICKS AND TECHNIQUES</span>
     <span>Tips · Tutorials · Digital discoveries</span>
   </div>
 </div>

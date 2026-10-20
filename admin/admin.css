@@ -76,6 +76,17 @@ button,input,select,textarea{font:inherit;color:inherit}
   box-shadow:0 24px 60px rgba(0,0,0,.45);
 }
 .grid-2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}
+/* dashboard overview strip */
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;margin-bottom:22px}
+.stat{
+  background:var(--panel);border:1px solid var(--c-line);border-radius:18px;
+  padding:18px 20px;backdrop-filter:blur(14px);
+  box-shadow:0 24px 60px rgba(0,0,0,.45);
+}
+.stat__k{font-size:10px;font-weight:800;letter-spacing:.18em;text-transform:uppercase;color:var(--c-muted-2)}
+.stat__v{font-family:var(--font-display);font-size:26px;font-weight:800;letter-spacing:-.02em;color:var(--c-text);margin-top:6px}
+.stat--published .stat__k{color:var(--ok)}
+.stat--drafts .stat__k{color:var(--warn)}
 .stack{display:grid;gap:14px}
 label{display:grid;gap:7px;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--c-muted)}
 input[type=text],input[type=email],input[type=password],input[type=search],input[type=url],select,textarea{

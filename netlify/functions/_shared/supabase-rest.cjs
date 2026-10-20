@@ -157,18 +157,28 @@ const ALLOWED_TAGS = new Set([
   'ul', 'ol', 'li',
   'strong', 'b', 'em', 'i', 'u', 's', 'mark', 'small', 'sub', 'sup',
   'code', 'pre', 'blockquote', 'figure', 'figcaption',
-  'a', 'img', 'span',
+  'a', 'img', 'span', 'iframe',
   'table', 'thead', 'tbody', 'tfoot', 'tr', 'th', 'td', 'caption'
 ]);
 const VOID_TAGS = new Set(['br', 'hr', 'img']);
 const ALLOWED_ATTRS = {
   a: ['href', 'target', 'rel', 'title'],
   img: ['src', 'alt', 'width', 'height', 'loading'],
+  iframe: ['src', 'title', 'width', 'height', 'loading', 'referrerpolicy', 'allow', 'allowfullscreen', 'frameborder'],
   th: ['colspan', 'rowspan', 'scope'],
   td: ['colspan', 'rowspan'],
   '*': ['class']
 };
 const SAFE_URL = /^(https?:\/\/|mailto:|\/|\.\/|\.\.\/|#)/i;
+
+/* Only YouTube's privacy-enhanced / standard embed player may be framed.
+   Everything else (ads, third-party widgets, javascript: iframes) is dropped. */
+const EMBED_URL = /^https:\/\/www\.youtube(?:-nocookie)?\.com\/embed\/[A-Za-z0-9_-]{6,20}(?:[?&][A-Za-z0-9_=&%-]*)?$/;
+
+function safeEmbedUrl(value) {
+  const v = String(value || '').trim();
+  return EMBED_URL.test(v) ? v : '';
+}
 
 function safeUrl(value) {
   const v = String(value || '').trim();
@@ -187,7 +197,11 @@ function sanitizeAttrs(tag, raw) {
     if (!allowed.includes(name)) continue;
     if (name.startsWith('on')) continue;
     let value = m[3] !== undefined ? m[3] : (m[4] !== undefined ? m[4] : (m[5] || ''));
-    if (name === 'href' || name === 'src') {
+    if (name === 'src') {
+      value = tag === 'iframe' ? safeEmbedUrl(value) : safeUrl(value);
+      if (!value) continue;
+    }
+    if (name === 'href') {
       value = safeUrl(value);
       if (!value) continue;
     }
@@ -198,9 +212,22 @@ function sanitizeAttrs(tag, raw) {
     }
     if (name === 'rel') continue; // always forced with target=_blank above
     if (name === 'loading' && !/^lazy$/i.test(value)) continue;
+    if ((name === 'width' || name === 'height') && !/^\d{1,4}$/.test(value)) continue;
+    if (name === 'frameborder' && !/^[01]$/.test(value)) continue;
     out.push(name + '="' + String(value).replace(/"/g, '&quot;') + '"');
   }
+  // bare boolean attribute on embeds: allowfullscreen / allowfullscreen=""
+  if (tag === 'iframe' && /\ballowfullscreen\b/i.test(raw) && !/allowfullscreen\s*=/i.test(raw)) {
+    out.push('allowfullscreen');
+  }
   return out.length ? ' ' + out.join(' ') : '';
+}
+
+/* Keep only genuine YouTube embeds; drop every other iframe (incl. empty src). */
+function keepEmbedIframe(full, attrs) {
+  const m = /src\s*=\s*("([^"]*)"|'([^']*)'|([^\s"'>]+))/i.exec(attrs || '');
+  const raw = m ? (m[2] !== undefined ? m[2] : (m[3] !== undefined ? m[3] : (m[4] || ''))) : '';
+  return safeEmbedUrl(raw) ? '<iframe' + (attrs || '') + '></iframe>' : '';
 }
 
 function sanitizeHtml(html) {
@@ -208,8 +235,11 @@ function sanitizeHtml(html) {
   // 1. drop whole elements that can execute or fetch code
   src = src
     .replace(/<!--[\s\S]*?-->/g, '')
-    .replace(/<(script|style|iframe|object|embed|link|meta|base|form|input|button|textarea|select|video|audio|source)\b[\s\S]*?<\/\1\s*>/gi, '')
-    .replace(/<(script|style|iframe|object|embed|link|meta|base|form|input|button|textarea|select|video|audio|source)\b[^>]*\/?>/gi, '');
+    .replace(/<(script|style|object|embed|link|meta|base|form|input|button|textarea|select|video|audio|source)\b[\s\S]*?<\/\1\s*>/gi, '')
+    .replace(/<(script|style|object|embed|link|meta|base|form|input|button|textarea|select|video|audio|source)\b[^>]*\/?>/gi, '')
+    // iframes survive only when they point at the YouTube embed player
+    .replace(/<iframe\b([^>]*)>[\s\S]*?<\/iframe\s*>/gi, keepEmbedIframe)
+    .replace(/<iframe\b([^>]*?)\/?>/gi, keepEmbedIframe);
   // 2. rebuild from an allowlist
   let out = '';
   const re = /<\/?([a-zA-Z][a-zA-Z0-9]*)((?:[^>"']|"[^"]*"|'[^']*')*)>/g;
@@ -224,7 +254,10 @@ function sanitizeHtml(html) {
     if (closing) {
       if (!VOID_TAGS.has(tag)) out += '</' + tag + '>';
     } else {
-      out += '<' + tag + sanitizeAttrs(tag, m[2] || '') + (VOID_TAGS.has(tag) ? ' />' : '>');
+      const attrs = sanitizeAttrs(tag, m[2] || '');
+      // an iframe without a surviving embed src is useless — drop the element
+      if (tag === 'iframe' && attrs.indexOf('src=') === -1) continue;
+      out += '<' + tag + attrs + (VOID_TAGS.has(tag) ? ' />' : '>');
     }
   }
   out += escapeText(src.slice(last));

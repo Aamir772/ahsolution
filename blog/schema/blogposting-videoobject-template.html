@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en-IN">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<title>Schema template (documentation) | AH Solution</title>
+</head>
+<body>
+<!-- Add to the published article's HTML head/body only after replacing all placeholders with real values. -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "{{CANONICAL_ARTICLE_URL}}"
+  },
+  "headline": "{{ARTICLE_TITLE}}",
+  "description": "{{META_DESCRIPTION}}",
+  "image": [
+    "{{PUBLIC_ABSOLUTE_COVER_IMAGE_URL}}"
+  ],
+  "datePublished": "{{ACTUAL_PUBLISH_DATE_ISO8601}}",
+  "dateModified": "{{ACTUAL_LAST_MODIFIED_ISO8601}}",
+  "author": {
+    "@type": "Organization",
+    "name": "AH Solution",
+    "url": "https://ahsolution.live/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "AH Solution",
+    "url": "https://ahsolution.live/"
+  },
+  "inLanguage": "en-IN",
+  "isPartOf": {
+    "@type": "Blog",
+    "name": "AH Solution Blog",
+    "url": "https://ahsolution.live/blog.html"
+  },
+  "video": {
+    "@type": "VideoObject",
+    "name": "{{SOURCE_VIDEO_TITLE}}",
+    "description": "{{VIDEO_DESCRIPTION_OR_ARTICLE_SUMMARY}}",
+    "thumbnailUrl": ["{{PUBLIC_ABSOLUTE_THUMBNAIL_URL}}"],
+    "contentUrl": "{{ORIGINAL_YOUTUBE_VIDEO_URL}}",
+    "embedUrl": "https://www.youtube-nocookie.com/embed/{{YOUTUBE_VIDEO_ID}}"
+  }
+}
+</script>
+
+</body>
+</html>

@@ -1,8 +1,13 @@
 /* ==========================================================================
    AH SOLUTION — ai-qa.cjs
    End-to-end QA for SOLUTION AI against the local static server, with the
-   Netlify function mocked via request interception. Also re-checks that core
-   website features still work.
+   assistant backend (/health + /api/chat) mocked via request interception.
+   Also re-checks that core website features still work.
+
+   The client talks to the backend at window.__AH_ASSISTANT_BASE__ + '/api/chat'
+   and '/health'. We force that base to '' (same origin) so Playwright can mock
+   both endpoints here. Also covers offline and degraded (model failed) states.
+
    Run: node scripts/ai-qa.cjs   (requires the site on http://localhost:8000)
    ========================================================================== */
 'use strict';
@@ -28,7 +33,8 @@ function findChrome() {
 
 const { chromium } = req('playwright-core');
 const BASE = 'http://localhost:8000/index.html';
-const FN_GLOB = '**/.netlify/functions/solution-ai-chat**';
+const HEALTH_GLOB = '**/health';
+const CHAT_GLOB = '**/api/chat';
 const OUT = path.join('C:/Users/haami/AppData/Local/Temp/ah-qa/out');
 try { fs.mkdirSync(OUT, { recursive: true }); } catch (e) {}
 
@@ -37,6 +43,44 @@ const ok = (c, name, extra) => {
   if (c) { pass++; console.log('  \u2713 ' + name); }
   else { fail++; console.log('  \u2717 ' + name + (extra ? '  -> ' + extra : '')); }
 };
+
+// Force same-origin so /health and /api/chat are interceptable in QA.
+const setBase = () => { try { window.__AH_ASSISTANT_BASE__ = ''; } catch (e) {} };
+
+function healthBody(providers) {
+  return JSON.stringify({ ok: true, status: 'ok', version: '3.1.0', uptimeMs: 10, providers, tools: 4, storage: 'memory', config: {} });
+}
+const CLOUD_PROVIDERS = [{ id: 'openai', kind: 'cloud', model: 'gpt-mock', available: true }];
+const NONE_PROVIDERS = [{ id: 'none', kind: 'none', model: 'none', available: true }];
+
+function chatBody(extra) {
+  return JSON.stringify(Object.assign({
+    ok: true, reply: 'Mocked AI reply for QA.', mode: 'model', provider: 'openai', model: 'gpt-mock',
+    sessionId: 'sess-1', sources: [{ title: 'Mocked source', url: 'https://ahsolution.live/vlogs.html', snippet: 's', score: 3 }],
+    attached: true, flagged: false, degraded: false, modelConfigured: true
+  }, extra || {}));
+}
+
+async function routeBackend(page, { providers = CLOUD_PROVIDERS, chat = chatBody(), healthStatus = 200, abort = false } = {}, counters = { post: 0 }) {
+  await page.route(HEALTH_GLOB, (route) => {
+    if (abort) return route.abort('failed');
+    return route.fulfill({ status: healthStatus, contentType: 'application/json', body: healthBody(providers) });
+  });
+  await page.route(CHAT_GLOB, (route) => {
+    if (abort) return route.abort('failed');
+    const r = route.request();
+    if (r.method() === 'POST') { counters.post++; return route.fulfill({ status: 200, contentType: 'application/json', body: chat }); }
+    return route.fulfill({ status: 404, contentType: 'application/json', body: JSON.stringify({ ok: false }) });
+  });
+  return counters;
+}
+
+async function boot(page) {
+  await page.goto(BASE, { waitUntil: 'load', timeout: 30000 });
+  await page.waitForFunction(() => document.documentElement.classList.contains('booted'), null, { timeout: 20000, polling: 100 });
+  await page.waitForFunction(() => document.documentElement.classList.contains('device-settled'), null, { timeout: 20000, polling: 100 }).catch(() => {});
+  await page.waitForTimeout(600);
+}
 
 (async () => {
   const exe = findChrome();
@@ -49,23 +93,16 @@ const ok = (c, name, extra) => {
   /* ---------------- Desktop ---------------- */
   console.log('SOLUTION AI QA — desktop\n');
   const ctx = await browser.newContext({ viewport: { width: 1440, height: 900 }, deviceScaleFactor: 1 });
+  await ctx.addInitScript(setBase);
   const page = await ctx.newPage();
   const errors = [];
   page.on('pageerror', (e) => errors.push('pageerror: ' + e.message));
   page.on('console', (m) => { if (m.type() === 'error') errors.push('console: ' + m.text()); });
 
-  let postCount = 0, getCount = 0;
-  await page.route(FN_GLOB, async (route) => {
-    const r = route.request();
-    if (r.method() === 'POST') { postCount++; return route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ ok: true, reply: 'Mocked AI reply for QA.', sources: [{ title: 'Mocked source', url: 'https://ahsolution.live/vlogs.html', type: 'page', label: 'Page' }], mode: 'ai' }) }); }
-    getCount++;
-    return route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ ok: true, aiConfigured: true, durableRateLimit: true }) });
-  });
+  const counters = { post: 0 };
+  await routeBackend(page, {}, counters);
 
-  await page.goto(BASE, { waitUntil: 'load', timeout: 30000 });
-  await page.waitForFunction(() => document.documentElement.classList.contains('booted'), null, { timeout: 20000, polling: 100 });
-  await page.waitForFunction(() => document.documentElement.classList.contains('device-settled'), null, { timeout: 20000, polling: 100 });
-  await page.waitForTimeout(600);
+  await boot(page);
 
   // Globe
   const hasCore = await page.$('[data-hero-core]');
@@ -89,23 +126,22 @@ const ok = (c, name, extra) => {
   ok(coreInfo && coreInfo.label === 'Open SOLUTION AI', 'activation core has accessible name');
   ok(coreInfo && coreInfo.expanded === 'false', 'core starts collapsed');
 
-  // UI-layer open latency (isolated from browser actionability overhead; panel is closed here)
+  // UI-layer open latency
   const jsOpenMs = await page.evaluate(() => {
     const api = window.__SOLUTION_AI__;
     if (!api) return -1;
     const t = performance.now();
     api.open();
-    const ms = performance.now() - t;
-    return Math.round(ms);
+    return Math.round(performance.now() - t);
   });
   ok(jsOpenMs >= 0 && jsOpenMs < 200, 'panel open is immediate at the UI layer (' + jsOpenMs + 'ms)');
   await page.evaluate(() => window.__SOLUTION_AI__ && window.__SOLUTION_AI__.close());
   await page.waitForTimeout(450);
 
-  // Open by clicking the exact centre
+  // Open by clicking the core
   const t0 = Date.now();
   await page.click('[data-ai-open]');
-  await page.waitForSelector('[data-ai-panel].open', { timeout: 3000 });
+  await page.waitForSelector('[data-ai-panel].open', { timeout: 8000 });
   const openMs = Date.now() - t0;
   ok(openMs < 2500, 'panel opens on core click (' + openMs + 'ms)');
   const focused = await page.evaluate(() => document.activeElement === document.querySelector('[data-ai-input]'));
@@ -115,15 +151,22 @@ const ok = (c, name, extra) => {
     return !!(core && core.globe && core.globe.state().running);
   });
   ok(stillAnimating, 'globe keeps animating while panel is open');
+
+  // Health → truthful cloud status
+  await page.waitForFunction(() => document.querySelector('[data-ai-status]').getAttribute('data-mode') === 'cloud', null, { timeout: 4000 });
+  const cloudText = await page.textContent('[data-ai-status]');
+  ok(/cloud/i.test(cloudText), 'status reflects a live cloud model', cloudText);
+  const base = await page.evaluate(() => window.__SOLUTION_AI__ && window.__SOLUTION_AI__.state().base);
+  ok(base === '', 'client honours the configured assistant base', String(base));
   await page.screenshot({ path: path.join(OUT, 'ai-desktop-open.png') });
 
   // Quick prompt -> local knowledge answer (no POST)
-  const postsBefore = postCount;
+  const postsBefore = counters.post;
   await page.click('[data-ai-quick-btn]');
   await page.waitForFunction(() => {
     const msgs = document.querySelectorAll('[data-ai-messages] .ai-msg--ai');
     const last = msgs[msgs.length - 1];
-    return last && /found|मिला/i.test(last.textContent);
+    return last && /found|\u092e\u093f\u0932\u093e/i.test(last.textContent);
   }, null, { timeout: 5000 });
   const localHasCard = await page.evaluate(() => {
     const msgs = document.querySelectorAll('[data-ai-messages] .ai-msg--ai');
@@ -131,15 +174,19 @@ const ok = (c, name, extra) => {
     return !!(last.querySelector('.ai-source, .ai-card'));
   });
   ok(localHasCard, 'quick prompt answered from site content with a real source/card');
-  ok(postCount === postsBefore, 'local answer made no server call (cost-free)');
+  ok(counters.post === postsBefore, 'local answer made no server call (cost-free)');
 
-  // General question -> mocked AI
+  // General question -> mocked model
   await page.fill('[data-ai-input]', 'Tell me something random about clouds and weather');
   await page.click('[data-ai-send]');
   await page.waitForFunction(() => /Mocked AI reply/.test(document.querySelector('[data-ai-messages]').textContent), null, { timeout: 5000 });
-  ok(postCount === postsBefore + 1, 'general question called the AI endpoint');
-  const statusText = await page.textContent('[data-ai-status]');
-  ok(/AI/i.test(statusText), 'status badge reflects AI mode', statusText);
+  ok(counters.post === postsBefore + 1, 'general question called the chat endpoint');
+  const statusMode = await page.getAttribute('[data-ai-status]', 'data-mode');
+  ok(statusMode === 'cloud', 'status stays cloud after a live-model reply', statusMode);
+
+  // Multi-turn: the session id is reused on the next turn
+  const sess = await page.evaluate(() => window.__SOLUTION_AI__.state().sessionId);
+  ok(sess === 'sess-1', 'client stores the server session id', String(sess));
 
   // Copy button present
   const copyBtn = await page.$('[data-ai-messages] .ai-msg--ai:last-child [data-ai-copy]');
@@ -184,28 +231,27 @@ const ok = (c, name, extra) => {
   });
   ok(mic.sr ? !mic.hidden : mic.hidden, 'mic button state matches browser support (sr=' + mic.sr + ')');
 
+  const voiceHidden = await page.evaluate(() => document.querySelector('[data-ai-voice]').hidden);
+  ok(voiceHidden, 'voice button stays hidden when the server reports voice unavailable');
+  const noVoiceState = await page.evaluate(() => document.querySelector('[data-ai-voice-state]').hidden);
+  ok(noVoiceState, 'no voice state is shown when no session is active');
+
   await page.screenshot({ path: path.join(OUT, 'ai-desktop-closed.png') });
   await ctx.close();
 
   /* ---------------- Mobile ---------------- */
   console.log('\nSOLUTION AI QA — mobile 390px\n');
   const mctx = await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true, deviceScaleFactor: 2 });
+  await mctx.addInitScript(setBase);
   const mpage = await mctx.newPage();
   const merrors = [];
   mpage.on('pageerror', (e) => merrors.push('pageerror: ' + e.message));
   mpage.on('console', (m) => { if (m.type() === 'error') merrors.push('console: ' + m.text()); });
-  await mpage.route(FN_GLOB, (route) => {
-    const r = route.request();
-    if (r.method() === 'POST') return route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ ok: true, reply: 'Mocked AI reply for QA.', sources: [], mode: 'ai' }) });
-    return route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ ok: true, aiConfigured: true, durableRateLimit: true }) });
-  });
-  await mpage.goto(BASE, { waitUntil: 'load', timeout: 30000 });
-  await mpage.waitForFunction(() => document.documentElement.classList.contains('booted'), null, { timeout: 20000, polling: 100 });
-  await mpage.waitForFunction(() => document.documentElement.classList.contains('device-settled'), null, { timeout: 20000, polling: 100 }).catch(() => {});
-  await mpage.waitForTimeout(600);
+  await routeBackend(mpage, { chat: chatBody({ sources: [] }) }, { post: 0 });
+  await boot(mpage);
 
   await mpage.click('[data-ai-open]');
-  await mpage.waitForSelector('[data-ai-panel].open', { timeout: 3000 });
+  await mpage.waitForSelector('[data-ai-panel].open', { timeout: 8000 });
   await mpage.waitForTimeout(400);
   const sheet = await mpage.evaluate(() => {
     const p = document.querySelector('[data-ai-panel]');
@@ -227,6 +273,7 @@ const ok = (c, name, extra) => {
   /* ---------------- Voice (stubbed SpeechRecognition + speechSynthesis) ---------------- */
   console.log('\nSOLUTION AI QA — voice (stubbed)\n');
   const vctx = await browser.newContext({ viewport: { width: 1440, height: 900 } });
+  await vctx.addInitScript(setBase);
   await vctx.addInitScript(() => {
     function FakeSR() { this.started = false; this.onstart = null; this.onend = null; this.onerror = null; this.onresult = null; }
     FakeSR.prototype.start = function () { this.started = true; window.__fakeSR = this; setTimeout(() => { this.onstart && this.onstart(); }, 0); };
@@ -243,16 +290,10 @@ const ok = (c, name, extra) => {
   const verrors = [];
   vpage.on('pageerror', (e) => verrors.push('pageerror: ' + e.message));
   vpage.on('console', (m) => { if (m.type() === 'error') verrors.push('console: ' + m.text()); });
-  await vpage.route(FN_GLOB, (route) => {
-    if (route.request().method() === 'POST') return route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ ok: true, reply: 'Voice QA reply about the channel.', sources: [], mode: 'ai' }) });
-    return route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ ok: true, aiConfigured: true, durableRateLimit: true }) });
-  });
-  await vpage.goto(BASE, { waitUntil: 'load', timeout: 30000 });
-  await vpage.waitForFunction(() => document.documentElement.classList.contains('booted'), null, { timeout: 20000, polling: 100 });
-  await vpage.waitForFunction(() => document.documentElement.classList.contains('device-settled'), null, { timeout: 20000, polling: 100 }).catch(() => {});
-  await vpage.waitForTimeout(600);
+  await routeBackend(vpage, { chat: chatBody({ reply: 'Voice QA reply about the channel.', sources: [] }) }, { post: 0 });
+  await boot(vpage);
   await vpage.click('[data-ai-open]');
-  await vpage.waitForSelector('[data-ai-panel].open', { timeout: 3000 });
+  await vpage.waitForSelector('[data-ai-panel].open', { timeout: 8000 });
 
   const micShown = await vpage.evaluate(() => !document.querySelector('[data-ai-mic]').hidden);
   ok(micShown, 'mic button shown when SpeechRecognition is available');
@@ -285,34 +326,245 @@ const ok = (c, name, extra) => {
   ok(verrors.filter((e) => /pageerror/.test(e)).length === 0, 'no uncaught page errors (voice)');
   await vctx.close();
 
-  /* ---------------- Knowledge-only (AI endpoint unavailable, no key) ---------------- */
+  /* ---------------- Real voice (backend available, WebRTC stubbed) ----------------
+     Exercises the client voice pipeline end-to-end: capability check, mic,
+     SDP offer -> backend session relay, truthful states, mute, graceful stop,
+     mic release and holographic-state sync. No real provider is contacted. */
+  console.log('\nSOLUTION AI QA — real voice (WebRTC stubbed)\n');
+  const rmctx = await browser.newContext({ viewport: { width: 1440, height: 900 } });
+  await rmctx.addInitScript(setBase);
+  await rmctx.addInitScript(() => {
+    window.__voiceQA = { dc: null, pc: null, tracks: [], sent: [], remoteSet: false, added: 0 };
+    function FakeTrack() { this.enabled = true; this.stopped = false; }
+    FakeTrack.prototype.stop = function () { this.stopped = true; };
+    function FakeStream(tracks) { this._t = tracks || []; }
+    FakeStream.prototype.getTracks = function () { return this._t.slice(); };
+    FakeStream.prototype.getAudioTracks = function () { return this._t.slice(); };
+    window.MediaStream = FakeStream;
+    const md = navigator.mediaDevices || (navigator.mediaDevices = {});
+    Object.defineProperty(md, 'getUserMedia', {
+      configurable: true,
+      value: async () => { const tr = new FakeTrack(); window.__voiceQA.tracks.push(tr); return new FakeStream([tr]); }
+    });
+    function FakeDC() { this.readyState = 'open'; this._l = {}; }
+    FakeDC.prototype.addEventListener = function (t, fn) { (this._l[t] = this._l[t] || []).push(fn); };
+    FakeDC.prototype.send = function (msg) { window.__voiceQA.sent.push(msg); };
+    FakeDC.prototype.close = function () { if (this.readyState === 'closed') return; this.readyState = 'closed'; (this._l.close || []).forEach((fn) => fn({})); };
+    FakeDC.prototype.emit = function (obj) { (this._l.message || []).forEach((fn) => fn({ data: JSON.stringify(obj) })); };
+    function FakePC() { this.iceGatheringState = 'complete'; this.connectionState = 'new'; this._l = {}; window.__voiceQA.pc = this; }
+    FakePC.prototype.addEventListener = function (t, fn) { (this._l[t] = this._l[t] || []).push(fn); };
+    FakePC.prototype.createDataChannel = function () { this.dc = new FakeDC(); window.__voiceQA.dc = this.dc; return this.dc; };
+    FakePC.prototype.addTrack = function () { window.__voiceQA.added++; };
+    FakePC.prototype.createOffer = async function () { return { type: 'offer', sdp: 'v=0\r\no=- 1 1 IN IP4 127.0.0.1\r\ns=-\r\nm=audio 9 UDP/TLS/RTP/SAVPF 111\r\n' }; };
+    FakePC.prototype.setLocalDescription = async function (d) { this.localDescription = d; };
+    FakePC.prototype.setRemoteDescription = async function () {
+      this.connectionState = 'connected';
+      window.__voiceQA.remoteSet = true;
+    };
+    FakePC.prototype.close = function () { this.connectionState = 'closed'; };
+    window.RTCPeerConnection = FakePC;
+  });
+  const rpage = await rmctx.newPage();
+  const rerrors = [];
+  rpage.on('pageerror', (e) => rerrors.push('pageerror: ' + e.message));
+  rpage.on('console', (m) => { if (m.type() === 'error') rerrors.push('console: ' + m.text()); });
+  await routeBackend(rpage, {}, { post: 0 });
+  await rpage.route('**/api/voice/session', (route) => route.fulfill({
+    status: 200, contentType: 'application/json',
+    body: JSON.stringify({ ok: true, session: { sdp: 'v=0\r\no=- 2 2 IN IP4 127.0.0.1\r\ns=-\r\nm=audio 9\r\n', transport: 'webrtc', voice: 'marin', model: 'gpt-realtime', maxSessionSeconds: 300 } })
+  }));
+  await rpage.route('**/api/voice', (route) => route.fulfill({
+    status: 200, contentType: 'application/json',
+    body: JSON.stringify({ ok: true, voice: { enabled: true, available: true, transport: 'webrtc', model: 'gpt-realtime', voice: 'marin', voices: ['marin'], maxSessionSeconds: 300, requireAuth: false, configured: true } })
+  }));
+  await boot(rpage);
+  await rpage.click('[data-ai-open]');
+  await rpage.waitForSelector('[data-ai-panel].open', { timeout: 8000 });
+
+  await rpage.waitForFunction(() => !document.querySelector('[data-ai-voice]').hidden, null, { timeout: 3000 });
+  ok(true, 'voice button appears when the server reports voice available');
+  const avail = await rpage.evaluate(() => window.__SOLUTION_AI__.voiceAvailable());
+  ok(avail === true, 'client reports voice available from the capability endpoint');
+  const hiddenBefore = await rpage.evaluate(() => document.querySelector('[data-ai-voice-state]').hidden);
+  ok(hiddenBefore, 'voice state stays hidden until a session is active');
+
+  await rpage.click('[data-ai-voice]');
+  await rpage.waitForFunction(() => window.__voiceQA && window.__voiceQA.remoteSet === true, null, { timeout: 5000 });
+  await rpage.waitForFunction(() => window.__SOLUTION_AI__.voiceState().state === 'connecting', null, { timeout: 3000 });
+  ok(true, 'starting voice enters the connecting state');
+
+  await rpage.evaluate(() => window.__voiceQA.dc.emit({ type: 'session.started' }));
+  await rpage.waitForFunction(() => window.__SOLUTION_AI__.voiceState().state === 'listening', null, { timeout: 3000 });
+  const listUi = await rpage.evaluate(() => ({
+    text: document.querySelector('[data-ai-voice-state]').textContent,
+    holo: document.querySelector('[data-hero-core]').getAttribute('data-holo-state'),
+    hidden: document.querySelector('[data-ai-voice-state]').hidden
+  }));
+  ok(/listening/i.test(listUi.text) && !listUi.hidden, 'UI shows Listening while the session is live', listUi.text);
+  ok(listUi.holo === 'listening', 'holographic core reflects the listening state', String(listUi.holo));
+
+  await rpage.evaluate(() => window.__voiceQA.dc.emit({ type: 'response.output_audio.started' }));
+  await rpage.waitForFunction(() => window.__SOLUTION_AI__.voiceState().state === 'speaking', null, { timeout: 3000 });
+  const speakHolo = await rpage.evaluate(() => document.querySelector('[data-hero-core]').getAttribute('data-holo-state'));
+  ok(speakHolo === 'speaking', 'holographic core reflects the speaking state', String(speakHolo));
+  await rpage.evaluate(() => window.__voiceQA.dc.emit({ type: 'response.output_audio.done' }));
+  await rpage.waitForFunction(() => window.__SOLUTION_AI__.voiceState().state === 'listening', null, { timeout: 3000 });
+  ok(true, 'state returns to Listening after the reply finishes');
+
+  await rpage.click('[data-ai-voice-mute]');
+  const muted = await rpage.evaluate(() => ({ pressed: document.querySelector('[data-ai-voice-mute]').getAttribute('aria-pressed'), disabled: window.__voiceQA.tracks.every((t) => !t.enabled) }));
+  ok(muted.pressed === 'true' && muted.disabled, 'mute disables the outgoing microphone track');
+  await rpage.click('[data-ai-voice-mute]');
+  const unmuted = await rpage.evaluate(() => window.__voiceQA.tracks.every((t) => t.enabled));
+  ok(unmuted, 'unmute re-enables the microphone track');
+
+  await rpage.click('[data-ai-voice]');
+  const closedSent = await rpage.evaluate(() => window.__voiceQA.sent.some((s) => /session\.close/.test(s)));
+  ok(closedSent, 'stopping sends a graceful session.close request');
+  await rpage.evaluate(() => window.__voiceQA.dc.emit({ type: 'session.closed' }));
+  await rpage.waitForFunction(() => window.__SOLUTION_AI__.voiceState().state === 'idle', null, { timeout: 3000 });
+  const cleaned = await rpage.evaluate(() => ({
+    tracksStopped: window.__voiceQA.tracks.every((t) => t.stopped),
+    pcClosed: window.__voiceQA.pc && window.__voiceQA.pc.connectionState === 'closed',
+    hidden: document.querySelector('[data-ai-voice-state]').hidden,
+    holo: document.querySelector('[data-hero-core]').getAttribute('data-holo-state')
+  }));
+  ok(cleaned.tracksStopped, 'stopping releases the microphone tracks');
+  ok(cleaned.pcClosed, 'stopping closes the peer connection');
+  ok(cleaned.hidden && cleaned.holo === 'idle', 'voice UI and holographic core return to idle');
+
+  /* Regression: stopping must ALWAYS release the mic and the hologram, even
+     when the remote never sends session.closed and even mid-connect. */
+  const startSession = async () => {
+    await rpage.evaluate(() => window.__SOLUTION_AI__.startVoice());
+    await rpage.waitForFunction(() => window.__voiceQA && window.__voiceQA.dc && window.__voiceQA.dc.readyState === 'open', null, { timeout: 5000 });
+  };
+  const stoppedFor = async () => rpage.evaluate(() => ({
+    state: window.__SOLUTION_AI__.voiceState().state,
+    active: window.__SOLUTION_AI__.voiceState().active,
+    tracksStopped: window.__voiceQA.tracks.every((t) => t.stopped),
+    holo: document.querySelector('[data-hero-core]').getAttribute('data-holo-state')
+  }));
+
+  // (a) the remote close we asked for completes the cleanup on its own
+  await startSession();
+  await rpage.evaluate(() => window.__voiceQA.dc.emit({ type: 'session.started' }));
+  await rpage.waitForFunction(() => window.__SOLUTION_AI__.voiceState().state === 'listening', null, { timeout: 3000 });
+  await rpage.evaluate(() => window.__SOLUTION_AI__.stopVoice());
+  await rpage.evaluate(() => window.__voiceQA.dc.close()); // remote never sends session.closed
+  await rpage.waitForFunction(() => window.__SOLUTION_AI__.voiceState().state === 'idle', null, { timeout: 3000 });
+  const afterRemoteClose = await stoppedFor();
+  ok(afterRemoteClose.tracksStopped, 'a remote close after stop releases the microphone');
+  ok(afterRemoteClose.holo === 'idle' && !afterRemoteClose.active, 'the hologram returns to idle after stop');
+
+  // (b) a hung connect must still be cancellable
+  await startSession();
+  await rpage.waitForFunction(() => window.__SOLUTION_AI__.voiceState().state === 'connecting', null, { timeout: 3000 });
+  await rpage.click('[data-ai-voice]');
+  await rpage.waitForFunction(() => window.__SOLUTION_AI__.voiceState().state === 'idle', null, { timeout: 6000 });
+  const afterCancel = await stoppedFor();
+  ok(afterCancel.tracksStopped, 'cancelling during connect releases the microphone');
+  ok(afterCancel.holo === 'idle', 'the hologram returns to idle after cancelling');
+  const micBtnEnabled = await rpage.evaluate(() => !document.querySelector('[data-ai-voice]').disabled);
+  ok(micBtnEnabled, 'the mic button stays usable so a hung session can be stopped');
+
+  // (c) a failing session must not keep the microphone live
+  await startSession();
+  await rpage.evaluate(() => window.__voiceQA.dc.emit({ type: 'session.started' }));
+  await rpage.waitForFunction(() => window.__SOLUTION_AI__.voiceState().state === 'listening', null, { timeout: 3000 });
+  await rpage.evaluate(() => window.__voiceQA.dc.emit({ type: 'error', error: { message: 'model exploded' } }));
+  await rpage.waitForFunction(() => window.__SOLUTION_AI__.voiceState().state === 'idle', null, { timeout: 3000 });
+  const afterError = await stoppedFor();
+  ok(afterError.tracksStopped, 'a failing session releases the microphone');
+  ok(afterError.holo === 'idle', 'the hologram returns to idle after a failure');
+  ok(/failed|unable/i.test(await rpage.evaluate(() => document.querySelector('[data-ai-note]').textContent)), 'the failure is reported to the user');
+
+  // Text chat still works after a voice session (voice is additive).
+  await rpage.fill('[data-ai-input]', 'Tell me something random about mountain trails');
+  await rpage.click('[data-ai-send]');
+  await rpage.waitForFunction(() => /Mocked AI reply/.test(document.querySelector('[data-ai-messages]').textContent), null, { timeout: 5000 });
+  ok(true, 'text chat still works after using voice');
+  ok(rerrors.filter((e) => /pageerror/.test(e)).length === 0, 'no uncaught page errors (real voice)');
+  await rpage.screenshot({ path: path.join(OUT, 'ai-voice-states.png') });
+  await rmctx.close();
+
+  /* ---------------- Knowledge-only (backend up, no model configured) ---------------- */
   console.log('\nSOLUTION AI QA — knowledge-only mode\n');
   const kctx = await browser.newContext({ viewport: { width: 1440, height: 900 } });
+  await kctx.addInitScript(setBase);
   const kpage = await kctx.newPage();
   const kerrors = [];
   kpage.on('pageerror', (e) => kerrors.push('pageerror: ' + e.message));
   kpage.on('console', (m) => { if (m.type() === 'error') kerrors.push('console: ' + m.text()); });
-  let kpost = 0;
-  await kpage.route(FN_GLOB, (route) => {
-    if (route.request().method() === 'POST') { kpost++; return route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ ok: true, reply: 'SHOULD NOT HAPPEN', sources: [], mode: 'ai' }) }); }
-    return route.fulfill({ status: 503, contentType: 'application/json', body: JSON.stringify({ ok: false }) });
-  });
-  await kpage.goto(BASE, { waitUntil: 'load', timeout: 30000 });
-  await kpage.waitForFunction(() => document.documentElement.classList.contains('booted'), null, { timeout: 20000, polling: 100 });
-  await kpage.waitForFunction(() => document.documentElement.classList.contains('device-settled'), null, { timeout: 20000, polling: 100 }).catch(() => {});
-  await kpage.waitForTimeout(600);
+  const kc = await routeBackend(kpage, {
+    providers: NONE_PROVIDERS,
+    chat: chatBody({ mode: 'knowledge', reply: 'Knowledge reply from site content.', modelConfigured: false, provider: 'none', sources: [] })
+  }, { post: 0 });
+  await boot(kpage);
   await kpage.click('[data-ai-open]');
-  await kpage.waitForSelector('[data-ai-panel].open', { timeout: 3000 });
-  await kpage.waitForFunction(() => document.querySelector('[data-ai-status]').getAttribute('data-mode') === 'knowledge', null, { timeout: 3000 });
-  ok(true, 'status shows knowledge mode when the AI endpoint is unavailable');
+  await kpage.waitForSelector('[data-ai-panel].open', { timeout: 8000 });
+  await kpage.waitForFunction(() => document.querySelector('[data-ai-status]').getAttribute('data-mode') === 'knowledge', null, { timeout: 4000 });
+  ok(true, 'status shows knowledge mode when no model is configured');
+  const kNote = await kpage.textContent('[data-ai-note]');
+  ok(/server|AH_PROVIDER|model/i.test(kNote), 'knowledge mode shows an actionable setup hint', (kNote || '').slice(0, 60));
   await kpage.fill('[data-ai-input]', 'Tell me something random about clouds and weather');
   await kpage.click('[data-ai-send]');
   await kpage.waitForFunction(() => document.querySelectorAll('[data-ai-messages] .ai-msg--ai').length > 0, null, { timeout: 5000 });
   const ktext = await kpage.textContent('[data-ai-messages] .ai-msg--ai:last-child');
-  ok(ktext && ktext.trim().length > 0 && !/SHOULD NOT HAPPEN/.test(ktext), 'knowledge-only reply rendered without the AI endpoint');
-  ok(kpost === 0, 'knowledge-only mode made no POST to the AI endpoint');
+  ok(ktext && ktext.trim().length > 0, 'knowledge-only reply rendered');
+  ok(kc.post === 0, 'knowledge-only mode made no chat request (no fabricated AI reply)');
   ok(kerrors.filter((e) => /pageerror/.test(e)).length === 0, 'no uncaught page errors (knowledge-only)');
   await kctx.close();
+
+  /* ---------------- Backend unreachable (offline/error) ---------------- */
+  console.log('\nSOLUTION AI QA — backend unreachable\n');
+  const uctx = await browser.newContext({ viewport: { width: 1440, height: 900 } });
+  await uctx.addInitScript(setBase);
+  const upage = await uctx.newPage();
+  const uerrors = [];
+  upage.on('pageerror', (e) => uerrors.push('pageerror: ' + e.message));
+  upage.on('console', (m) => { if (m.type() === 'error') uerrors.push('console: ' + m.text()); });
+  await routeBackend(upage, { abort: true }, { post: 0 });
+  await boot(upage);
+  await upage.click('[data-ai-open]');
+  await upage.waitForSelector('[data-ai-panel].open', { timeout: 8000 });
+  await upage.waitForFunction(() => {
+    const m = document.querySelector('[data-ai-status]').getAttribute('data-mode');
+    return m === 'error' || m === 'offline';
+  }, null, { timeout: 4000 });
+  ok(true, 'status shows an honest unavailable state when the backend is down');
+  await upage.fill('[data-ai-input]', 'Tell me something random about penguins in space');
+  await upage.click('[data-ai-send]');
+  await upage.waitForFunction(() => {
+    const area = document.querySelector('[data-ai-messages]');
+    return !!area.querySelector('.ai-msg--ai[data-ai-retry], .ai-msg--ai:last-child');
+  }, null, { timeout: 6000 });
+  ok(uerrors.filter((e) => /pageerror/.test(e)).length === 0, 'no uncaught page errors (unreachable)');
+  await uctx.close();
+
+  /* ---------------- Degraded (model configured but failing) ---------------- */
+  console.log('\nSOLUTION AI QA — degraded model\n');
+  const dctx = await browser.newContext({ viewport: { width: 1440, height: 900 } });
+  await dctx.addInitScript(setBase);
+  const dpage = await dctx.newPage();
+  const derrors = [];
+  dpage.on('pageerror', (e) => derrors.push('pageerror: ' + e.message));
+  dpage.on('console', (m) => { if (m.type() === 'error') derrors.push('console: ' + m.text()); });
+  await routeBackend(dpage, {
+    providers: CLOUD_PROVIDERS,
+    chat: chatBody({ mode: 'knowledge', degraded: true, reply: 'Site content answer while the model is down.', sources: [] })
+  }, { post: 0 });
+  await boot(dpage);
+  await dpage.click('[data-ai-open]');
+  await dpage.waitForSelector('[data-ai-panel].open', { timeout: 8000 });
+  await dpage.waitForFunction(() => document.querySelector('[data-ai-status]').getAttribute('data-mode') === 'cloud', null, { timeout: 4000 });
+  await dpage.fill('[data-ai-input]', 'Tell me something random about the deep ocean');
+  await dpage.click('[data-ai-send]');
+  await dpage.waitForFunction(() => /Site content answer/.test(document.querySelector('[data-ai-messages]').textContent), null, { timeout: 5000 });
+  const dmode = await dpage.getAttribute('[data-ai-status]', 'data-mode');
+  ok(dmode === 'error', 'a failing model downgrades the status to an honest error state', dmode);
+  ok(derrors.filter((e) => /pageerror/.test(e)).length === 0, 'no uncaught page errors (degraded)');
+  await dctx.close();
 
   await browser.close();
 

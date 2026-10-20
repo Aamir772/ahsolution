@@ -1,0 +1,516 @@
+/* ==========================================================================
+   AH SOLUTION — editorial reading theme (blog listing + article pages)
+
+   Scope: every rule is gated on .theme-editorial (set on <body> of blog.html
+   and of every generated /article/<slug>/ page), so the rest of the site —
+   including the 3D hero core and the dark marketing pages — is untouched.
+
+   Direction (v6): ONE dark reading surface for the whole site. The editorial
+   pages now use the same dark token family as the marketing pages
+   (tokens.css), with warm-carbon surfaces, crimson accents and the existing
+   Manrope/DM Sans type stack — so no page ever flashes a light paper theme
+   between navigation.
+
+   Contrast (checked against --ed-bg #0C0C11):
+     --ed-ink    #F5F5F7 ~17.9:1   --ed-ink-2  #B7B8C4 ~11.0:1
+     --ed-muted  #9092A0   ~5.9:1   --ed-link   #FF526B ~6.3:1
+     --ed-accent #D8203E (fills, white text ≥ 5:1)  (labels / large text)
+   ========================================================================== */
+
+.theme-editorial{
+  /* surfaces */
+  --ed-bg:#0C0C11;
+  --ed-bg-2:#101116;
+  --ed-card:#15161D;
+  --ed-card-2:#1B1D25;
+  /* ink */
+  --ed-ink:#F5F5F7;
+  --ed-ink-2:#C9CAD3;
+  --ed-muted:#9A9CA9;
+  --ed-muted-2:#848693;
+  /* lines */
+  --ed-line:rgba(255,255,255,.10);
+  --ed-line-2:rgba(255,255,255,.20);
+  /* crimson (same brand family as --c-primary-strong / --c-primary-deep) */
+  --ed-accent:#D8203E;
+  --ed-accent-deep:#A5142B;
+  --ed-link:#FF526B;
+  --ed-tint:rgba(230,41,70,.10);
+  --ed-tint-2:rgba(230,41,70,.18);
+  /* elevation (matches the dark site's shadows) */
+  --ed-shadow:0 1px 2px rgba(0,0,0,.4),0 10px 26px rgba(0,0,0,.38);
+  --ed-shadow-hi:0 2px 6px rgba(0,0,0,.42),0 20px 46px rgba(0,0,0,.5);
+  --ed-radius:14px;
+
+  background:var(--ed-bg);
+  color:var(--ed-ink);
+}
+.theme-editorial body&,
+body.theme-editorial{color:var(--ed-ink)}
+
+/* The site paints a fixed dark wash behind everything; keep it in harmony. */
+body.theme-editorial::before{
+  background:
+    radial-gradient(ellipse 55% 40% at 86% -4%,rgba(230,41,70,.07),transparent 62%),
+    linear-gradient(180deg,var(--ed-bg),var(--ed-bg) 70%,var(--ed-bg-2));
+}
+body.theme-editorial{background:var(--ed-bg)}
+body.theme-editorial p{color:var(--ed-ink-2)}
+body.theme-editorial ::selection{background:var(--ed-accent);color:#fff}
+body.theme-editorial :focus-visible{outline:2px solid var(--ed-accent);outline-offset:3px}
+
+/* --- the actual reading surface ---------------------------------------
+   device.css paints .device-screen with the dark --bg token (#08080B) and
+   dims its edges with a 40px black inset vignette. Editorial pages own
+   this element with a slightly lifted carbon tone: dark ink on near-black,
+   with the same red/blue edge glint as the home screen. Both declarations
+   below outrank device.css (0,2,1 vs 0,1,0), so no !important is required. */
+body.theme-editorial .device-screen{
+  background:
+    radial-gradient(120% 60% at 50% -10%,rgba(230,41,70,.045),transparent 60%),
+    var(--ed-bg);
+  box-shadow:
+    inset 0 0 0 1px rgba(0,0,0,.9),
+    inset 0 0 0 2px rgba(255,255,255,.055);
+  scrollbar-color:rgba(255,255,255,.22) transparent;
+}
+body.theme-editorial .device-screen::-webkit-scrollbar-thumb{
+  background:rgba(255,255,255,.20);background-clip:content-box;
+}
+
+/* ============================== listing: hero ============================= */
+.ed-hero{
+  position:relative;padding:58px 0 40px;
+  background:
+    radial-gradient(720px 320px at 92% -30%,var(--ed-tint),transparent 65%),
+    linear-gradient(180deg,var(--ed-bg-2),var(--ed-bg));
+  border-bottom:1px solid var(--ed-line);
+}
+.ed-hero__grid{display:grid;grid-template-columns:1.12fr .88fr;gap:44px;align-items:end}
+.ed-kicker{
+  display:inline-flex;align-items:center;gap:9px;margin:0 0 16px;
+  font-size:11px;font-weight:800;letter-spacing:.18em;text-transform:uppercase;color:var(--ed-accent-deep);
+}
+.ed-kicker::before{content:"";width:24px;height:1px;background:var(--ed-accent)}
+.ed-hero h1{
+  font-size:clamp(31px,4.2vw,52px);line-height:1.08;letter-spacing:-.032em;
+  color:var(--ed-ink);max-width:16ch;margin:0;
+}
+.ed-hero h1 em{font-style:normal;color:var(--ed-accent-deep)}
+.ed-hero__deck{margin:18px 0 0;max-width:56ch;font-size:16px;line-height:1.72;color:var(--ed-ink-2)}
+.ed-hero__note{margin:14px 0 0;font-size:12.5px;color:var(--ed-muted)}
+
+/* search field (binds the existing [data-blog-search] behaviour) */
+.ed-search{
+  display:flex;align-items:center;gap:11px;background:var(--ed-card);
+  border:1px solid var(--ed-line-2);border-radius:999px;padding:2px 8px 2px 18px;
+  box-shadow:var(--ed-shadow);
+}
+.ed-search:focus-within{border-color:var(--ed-accent);box-shadow:0 0 0 3px var(--ed-tint-2),var(--ed-shadow)}
+.ed-search svg{flex:none;color:var(--ed-muted)}
+.ed-search input{
+  flex:1;min-width:0;background:transparent;border:0;outline:0;color:var(--ed-ink);
+  font-size:14.5px;padding:15px 0;
+}
+.ed-search input::placeholder{color:var(--ed-muted-2)}
+
+/* category navigation */
+.ed-cats{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}
+.ed-cats .filter-chip{scroll-margin-top:96px}
+
+/* ============================ listing: toolbar =========================== */
+.ed-listing{padding:34px 0 10px}
+.ed-toolbar{
+  display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;
+  gap:14px;margin-bottom:20px;padding-bottom:14px;border-bottom:1px solid var(--ed-line);
+}
+.ed-toolbar h2{font-size:20px;letter-spacing:-.02em;color:var(--ed-ink);margin:0}
+.ed-toolbar__tools{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+
+.theme-editorial .blog-count{margin:0;color:var(--ed-muted);font-size:12.5px;letter-spacing:.01em}
+.theme-editorial .sort-box{margin:0;color:var(--ed-muted)}
+.theme-editorial .sort-box select{
+  border-color:var(--ed-line-2);background:var(--ed-card);color:var(--ed-ink);
+}
+.theme-editorial .sort-box select:hover,
+.theme-editorial .sort-box select:focus{border-color:var(--ed-accent);color:var(--ed-accent-deep)}
+
+/* ============================== listing: chips =========================== */
+.theme-editorial .filter-chip{
+  background:var(--ed-card);border-color:var(--ed-line-2);color:var(--ed-ink-2);
+  padding:9px 15px;font-size:12px;font-weight:700;letter-spacing:.005em;
+}
+.theme-editorial .filter-chip:hover{border-color:var(--ed-accent);color:var(--ed-accent-deep);background:var(--ed-tint)}
+.theme-editorial .filter-chip.active{
+  border-color:var(--ed-accent-deep);background:var(--ed-accent-deep);color:#fff;
+}
+.theme-editorial .filter-chip:focus-visible{outline:2px solid var(--ed-accent);outline-offset:2px}
+
+/* ============================ listing: the grid ========================== */
+/* 12-column editorial grid:
+     · first visible card is the feature  (span 8, two rows tall)
+     · next two are the compact stack     (span 4 each)
+     · everything else is a regular card  (span 4 -> 3-up)
+   Sizes are assigned in assets/js/main.js (applyLayout) from the DOM order,
+   so sorting and filtering can never leave holes in the layout.            */
+.editorial-grid{display:grid;grid-template-columns:repeat(12,1fr);gap:22px;align-items:stretch}
+.editorial-grid>[data-blog-card]{grid-column:span 4;min-width:0}
+.editorial-grid>.is-feature{grid-column:span 8;grid-row:span 2}
+.editorial-grid>.is-compact{grid-column:span 4}
+.editorial-grid>.empty-state{grid-column:1/-1}
+
+/* dark card skin over the .content-card base */
+.theme-editorial .editorial-grid .content-card{
+  display:flex;flex-direction:column;background:var(--ed-card);border-color:var(--ed-line);
+  box-shadow:var(--ed-shadow);backdrop-filter:none;
+  transition:transform var(--dur-base) var(--ease-out),box-shadow var(--dur-base) var(--ease-out),border-color var(--dur-base);
+}
+.theme-editorial .editorial-grid .content-card:hover,
+.theme-editorial .editorial-grid .content-card:focus-visible{
+  border-color:var(--ed-line-2);box-shadow:var(--ed-shadow-hi);
+}
+.theme-editorial .editorial-grid .content-card::after{display:none}
+.theme-editorial .editorial-grid .card-image{
+  height:auto;aspect-ratio:16/9;background:var(--ed-bg-2);
+}
+.theme-editorial .editorial-grid .card-image::after{
+  background:linear-gradient(0deg,rgba(23,23,28,.42),transparent 55%);
+}
+.theme-editorial .editorial-grid .card-image img{opacity:1}
+.theme-editorial .editorial-grid .card-tag{
+  border-color:rgba(255,255,255,.55);background:rgba(23,23,28,.62);color:#fff;
+}
+.theme-editorial .editorial-grid .card-body{
+  padding:18px 20px 20px;transform:none;display:flex;flex-direction:column;flex:1;
+}
+.theme-editorial .editorial-grid .card-meta{
+  color:var(--ed-muted);font-size:10.5px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;margin-bottom:9px;
+}
+.theme-editorial .editorial-grid .card-body h3{
+  font-size:17px;line-height:1.34;letter-spacing:-.018em;color:var(--ed-ink);margin:0;
+}
+.theme-editorial .editorial-grid .card-body p{
+  font-size:13.5px;line-height:1.66;color:var(--ed-muted);margin:9px 0 0;
+  display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;
+}
+.theme-editorial .editorial-grid .card-bottom{
+  margin-top:auto;padding-top:14px;border-top:1px solid var(--ed-line);
+  color:var(--ed-ink-2);font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;
+}
+.theme-editorial .editorial-grid .arrow{color:var(--ed-accent);font-size:16px}
+.theme-editorial .editorial-grid .content-card:hover .arrow{transform:translate(3px,-3px)}
+
+/* feature card: bigger type, taller image, editorial flag */
+.editorial-grid>.is-feature .card-image{aspect-ratio:auto;flex:1;min-height:300px}
+.editorial-grid>.is-feature .card-image img{height:100%}
+.editorial-grid>.is-feature .card-body{padding:24px 28px 26px}
+.editorial-grid>.is-feature .card-body h3{font-size:clamp(22px,2.1vw,29px);line-height:1.2;letter-spacing:-.026em}
+.editorial-grid>.is-feature .card-body p{
+  font-size:14.5px;line-height:1.7;-webkit-line-clamp:4;color:var(--ed-ink-2);margin-top:12px;
+}
+.editorial-grid>.is-feature .card-image::before{
+  content:"Editor's pick";position:absolute;z-index:2;left:15px;top:14px;
+  display:inline-flex;align-items:center;gap:7px;
+  padding:6px 11px;border-radius:6px;background:var(--ed-accent-deep);color:#fff;
+  font-size:9.5px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;
+}
+/* compact cards keep the same anatomy but tighter */
+.editorial-grid>.is-compact .card-body h3{font-size:16px}
+
+.theme-editorial .empty-state{
+  border-color:var(--ed-line-2);color:var(--ed-muted);background:var(--ed-card-2);
+}
+
+/* ============================ listing: page tail ========================= */
+.theme-editorial .notice{color:var(--ed-muted);font-size:12px;line-height:1.7;max-width:78ch}
+
+/* ============================== article page ============================= */
+
+/* --- article reading palette (spec) ------------------------------------
+   body.article-page (0,1,1) overrides the .theme-editorial tokens (0,1,0)
+   for the 17 /article/<slug>/ routes only. Every article rule below reads
+   these variables, so one block restyles headings, body, lists, links,
+   tables, code, callouts and metadata coherently.
+     page background #0C0C11 · surface #15161D · border rgba(255,255,255,.14)
+     body #D9DAE2 · H1-H3 #F5F5F7 · secondary #9A9CA9 · links #FF526B
+   Contrast on #15161D: body ~11.9:1 · headings ~17.0:1 · secondary ~5.8:1 ·
+   links ~6.2:1 — all pass WCAG AA (and AAA for the first three).          */
+body.article-page{
+  --ed-bg:#0C0C11;
+  --ed-bg-2:#101116;
+  --ed-card:#15161D;
+  --ed-card-2:#1B1D25;
+  --ed-ink:#F5F5F7;
+  --ed-ink-2:#D9DAE2;
+  --ed-muted:#9A9CA9;
+  --ed-muted-2:#848693;
+  --ed-line:rgba(255,255,255,.10);
+  --ed-line-2:rgba(255,255,255,.20);
+  --ed-link:#FF526B;
+  --ed-accent:#D8203E;
+  --ed-accent-deep:#A5142B;
+  --ed-tint:rgba(230,41,70,.10);
+  --ed-tint-2:rgba(230,41,70,.18);
+}
+body.article-page .page-hero{
+  padding:46px 0 30px;
+  background:linear-gradient(180deg,var(--ed-bg-2),var(--ed-bg));
+  border-bottom:1px solid var(--ed-line);
+}
+body.article-page .page-hero::after{display:none}
+/* opaque carbon reading surface for the article column (page stays #0C0C11) */
+body.article-page .article-main{
+  background:var(--ed-card);
+  border:1px solid var(--ed-line);
+  border-radius:16px;
+  padding:34px 36px 30px;
+  box-shadow:0 1px 2px rgba(0,0,0,.4),0 14px 34px rgba(0,0,0,.42);
+}
+.theme-editorial .breadcrumbs{color:var(--ed-muted);margin-bottom:14px}
+.theme-editorial .breadcrumbs a:hover{color:var(--ed-accent-deep)}
+.theme-editorial .breadcrumbs span[aria-current]{color:var(--ed-accent-deep);font-weight:600}
+.theme-editorial .back-link{color:var(--ed-link);font-weight:700;font-size:12.5px}
+.theme-editorial .back-link:hover{color:var(--ed-accent-deep)}
+.theme-editorial .article-kicker{color:var(--ed-accent-deep)}
+.theme-editorial .article-title{color:var(--ed-ink);letter-spacing:-.032em;line-height:1.1}
+.theme-editorial .article-intro{color:var(--ed-ink-2);font-size:17px;line-height:1.7}
+.theme-editorial .article-meta{color:var(--ed-muted)}
+.theme-editorial .article-meta span+span::before{content:"·";margin-right:16px;color:var(--ed-line-2)}
+
+.theme-editorial .article-wrap{grid-template-columns:minmax(0,1fr) 288px;gap:52px}
+.theme-editorial .article-cover{
+  border-color:var(--ed-line);box-shadow:var(--ed-shadow);background:var(--ed-card);
+  height:auto;aspect-ratio:1200/630;object-fit:cover;
+}
+.theme-editorial .article-body{font-size:17px;line-height:1.76;color:var(--ed-ink-2);overflow-wrap:break-word}
+.draft-ribbon{display:inline-block;margin:14px 0 0;padding:7px 14px;border:1px solid #E0A03C;border-radius:999px;background:rgba(224,160,60,.10);color:#F5C26B;font-size:12px;letter-spacing:.04em}
+.theme-editorial .article-body h2{
+  font-size:clamp(21px,2vw,26px);line-height:1.25;letter-spacing:-.024em;
+  color:var(--ed-ink);margin:46px 0 14px;padding-top:6px;
+}
+.theme-editorial .article-body h2:first-child{margin-top:0}
+.theme-editorial .article-body h3{
+  font-size:18px;line-height:1.35;letter-spacing:-.015em;color:var(--ed-ink);margin:30px 0 10px;
+}
+.theme-editorial .article-body h4{font-size:15.5px;color:var(--ed-ink);margin:22px 0 8px}
+.theme-editorial .article-body p{margin:14px 0;color:var(--ed-ink-2)}
+.theme-editorial .article-body strong{color:var(--ed-ink)}
+.theme-editorial .article-body a{
+  color:var(--ed-link);text-decoration:underline;text-underline-offset:3px;text-decoration-thickness:1px;
+}
+.theme-editorial .article-body a:hover{color:var(--ed-accent-deep);text-decoration-thickness:2px}
+
+/* --- explicit article text roles (WCAG AA checked) --------------------- */
+body.article-page .article-title,
+body.article-page .article-body h1,
+body.article-page .article-body h2,
+body.article-page .article-body h3,
+body.article-page .article-body h4{color:var(--ed-ink)}
+body.article-page .article-body p,
+body.article-page .article-body li,
+body.article-page .article-body td,
+body.article-page .article-body th,
+body.article-page .article-body strong{color:var(--ed-ink-2)}
+body.article-page .article-body strong{font-weight:800}
+body.article-page .article-kicker,
+body.article-page .article-meta,
+body.article-page .breadcrumbs,
+body.article-page .back-link{color:var(--ed-muted)}
+body.article-page .article-body .article-figure figcaption,
+body.article-page .video-block p,
+body.article-page .article-main .muted{color:var(--ed-muted)}
+body.article-page .article-body hr{border:0;border-top:1px solid var(--ed-line);margin:30px 0}
+
+/* every link in the article surface: spec crimson, with hover + focus */
+body.article-page .article-body a,
+body.article-page .aside-links a,
+body.article-page .article-toc a{color:var(--ed-link)}
+body.article-page .article-body a:hover,
+body.article-page .aside-links a:hover,
+body.article-page .article-toc a:hover{color:var(--ed-accent-deep)}
+body.article-page .article-body a:focus-visible,
+body.article-page .aside-links a:focus-visible,
+body.article-page .article-toc a:focus-visible,
+body.article-page .share-row a:focus-visible,
+body.article-page .share-row button:focus-visible,
+body.article-page .breadcrumbs a:focus-visible{
+  outline:2px solid var(--ed-link);outline-offset:2px;border-radius:3px;
+}
+
+/* FAQ: question headings and their answers use the same high-contrast pair */
+body.article-page .article-body h2#frequently-asked-questions{
+  border-top:1px solid var(--ed-line);padding-top:28px;margin-top:44px;
+}
+body.article-page .article-body h2#frequently-asked-questions ~ h3{color:var(--ed-ink)}
+body.article-page .article-body h2#frequently-asked-questions ~ h3 + p,
+body.article-page .article-body h2#frequently-asked-questions ~ p{color:var(--ed-ink-2)}
+
+/* inline code + fenced code blocks on the carbon surface */
+body.article-page .article-body code{
+  background:var(--ed-bg-2);border-color:var(--ed-line);color:#FF7D93;
+}
+body.article-page .article-body pre{
+  background:var(--ed-bg-2);border-color:var(--ed-line);color:var(--ed-ink-2);
+}
+body.article-page .article-body pre code{background:none;border:0;color:inherit}
+.theme-editorial .article-body ul,
+.theme-editorial .article-body ol{padding-left:24px;margin:14px 0;color:var(--ed-ink-2)}
+.theme-editorial .article-body li{margin:8px 0}
+.theme-editorial .article-body li::marker{color:var(--ed-accent);font-weight:700}
+.theme-editorial .article-body ul{list-style:none;padding-left:2px}
+.theme-editorial .article-body ul>li{position:relative;padding-left:24px}
+.theme-editorial .article-body ul>li::before{
+  content:"";position:absolute;left:4px;top:.72em;width:6px;height:6px;border-radius:2px;
+  background:var(--ed-accent);opacity:.75;
+}
+.theme-editorial .article-body ul.task-list{padding-left:0}
+.theme-editorial .article-body ul.task-list>li{padding-left:30px}
+.theme-editorial .article-body ul.task-list>li::before{display:none}
+.theme-editorial .article-body .task{
+  position:absolute;left:0;top:.28em;width:18px;height:18px;border-radius:5px;
+  display:grid;place-items:center;font-size:10px;border:1px solid var(--ed-line-2);color:var(--ed-muted);
+}
+.theme-editorial .article-body .task.done{background:var(--ed-tint);border-color:var(--ed-accent);color:var(--ed-accent-deep)}
+
+/* numbered instruction lists read as steps */
+.theme-editorial .article-body ol{list-style:none;padding-left:0;counter-reset:ed-step}
+.theme-editorial .article-body ol>li{position:relative;padding-left:44px;counter-increment:ed-step;margin:13px 0}
+.theme-editorial .article-body ol>li::before{
+  content:counter(ed-step);position:absolute;left:0;top:.06em;
+  width:30px;height:30px;border-radius:9px;display:grid;place-items:center;
+  background:var(--ed-tint);border:1px solid rgba(230,41,70,.34);
+  color:var(--ed-link);font-size:13px;font-weight:800;font-family:var(--font-display);
+}
+.theme-editorial .article-body ol[style*="start"]>li:first-child{}
+
+/* tables */
+.theme-editorial .article-body .table-wrap{margin:18px 0;border:1px solid var(--ed-line);border-radius:12px;overflow-x:auto;background:var(--ed-card)}
+.theme-editorial .article-body table{display:table;width:100%;border-collapse:collapse}
+.theme-editorial .article-body th,
+.theme-editorial .article-body td{border:0;border-bottom:1px solid var(--ed-line);padding:11px 14px;font-size:14px;color:var(--ed-ink-2)}
+.theme-editorial .article-body th{
+  background:var(--ed-bg-2);color:var(--ed-ink);font-size:11px;letter-spacing:.09em;text-transform:uppercase;font-weight:800;white-space:nowrap;
+}
+.theme-editorial .article-body tbody tr:last-child td{border-bottom:0}
+.theme-editorial .article-body td strong{color:var(--ed-ink)}
+
+/* code */
+.theme-editorial .article-body pre{
+  background:var(--ed-bg-2);border-color:var(--ed-line);color:var(--ed-ink-2);box-shadow:none;
+}
+.theme-editorial .article-body code{
+  background:rgba(255,255,255,.06);border:1px solid var(--ed-line);border-radius:5px;padding:1px 5px;
+  font-size:.88em;color:#FF7D93;
+}
+.theme-editorial .article-body pre code{background:none;border:0;padding:0;color:inherit}
+
+/* figures */
+.theme-editorial .article-body .article-figure{margin:26px 0}
+.theme-editorial .article-body .article-figure img{
+  width:100%;height:auto;border-radius:12px;border:1px solid var(--ed-line);
+  background:var(--ed-card);box-shadow:var(--ed-shadow);
+}
+.theme-editorial .article-body .article-figure figcaption{
+  margin-top:10px;font-size:13px;line-height:1.6;color:var(--ed-muted);
+  padding-left:14px;border-left:2px solid var(--ed-tint-2);
+}
+
+/* callouts — class is added by scripts/blog-md.js from the bold prefix */
+.theme-editorial .article-body blockquote{
+  margin:22px 0;padding:16px 18px;border-radius:12px;border:1px solid var(--ed-line);
+  border-left:3px solid var(--ed-line-2);background:var(--ed-card-2);color:var(--ed-ink-2);
+}
+.theme-editorial .article-body blockquote p{margin:0;font-size:15px}
+.theme-editorial .article-body blockquote.callout--tip{border-left-color:#2F8F63;background:rgba(63,191,127,.08)}
+.theme-editorial .article-body blockquote.callout--warning{border-left-color:var(--ed-accent);background:var(--ed-tint)}
+.theme-editorial .article-body blockquote.callout--note{border-left-color:#3F6FB4;background:rgba(63,111,180,.08)}
+
+/* table of contents */
+.theme-editorial .article-toc{
+  margin:0 0 8px;padding:20px 22px;background:var(--ed-card);border:1px solid var(--ed-line);
+  border-radius:var(--ed-radius);box-shadow:var(--ed-shadow);
+}
+.theme-editorial .article-toc__title{
+  display:block;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ed-accent-deep);margin-bottom:10px;
+}
+.theme-editorial .article-toc ol{margin:0;padding-left:20px;font-size:14.5px;line-height:1.55}
+.theme-editorial .article-toc li{margin:7px 0}
+.theme-editorial .article-toc a{color:var(--ed-ink-2);text-decoration:none}
+.theme-editorial .article-toc a:hover{color:var(--ed-accent-deep);text-decoration:underline;text-underline-offset:3px}
+.theme-editorial .article-toc li::marker{color:var(--ed-accent)}
+
+/* original-video block */
+.theme-editorial .video-block{
+  margin:40px 0 0;padding:26px 26px 24px;background:var(--ed-card);
+  border:1px solid var(--ed-line);border-radius:var(--ed-radius);box-shadow:var(--ed-shadow);
+}
+.theme-editorial .video-block h2{margin:0 0 6px;font-size:20px}
+.theme-editorial .video-block p{font-size:13.5px;color:var(--ed-muted);margin:0 0 4px}
+.theme-editorial .article-body iframe{border-radius:10px;background:var(--ed-bg-2)}
+
+/* sidebar */
+.theme-editorial .article-aside{position:sticky;top:calc(var(--header-h) + 24px);display:grid;gap:16px}
+.theme-editorial .aside-card{
+  background:var(--ed-card);border-color:var(--ed-line);box-shadow:var(--ed-shadow);padding:20px;
+}
+.theme-editorial .aside-card h3{
+  font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ed-accent-deep);margin:0 0 4px;
+}
+.theme-editorial .aside-card p{color:var(--ed-ink-2);font-size:13px;line-height:1.65;margin:8px 0 0}
+.theme-editorial .aside-links{margin-top:12px;border-top:1px solid var(--ed-line);padding-top:12px}
+.theme-editorial .aside-links a{
+  display:block;font-size:13px;color:var(--ed-link);padding:5px 0;text-decoration:none;
+}
+.theme-editorial .aside-links a:hover{color:var(--ed-accent-deep);text-decoration:underline;text-underline-offset:3px}
+
+/* share + related */
+.theme-editorial .share-row{margin-top:38px;padding-top:22px;border-top:1px solid var(--ed-line)}
+.theme-editorial .share-row a,
+.theme-editorial .share-row button{
+  background:var(--ed-card);border-color:var(--ed-line-2);color:var(--ed-ink-2);
+}
+.theme-editorial .share-row a:hover,
+.theme-editorial .share-row button:hover{border-color:var(--ed-accent);color:var(--ed-accent-deep)}
+.theme-editorial .article-main h2{color:var(--ed-ink)}
+
+/* reading progress sits above the dark page */
+body.article-page .reading-progress{height:3px;box-shadow:none}
+
+/* keep the dark chrome around the reading surface in sync */
+body.theme-editorial .announcement,
+body.theme-editorial .site-header,
+body.theme-editorial .site-footer{color-scheme:dark}
+
+/* ================================ responsive ============================= */
+@media (max-width:1120px){
+  .ed-hero__grid{grid-template-columns:1fr;gap:26px;align-items:start}
+  .editorial-grid>[data-blog-card]{grid-column:span 6}
+  .editorial-grid>.is-feature{grid-column:span 12;grid-row:auto}
+  .editorial-grid>.is-feature .card-image{min-height:0;aspect-ratio:16/9;flex:none}
+  .theme-editorial .article-wrap{grid-template-columns:minmax(0,1fr) 250px;gap:34px}
+}
+@media (max-width:860px){
+  .theme-editorial .article-wrap{grid-template-columns:minmax(0,1fr)}
+  .theme-editorial .article-aside{position:static;grid-template-columns:1fr 1fr}
+}
+@media (max-width:680px){
+  .ed-hero{padding:40px 0 30px}
+  .ed-hero h1{font-size:clamp(28px,7.6vw,36px)}
+  .ed-hero__deck{font-size:15px}
+  .editorial-grid{gap:16px}
+  .editorial-grid>[data-blog-card],
+  .editorial-grid>.is-compact{grid-column:span 12}
+  .editorial-grid>.is-feature .card-body{padding:20px}
+  .theme-editorial .article-body{font-size:16px;line-height:1.74}
+  .theme-editorial .article-body h2{font-size:21px;margin:36px 0 12px}
+  .theme-editorial .article-aside{grid-template-columns:1fr}
+  .theme-editorial .video-block{padding:18px}
+  .theme-editorial .article-toc{padding:16px 18px}
+  .theme-editorial .article-body ol>li{padding-left:38px}
+}
+
+/* ============================== reduced motion =========================== */
+@media (prefers-reduced-motion:reduce){
+  .theme-editorial .editorial-grid .content-card{transition:none}
+  .theme-editorial .editorial-grid .card-image img{transition:none}
+}
