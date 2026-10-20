@@ -28,7 +28,14 @@ const BLOG_HTML = path.join(ROOT, 'blog.html');
 const SITEMAP = path.join(ROOT, 'sitemap.xml');
 const ARTICLE_DIR = path.join(ROOT, 'article');
 const AUTHORS = 'AH Solution Editorial Team';
-const FALLBACK_IMG = '/assets/img/og-default.jpg';
+/* Generated article pages live two levels deep (article/<slug>/index.html),
+   so every NON-metadata internal reference (chrome, css, images, nav, cards)
+   must be page-relative. This keeps the pages correct at the production
+   domain root AND under any sub-path host (e.g. GitHub Pages project sites),
+   where root-absolute paths would hit 404s. Metadata—canonical, og:*, sitemap
+   <loc>—stays absolute to SITE, the single consistent production base URL. */
+const PAGE_PREFIX = '../../';
+const OG_DEFAULT = 'assets/img/og-default.jpg';
 
 const MARK_START = '<!-- BLOG:ARTICLES:START -->';
 const MARK_END = '<!-- BLOG:ARTICLES:END -->';
@@ -65,7 +72,8 @@ const editorialPos = (slug) => {
 const esc = (s) => String(s == null ? '' : s)
   .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
-const asset = (p) => '/' + String(p || '').replace(/^\/+/, '');
+const asset = (p) => String(p || '').replace(/^\/+/, '');   // repo path, page-relative at root
+const rel = (p) => PAGE_PREFIX + String(p || '').replace(/^\/+/, '');  // two levels up
 const abs = (p) => SITE + '/' + String(p || '').replace(/^\/+/, '');
 
 function replaceRegion(text, inner, label) {
@@ -91,18 +99,18 @@ const SEARCH_MODAL = `<div class="search-modal" data-search-modal role="dialog" 
 
 const HEADER = `<header class="site-header">
   <div class="container nav">
-    <a class="brand" href="/index.html" aria-label="AH Solution — home">
-      <img class="brand-logo" src="/assets/img/logo.svg" alt="AH Solution" width="152" height="40" decoding="async">
+    <a class="brand" href="${PAGE_PREFIX}index.html" aria-label="AH Solution — home">
+      <img class="brand-logo" src="${PAGE_PREFIX}assets/img/logo.svg" alt="AH Solution" width="152" height="40" decoding="async">
     </a>
     <nav class="nav-links" id="primary-nav" aria-label="Main navigation">
       <span class="nav-pill" aria-hidden="true"></span>
-      <a href="/index.html">Home</a>
-      <a href="/vlogs.html">Videos</a>
-      <a href="/vlogs.html#shorts">Shorts</a>
-      <a href="/blog.html" class="active" aria-current="page">Blog</a>
-      <a href="/index.html#categories">Categories</a>
-      <a href="/about.html">About</a>
-      <a href="/contact.html">Contact</a>
+      <a href="${PAGE_PREFIX}index.html">Home</a>
+      <a href="${PAGE_PREFIX}vlogs.html">Videos</a>
+      <a href="${PAGE_PREFIX}vlogs.html#shorts">Shorts</a>
+      <a href="${PAGE_PREFIX}blog.html" class="active" aria-current="page">Blog</a>
+      <a href="${PAGE_PREFIX}index.html#categories">Categories</a>
+      <a href="${PAGE_PREFIX}about.html">About</a>
+      <a href="${PAGE_PREFIX}contact.html">Contact</a>
     </nav>
     <div class="nav-right">
       <button class="icon-btn" data-search-open aria-label="Search the website" title="Search (press /)">
@@ -118,25 +126,25 @@ const FOOTER = `<footer class="site-footer">
   <div class="container">
     <div class="footer-top">
       <div class="footer-brand">
-        <a class="brand" href="/index.html" aria-label="AH Solution — home">
-          <img class="brand-logo brand-logo--sm" src="/assets/img/logo.svg" alt="AH Solution" width="129" height="34" decoding="async">
+        <a class="brand" href="${PAGE_PREFIX}index.html" aria-label="AH Solution — home">
+          <img class="brand-logo brand-logo--sm" src="${PAGE_PREFIX}assets/img/logo.svg" alt="AH Solution" width="129" height="34" decoding="async">
         </a>
         <p>Simple solutions for everyday tech problems. Practical tutorials, digital tools, and honest discoveries made easier to understand.</p>
       </div>
       <div class="footer-col">
         <strong>Explore</strong>
-        <a href="/vlogs.html">Videos</a>
-        <a href="/vlogs.html#shorts">Shorts</a>
-        <a href="/blog.html">Blog &amp; guides</a>
-        <a href="/index.html#categories">Categories</a>
+        <a href="${PAGE_PREFIX}vlogs.html">Videos</a>
+        <a href="${PAGE_PREFIX}vlogs.html#shorts">Shorts</a>
+        <a href="${PAGE_PREFIX}blog.html">Blog &amp; guides</a>
+        <a href="${PAGE_PREFIX}index.html#categories">Categories</a>
       </div>
       <div class="footer-col">
         <strong>Company</strong>
-        <a href="/about.html">About</a>
-        <a href="/contact.html">Contact</a>
-        <a href="/tutorials.html">Tutorials</a>
-        <a href="/privacy.html">Privacy Policy</a>
-        <a href="/terms.html#disclaimer">Disclaimer</a>
+        <a href="${PAGE_PREFIX}about.html">About</a>
+        <a href="${PAGE_PREFIX}contact.html">Contact</a>
+        <a href="${PAGE_PREFIX}tutorials.html">Tutorials</a>
+        <a href="${PAGE_PREFIX}privacy.html">Privacy Policy</a>
+        <a href="${PAGE_PREFIX}terms.html#disclaimer">Disclaimer</a>
       </div>
       <div class="footer-col">
         <strong>Connect</strong>
@@ -149,10 +157,10 @@ const FOOTER = `<footer class="site-footer">
     <div class="footer-bottom">
       <span>© <span data-year></span> AH Solution. Built for curious minds.</span>
       <div class="footer-socials">
-        <a href="/privacy.html">Privacy</a>
-        <a href="/terms.html">Terms</a>
-        <a href="/terms.html#disclaimer">Disclaimer</a>
-        <a href="/contact.html">Contact</a>
+        <a href="${PAGE_PREFIX}privacy.html">Privacy</a>
+        <a href="${PAGE_PREFIX}terms.html">Terms</a>
+        <a href="${PAGE_PREFIX}terms.html#disclaimer">Disclaimer</a>
+        <a href="${PAGE_PREFIX}contact.html">Contact</a>
       </div>
     </div>
   </div>
@@ -167,7 +175,7 @@ const BOOT = `<div class="boot" data-boot aria-hidden="true">
         <circle class="boot-ring-track" cx="64" cy="64" r="56"></circle>
         <circle class="boot-ring-arc" cx="64" cy="64" r="56" stroke="url(#ahBootGrad)"></circle>
       </svg>
-      <img class="boot-logo" src="/assets/img/logo.svg" alt="AH Solution" width="216" height="57" decoding="async">
+      <img class="boot-logo" src="${PAGE_PREFIX}assets/img/logo.svg" alt="AH Solution" width="216" height="57" decoding="async">
       <span class="boot-wordmark" aria-hidden="true">AH SOLUTION</span>
     </div>
     <div class="boot-bar" aria-hidden="true"><span></span></div>
@@ -218,19 +226,19 @@ ${o.canonical ? '<meta property="og:url" content="' + esc(o.canonical) + '">' : 
 <meta property="og:image:height" content="630">
 <meta property="og:image:type" content="${o.imageType || 'image/png'}">
 <meta name="twitter:card" content="summary_large_image">
-<link rel="icon" href="/assets/img/favicon.ico" sizes="any">
-<link rel="icon" type="image/svg+xml" href="/assets/img/favicon.svg">
-<link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32x32.png">
-<link rel="icon" type="image/png" sizes="16x16" href="/assets/img/favicon-16x16.png">
-<link rel="apple-touch-icon" sizes="180x180" href="/assets/img/apple-touch-icon.png">
-<link rel="manifest" href="/site.webmanifest">
+<link rel="icon" href="${PAGE_PREFIX}assets/img/favicon.ico" sizes="any">
+<link rel="icon" type="image/svg+xml" href="${PAGE_PREFIX}assets/img/favicon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="${PAGE_PREFIX}assets/img/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="${PAGE_PREFIX}assets/img/favicon-16x16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="${PAGE_PREFIX}assets/img/apple-touch-icon.png">
+<link rel="manifest" href="${PAGE_PREFIX}site.webmanifest">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap">
-<link rel="stylesheet" href="/assets/css/tokens.css">
-<link rel="stylesheet" href="/assets/css/styles.css">
-<link rel="stylesheet" href="/assets/css/editorial.css">
-<link rel="stylesheet" href="/assets/css/device.css">
+<link rel="stylesheet" href="${PAGE_PREFIX}assets/css/tokens.css">
+<link rel="stylesheet" href="${PAGE_PREFIX}assets/css/styles.css">
+<link rel="stylesheet" href="${PAGE_PREFIX}assets/css/editorial.css">
+<link rel="stylesheet" href="${PAGE_PREFIX}assets/css/device.css">
 <noscript><style>.boot{display:none !important}.device-shell{opacity:1 !important}</style></noscript>
 ${o.jsonld ? '<script type="application/ld+json">' + o.jsonld + '</script>' : ''}
 </head>
@@ -246,15 +254,16 @@ ${SEARCH_MODAL}`;
 
 /* ------------------------------ listing card ----------------------------- */
 
-function card(row, words, indent, size) {
+function card(row, words, indent, size, pagePrefix) {
+  const pre = pagePrefix || '';
   const pad = ' '.repeat(indent == null ? 8 : indent);
-  const thumb = asset(row.thumbnail_image_path || ('blog/assets/' + row.slug + '-thumbnail.svg'));
+  const thumb = pre + asset(row.thumbnail_image_path || ('blog/assets/' + row.slug + '-thumbnail.svg'));
   const mins = row.reading_minutes || readingMinutes(words);
   const search = [row.article_title, row.excerpt, row.category, (row.tags || []).join(' '),
     (row.secondary_keywords || []).join(' ')].join(' ').toLowerCase().replace(/"/g, '');
-  const href = '/article/' + row.slug + '/';
+  const href = pre + 'article/' + row.slug + '/';
   return pad + `<a class="content-card tilt${size ? ' ' + size : ''}" data-tilt="6" data-blog-card data-slug="${esc(row.slug)}" data-category="${esc(filterKey(row.category))}" data-order="${editorialPos(row.slug)}" data-min="${esc(mins)}" data-title="${esc(row.article_title)}" data-search="${esc(search)}" href="${href}">
-${pad}  <div class="card-image"><img src="${esc(thumb)}" alt="Cover graphic: ${esc(row.article_title)}" loading="lazy" decoding="async" width="640" height="360" onerror="this.onerror=null;this.src='${FALLBACK_IMG}'"><span class="card-tag">${esc(row.category)}</span></div>
+${pad}  <div class="card-image"><img src="${esc(thumb)}" alt="Cover graphic: ${esc(row.article_title)}" loading="lazy" decoding="async" width="640" height="360" onerror="this.onerror=null;this.src='${pre}${OG_DEFAULT}'"><span class="card-tag">${esc(row.category)}</span></div>
 ${pad}  <div class="card-body"><div class="card-meta">${esc(String(row.category).toUpperCase())} · ${esc(mins)} MIN READ</div>
 ${pad}    <h3>${esc(row.article_title)}</h3>
 ${pad}    <p>${esc(row.excerpt)}</p>
@@ -269,7 +278,7 @@ function articlePage(row, mdPath, all) {
   const rendered = renderBody(parsed.bodyMd);
   const words = rendered.words || articleWordCount(md);
   const mins = row.reading_minutes || readingMinutes(words);
-  const cover = asset(row.cover_image_path || ('blog/assets/' + row.slug + '-cover.svg'));
+  const cover = rel(row.cover_image_path || ('blog/assets/' + row.slug + '-cover.svg'));
   const canonical = SITE + '/article/' + row.slug + '/';
 
   /* Social crawlers do not rasterise SVG, so og:image prefers the 1200x630
@@ -321,7 +330,7 @@ function articlePage(row, mdPath, all) {
       const f = path.join(ARTICLES_DIR, String(r.article_number).padStart(2, '0') + '-' + r.slug + '.md');
       w = articleWordCount(fs.readFileSync(f, 'utf8')) || w;
     } catch (e) { /* keep default */ }
-    return card(r, w, 8);
+    return card(r, w, 8, undefined, PAGE_PREFIX);
   }).join('\n');
 
   const title = row.meta_title || (row.article_title + ' | AH Solution');
@@ -339,6 +348,12 @@ function articlePage(row, mdPath, all) {
 
   /* the trailing "Watch the original …" section becomes a framed component */
   let bodyHtml = rendered.html;
+  /* The markdown sources embed raw HTML figures (e.g. <img src="/blog/assets/
+     <slug>-explainer.svg">) that never pass through the markdown link
+     rewriter. Convert root-absolute Urirefs inside the body to the same
+     page-relative form so sub-path hosts (GitHub Pages) resolve them too.
+     Metadata (canonical/og/JSON-LD) is untouched — it is host-absolute. */
+  bodyHtml = bodyHtml.replace(/(src|href|poster)="\//g, (m, attr) => attr + '="' + PAGE_PREFIX);
   const VIDEO_H2 = '<h2 id="watch-the-original-ah-solution-video">';
   const vi = bodyHtml.indexOf(VIDEO_H2);
   if (vi !== -1) bodyHtml = bodyHtml.slice(0, vi) + '<section class="video-block">\n' + bodyHtml.slice(vi) + '\n</section>';
@@ -361,9 +376,9 @@ function articlePage(row, mdPath, all) {
   <div class="reading-progress" aria-hidden="true"></div>
   <section class="page-hero">
     <div class="container">
-      <nav class="breadcrumbs" aria-label="Breadcrumb">\n<a href="/index.html">Home</a> <span aria-hidden="true">/</span> <a href="/blog.html">Blog</a> <span aria-hidden="true">/</span> <a href="/blog.html?category=${encodeURIComponent(catKey || 'all')}">${esc(row.category)}</a> <span aria-hidden="true">/</span> <span aria-current="page">${esc(row.article_title)}</span></nav>
+      <nav class="breadcrumbs" aria-label="Breadcrumb">\n<a href="${PAGE_PREFIX}index.html">Home</a> <span aria-hidden="true">/</span> <a href="${PAGE_PREFIX}blog.html">Blog</a> <span aria-hidden="true">/</span> <a href="${PAGE_PREFIX}blog.html?category=${encodeURIComponent(catKey || 'all')}">${esc(row.category)}</a> <span aria-hidden="true">/</span> <span aria-current="page">${esc(row.article_title)}</span></nav>
       ${approved ? '' : '<p class="draft-ribbon" role="status">Draft for review — not yet published. Search: noindex pending approval.</p>'}
-      <a class="back-link" href="/blog.html">← Back to all articles</a>
+      <a class="back-link" href="${PAGE_PREFIX}blog.html">← Back to all articles</a>
       <div class="article-kicker">${esc(row.category)} · ${esc(mins)} min read</div>
       <h1 class="article-title">${esc(row.article_title)}</h1>
       <p class="article-intro">${esc(row.excerpt)}</p>
@@ -374,7 +389,7 @@ function articlePage(row, mdPath, all) {
   <section class="section">
     <div class="container article-wrap">
       <article class="article-main">
-        <img class="article-cover" src="${esc(cover)}" alt="${esc(row.image_alt_text || row.article_title)}" width="1200" height="630" decoding="async" onerror="this.onerror=null;this.src='/assets/img/og-default.jpg'">
+        <img class="article-cover" src="${esc(cover)}" alt="${esc(row.image_alt_text || row.article_title)}" width="1200" height="630" decoding="async" onerror="this.onerror=null;this.src='${PAGE_PREFIX}${OG_DEFAULT}'">
         <div class="article-body" data-article-content>
 ${videoJsonDiv(row)}
 ${bodyHtml}
@@ -392,7 +407,7 @@ ${bodyHtml}
           <div class="grid-2">${relatedHtml}</div>
         </div>
 
-        <p style="margin-top:18px"><a class="filter-chip" href="/blog.html">← Back to the blog</a></p>
+        <p style="margin-top:18px"><a class="filter-chip" href="${PAGE_PREFIX}blog.html">← Back to the blog</a></p>
       </article>
 
       <aside class="article-aside">
@@ -404,10 +419,10 @@ ${bodyHtml}
         <div class="aside-card">
           <h3>What we cover</h3>
           <div class="aside-links">
-            <a href="/blog.html?category=${encodeURIComponent(catKey || 'all')}">More in ${esc(row.category)}</a>
-            <a href="/blog.html">All articles</a>
-            <a href="/vlogs.html">Video tutorials</a>
-            <a href="/tutorials.html">Tutorial explorer</a>
+            <a href="${PAGE_PREFIX}blog.html?category=${encodeURIComponent(catKey || 'all')}">More in ${esc(row.category)}</a>
+            <a href="${PAGE_PREFIX}blog.html">All articles</a>
+            <a href="${PAGE_PREFIX}vlogs.html">Video tutorials</a>
+            <a href="${PAGE_PREFIX}tutorials.html">Tutorial explorer</a>
           </div>
         </div>
       </aside>
@@ -416,9 +431,9 @@ ${bodyHtml}
 </main>
 ${FOOTER}
 ${DEVICE_TAIL}
-<script src="/assets/js/device.js" defer></script>
-<script src="/assets/js/main.js" defer></script>
-<script src="/assets/js/cms.js" defer></script>
+<script src="${PAGE_PREFIX}assets/js/device.js" defer></script>
+<script src="${PAGE_PREFIX}assets/js/main.js" defer></script>
+<script src="${PAGE_PREFIX}assets/js/cms.js" defer></script>
 </body>
 </html>`;
 }

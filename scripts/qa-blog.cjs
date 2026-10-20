@@ -190,7 +190,7 @@ rows.forEach((r) => {
   if (/DRAFT/.test(html)) metaIssues.push(r.slug + ': DRAFT badge on a published page');
   const mdesc = unesc((html.match(/<meta name="description" content="([^"]*)"/) || [])[1] || '');
   if (mdesc !== r.meta_description) metaIssues.push(r.slug + ': meta description mismatch');
-  if (!html.includes('href="/blog.html"')) metaIssues.push(r.slug + ': no back-link to /blog.html');
+  if (!html.includes('href="../../blog.html"')) metaIssues.push(r.slug + ': no back-link to ../blog.html');
 
   const t = (html.match(/<title>([^<]*)<\/title>/) || [])[1] || '';
   if (seenTitles.has(t)) metaIssues.push('duplicate title: ' + t);
@@ -204,12 +204,12 @@ rows.forEach((r) => {
   /* editorial reading experience (assets/css/editorial.css) */
   if (!html.includes('<html lang="en-IN">')) designIssues.push(r.slug + ': html lang != en-IN');
   if (!html.includes('<body class="theme-editorial article-page">')) designIssues.push(r.slug + ': editorial body class missing');
-  if (!html.includes('/assets/css/editorial.css')) designIssues.push(r.slug + ': editorial.css not linked');
+  if (!html.includes('../../assets/css/editorial.css')) designIssues.push(r.slug + ': editorial.css not linked');
   if (!html.includes('class="reading-progress"')) designIssues.push(r.slug + ': reading progress bar missing');
   if (!html.includes('data-article-content')) designIssues.push(r.slug + ': article content marker missing');
   if (!html.includes('class="video-block"')) designIssues.push(r.slug + ': framed original-video component missing');
   if (!html.includes('<h1 class="article-title">')) designIssues.push(r.slug + ': article title class missing');
-  if (!/href="\/blog\.html\?category=[a-z]+"/.test(html)) designIssues.push(r.slug + ': no category breadcrumb link');
+  if (!/href="(\.\.\/\.\.\/)?blog\.html\?category=[a-z]+"/.test(html)) designIssues.push(r.slug + ': no category breadcrumb link');
   if (!html.includes('class="article-aside"')) designIssues.push(r.slug + ': article sidebar missing');
 
   /* relative links written in the draft are prefixed with ../../ at build time
@@ -280,7 +280,7 @@ ok('blog.html lists every manifest article exactly once',
   blogSlugs.length === 17 && manifestSlugs.every((s) => blogSlugs.filter((x) => x === s).length === 1),
   'total ' + blogSlugs.length + ', unique ' + new Set(blogSlugs).size);
 ok('every blog card links to its /article/<slug>/ page',
-  rows.every((r) => blogHtml.includes('href="/article/' + r.slug + '/"')));
+  rows.every((r) => blogHtml.includes('href="article/' + r.slug + '/"')));
 ok('blog.html has search + category chips + sort + result counter + empty state',
   /data-blog-search/.test(blogHtml) && (blogHtml.match(/data-filter="/g) || []).length >= 4 &&
   /data-blog-sort/.test(blogHtml) && /data-blog-count/.test(blogHtml) && /data-empty-state/.test(blogHtml));

@@ -111,7 +111,11 @@ function siteHref(href, opts) {
   const prefix = (opts && opts.rootPrefix != null) ? opts.rootPrefix : '../../';
   if (!prefix) return href;
   if (/^(#|mailto:|tel:|https?:|\/\/)/.test(href)) return href;
-  if (href.startsWith('/')) return href;           // already site-absolute
+  // A root-relative target ('/blog/assets/…') is fine at the domain root but
+  // misses the host prefix on sub-path hosts (GitHub Pages project sites),
+  // producing broken images and 404 navigations. Rewrite it to the same
+  // page-relative form; an empty prefix keeps root-absolute rendering.
+  if (href.startsWith('/')) return prefix + href.slice(1);
   return prefix + href.replace(/^\.\//, '');
 }
 
