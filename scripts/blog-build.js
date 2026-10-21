@@ -105,10 +105,10 @@ const HEADER = `<header class="site-header">
     <nav class="nav-links" id="primary-nav" aria-label="Main navigation">
       <span class="nav-pill" aria-hidden="true"></span>
       <a href="${PAGE_PREFIX}index.html">Home</a>
+      <a href="${PAGE_PREFIX}index.html#categories">Categories</a>
       <a href="${PAGE_PREFIX}vlogs.html">Videos</a>
       <a href="${PAGE_PREFIX}vlogs.html#shorts">Shorts</a>
       <a href="${PAGE_PREFIX}blog.html" class="active" aria-current="page">Blog</a>
-      <a href="${PAGE_PREFIX}index.html#categories">Categories</a>
       <a href="${PAGE_PREFIX}about.html">About</a>
       <a href="${PAGE_PREFIX}contact.html">Contact</a>
     </nav>

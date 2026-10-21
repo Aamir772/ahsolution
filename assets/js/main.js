@@ -32,29 +32,36 @@
    *    JS refines the choice so e.g. vlogs.html#shorts highlights Shorts,
    *    vlogs.html highlights Videos, and article pages highlight Blog.
    * ------------------------------------------------------------------ */
-  (function markActiveNav() {
+  (function initActiveNav() {
     const nav = $('.nav-links');
     if (!nav) return;
     const norm = (p) => (p || '').toLowerCase().replace(/\/index\.html$/, '/').replace(/\/+$/, '') || '/';
-    const path = norm(location.pathname);
-    const hash = (location.hash || '').toLowerCase().replace(/^#/, '');
-    const links = $$('a', nav);
-    let match = null;
-    links.forEach((a) => {
-      const href = a.getAttribute('href') || '';
-      if (href.startsWith('http')) return;
-      const parts = href.split('#');
-      const h = (parts[1] || '').toLowerCase();
-      const hOk = h ? h === hash : hash === '';
-      if (norm(parts[0]) === path && hOk) match = a;
-    });
-    if (!match && path.indexOf('/article') === 0) {
-      match = links.find(a => (a.getAttribute('href') || '').indexOf('blog') !== -1) || null;
-    }
-    if (!match) return; /* keep the page's static choice when no route matches */
-    links.forEach(a => { a.classList.remove('active'); a.removeAttribute('aria-current'); });
-    match.classList.add('active');
-    match.setAttribute('aria-current', 'page');
+    const mark = () => {
+      const path = norm(location.pathname);
+      const hash = (location.hash || '').toLowerCase().replace(/^#/, '');
+      const links = $$('a', nav);
+      let match = null;
+      links.forEach((a) => {
+        const href = a.getAttribute('href') || '';
+        if (href.startsWith('http')) return;
+        const parts = href.split('#');
+        const h = (parts[1] || '').toLowerCase();
+        const hOk = h ? h === hash : hash === '';
+        if (parts[0] && norm(parts[0]) === path && hOk) match = a;
+      });
+      if (!match && path.indexOf('/article') === 0) {
+        match = links.find(a => (a.getAttribute('href') || '').indexOf('blog') !== -1) || null;
+      }
+      if (!match && hash) {
+        match = links.find(a => (a.getAttribute('href') || '').toLowerCase().endsWith('#' + hash)) || null;
+      }
+      if (!match) return; /* keep the page's static choice when no route matches */
+      links.forEach(a => { a.classList.remove('active'); a.removeAttribute('aria-current'); });
+      match.classList.add('active');
+      match.setAttribute('aria-current', 'page');
+    };
+    mark();
+    window.addEventListener('hashchange', mark);
   })();
 
   /* ------------------------------------------------------------------ *
