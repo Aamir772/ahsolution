@@ -1,6 +1,6 @@
 # Blog draft import, review and publishing
 
-This document covers the 17 Hinglish drafts in `blog/articles/`: how they are
+This document covers the 17 drafts in `blog/articles/`: how they are
 built into public pages, how to review them locally, how to import them into the
 CMS **as drafts**, and how a human publishes later. Nothing here deploys
 anything automatically.

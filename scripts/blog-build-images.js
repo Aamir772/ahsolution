@@ -31,23 +31,23 @@ const FONT = "Manrope, 'Segoe UI', system-ui, sans-serif";
 /* ------------------------------ per-article ------------------------------ */
 
 const ART = {
-  1:  { glyph: 'phone',    bullets: ['First-look context (2021 short)', 'Used-phone buying checklist', 'Specs verify kaise karein'] },
-  2:  { glyph: 'laptop',   bullets: ['GPU/CPU evaluation framework', 'Thermals aur upgrade paths', 'Used-market checklist 2026'] },
-  3:  { glyph: 'laptop',   bullets: ['Aging platform — honest take', 'Typical 2021 configurations', 'Battery/thermal/warranty checks'] },
-  4:  { glyph: 'box',      bullets: ['Unboxing-day checklist', 'Invoice aur SKU verification', 'First-boot aur warranty steps'] },
+  1:  { glyph: 'phone',    bullets: ['First-look context (2021 short)', 'Used-phone buying checklist', 'How to verify the specs'] },
+  2:  { glyph: 'laptop',   bullets: ['GPU/CPU evaluation framework', 'Thermals and upgrade paths', 'Used-market checklist for 2026'] },
+  3:  { glyph: 'laptop',   bullets: ['An ageing platform — an honest take', 'Typical 2021 configurations', 'Battery, thermal and warranty checks'] },
+  4:  { glyph: 'box',      bullets: ['Unboxing-day checklist', 'Invoice and SKU verification', 'First-boot and warranty steps'] },
   5:  { glyph: 'camera',   bullets: ['Stability, focus, exposure', 'Night mode vs long exposure', 'Realistic phone-camera limits'] },
-  6:  { glyph: 'watch',    bullets: ['Budget smartwatch framework', 'Display, comfort aur battery', 'Feature claims verify karein'] },
+  6:  { glyph: 'watch',    bullets: ['Budget smartwatch framework', 'Display, comfort and battery', 'How to verify feature claims'] },
   7:  { glyph: 'apps',     bullets: ['App evaluation framework', 'Permission hygiene checks', 'Exact video list: verification pending'] },
-  8:  { glyph: 'apps',     bullets: ['Free vs freemium traps', 'FOSS aur open alternatives', 'Play Store verification steps'] },
+  8:  { glyph: 'apps',     bullets: ['Free vs freemium traps', 'FOSS and open alternatives', 'Play Store verification steps'] },
   9:  { glyph: 'browser',  bullets: ['Defaults vs privacy controls', 'Extensions, sync, compatibility', 'No universal speed winner'] },
   10: { glyph: 'keyboard', bullets: ['10 everyday Windows shortcuts', 'Clipboard, screenshots, snap', 'Shortcut → use-case table'] },
-  11: { glyph: 'monitor',  bullets: ['Live-wallpaper setup workflow', 'Performance aur GPU impact', 'Current alternatives included'] },
-  12: { glyph: 'wave',     bullets: ['Startup audio automation', 'Safe PowerShell greeting', 'Realistic expectations'] },
-  13: { glyph: 'chat',     bullets: ['Notification-access mechanism', 'Recovery ki real limits', 'Privacy risks of granting access'] },
-  14: { glyph: 'shield',   bullets: ['Legal aur malware risks', 'Privacy concerns', 'Safer legal alternatives'] },
-  15: { glyph: 'ah',       bullets: ['Channel ka mission', 'Content map: videos + blog', 'Kahan se start karein'] },
-  16: { glyph: 'remote',   bullets: ['Official setup steps', 'PIN aur account security', 'Offline-host troubleshooting'] },
-  17: { glyph: 'cast',     bullets: ['Cast vs Miracast vs PC', 'Method comparison table', 'Network/lag troubleshooting'] }
+  11: { glyph: 'monitor',  bullets: ['Live-wallpaper setup workflow', 'Performance and GPU impact', 'Current alternatives included'] },
+  12: { glyph: 'wave',     bullets: ['Startup audio automation', 'A safe PowerShell greeting', 'Realistic expectations'] },
+  13: { glyph: 'chat',     bullets: ['How the notification access works', 'The real limits of recovery', 'Privacy risks of granting access'] },
+  14: { glyph: 'shield',   bullets: ['Legal and malware risks', 'Privacy concerns', 'Safer legal alternatives'] },
+  15: { glyph: 'ah',       bullets: ['The mission of the channel', 'Content map: videos + blog', 'Where to start'] },
+  16: { glyph: 'remote',   bullets: ['Official setup steps', 'PIN and account security', 'Offline-host troubleshooting'] },
+  17: { glyph: 'cast',     bullets: ['Cast vs Miracast vs PC', 'Method comparison table', 'Network and lag troubleshooting'] }
 };
 
 /* ------------------------------- helpers -------------------------------- */
@@ -257,7 +257,7 @@ function cover(row, art) {
   const startY = 250 - (lines.length - 1) * 26;
   let s = baseSvg(w, h,
     'AH Solution editorial cover — ' + row.article_title,
-    'Original editorial vector illustration for the draft article “' + row.article_title + '”. Not a product photograph, screenshot or YouTube thumbnail.');
+    'Original editorial vector illustration for the article “' + row.article_title + '”. Not a product photograph, screenshot or YouTube thumbnail.');
   s += '<circle cx="920" cy="315" r="300" fill="url(#glow)"/>';
   s += '<rect x="0" y="0" width="' + w + '" height="6" fill="url(#bar)"/>';
   s += '<text x="80" y="120" font-family="' + FONT + '" font-size="20" font-weight="700" letter-spacing="4" fill="' + CRIMSON + '">AH SOLUTION \u00B7 BLOG ' + String(row.article_number).padStart(2, '0') + '/17</text>';
@@ -283,7 +283,7 @@ function thumb(row, art) {
   const tSize = lines.length > 2 ? 22 : 26;
   let s = baseSvg(w, h,
     'AH Solution card thumbnail — ' + row.article_title,
-    'Original editorial vector thumbnail for the draft article “' + row.article_title + '”.');
+    'Original editorial vector thumbnail for the article “' + row.article_title + '”.');
   s += '<circle cx="500" cy="180" r="170" fill="url(#glow)"/>';
   s += '<rect x="0" y="0" width="' + w + '" height="4" fill="url(#bar)"/>';
   s += '<text x="36" y="64" font-family="' + FONT + '" font-size="13" font-weight="700" letter-spacing="3" fill="' + CRIMSON + '">AH SOLUTION \u00B7 ' + String(row.article_number).padStart(2, '0') + '/17</text>';
@@ -305,19 +305,19 @@ function explainer(row, art) {
   const lines = wrap(title, 46).slice(0, 2);
   let s = baseSvg(w, h,
     'AH Solution explainer visual — ' + row.article_title,
-    'Original editorial explainer illustration for the draft article “' + row.article_title + '”. Diagram-style visual; not a screenshot or benchmark.');
+    'Original editorial explainer illustration for the article “' + row.article_title + '”. Diagram-style visual; not a screenshot or benchmark.');
   s += '<circle cx="330" cy="470" r="250" fill="url(#glow)"/>';
   s += '<rect x="0" y="0" width="' + w + '" height="6" fill="url(#bar)"/>';
   s += '<text x="70" y="110" font-family="' + FONT + '" font-size="18" font-weight="700" letter-spacing="4" fill="' + CRIMSON + '">AH SOLUTION \u00B7 EXPLAINER \u00B7 ARTICLE ' + String(row.article_number).padStart(2, '0') + '/17</text>';
   lines.forEach(function (ln, i) {
     s += '<text x="70" y="' + (190 + i * 56) + '" font-family="' + FONT + '" font-size="46" font-weight="800" fill="' + TEXT + '">' + esc(ln) + '</text>';
   });
-  s += '<text x="70" y="' + (190 + lines.length * 56 + 6) + '" font-family="' + FONT + '" font-size="19" font-weight="600" fill="' + MUTED + '">' + esc(row.category) + ' \u00B7 Hinglish draft</text>';
+  s += '<text x="70" y="' + (190 + lines.length * 56 + 6) + '" font-family="' + FONT + '" font-size="19" font-weight="600" fill="' + MUTED + '">' + esc(row.category) + ' \u00B7 English article</text>';
   // left glyph panel
   s += '<rect x="120" y="360" width="420" height="340" rx="18" fill="' + PANEL + '" stroke="' + LINE + '" stroke-width="1.5"/>';
   s += glyph(art.glyph, 330, 530, 230);
-  // right: kya seekhenge chips
-  s += '<text x="620" y="400" font-family="' + FONT + '" font-size="20" font-weight="700" letter-spacing="2" fill="' + CRIMSON + '">KYA SEEKHENGE</text>';
+  // right: "what you will learn" chips
+  s += '<text x="620" y="400" font-family="' + FONT + '" font-size="20" font-weight="700" letter-spacing="2" fill="' + CRIMSON + '">WHAT YOU WILL LEARN</text>';
   art.bullets.slice(0, 3).forEach(function (b, i) {
     const y = 440 + i * 78;
     s += '<rect x="620" y="' + y + '" width="500" height="58" rx="12" fill="' + PANEL + '" stroke="' + LINE + '" stroke-width="1.5"/>';

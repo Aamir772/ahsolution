@@ -89,11 +89,15 @@ function parseArticle(md) {
   // rendered body — the page template renders those itself. Raw HTML comments
   // in a draft are authoring/review notes; the renderer escapes HTML, so they
   // would otherwise leak into the article as visible escaped text — drop them.
+  // The <!--TOC--> marker is the one exception: it is a build instruction
+  // (renderBody swaps it for the generated table of contents), not a note.
   let content = bodyMd
     .replace(/^# .+\n+/m, '')
     .replace(/^> \*\*Draft for review[^\n]*\*\*\n+/m, '')
     .replace(/^!\[[^\]]*\]\([^)]+\s*"[^"]*"\)\s*\n+/m, '')
-    .replace(/<!--[\s\S]*?-->/g, '');
+    .replace(/<!--TOC-->/g, '\u0000AH_TOC\u0000')
+    .replace(/<!--[\s\S]*?-->/g, '')
+    .replace(/\u0000AH_TOC\u0000/g, '<!--TOC-->');
 
   return { title, banner, bodyMd: content.trim(), tailMd, editorialNote };
 }
@@ -315,7 +319,7 @@ function buildToc(headings) {
     .map(function (h) { return '<li><a href="#' + h.id + '">' + inline(h.text) + '</a></li>'; });
   if (!items.length) return '';
   return '<nav class="article-toc" aria-label="Table of contents">' +
-    '<strong class="article-toc__title">Is guide mein kya cover hoga</strong>' +
+    '<strong class="article-toc__title">What this guide covers</strong>' +
     '<ol>' + items.join('') + '</ol></nav>';
 }
 

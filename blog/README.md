@@ -1,7 +1,7 @@
 # AH Solution Blog Draft Pack — 17 Videos
 
 ## What's included
-- `articles/`: 17 Hinglish article drafts, each linked to the exact original YouTube video URL.
+- `articles/`: 17 article drafts written in professional English, each linked to the exact original YouTube video URL.
 - `blog-manifest.json` / `blog-manifest.csv`: source of truth — title, slug, route, tags,
   keywords, meta descriptions, thumbnail, schema type, word count, reading time, image
   paths and draft status.

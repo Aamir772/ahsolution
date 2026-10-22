@@ -2,14 +2,16 @@
 
 Every file in `blog/articles/*.md` MUST follow this exact structure. The
 build/import scripts parse this format, so do not invent new sections or
-reorder the skeleton. Everything is Hinglish written in Roman script.
+reorder the skeleton. Everything is written in professional English; the site's
+Hinglish identity lives in the interface chrome and the video channel, not in
+the written articles.
 
 ## Skeleton (in order)
 
 ```markdown
 # {Exact article title from manifest, as H1 — only H1 in the file}
 
-> **Draft for review · Article {NN}/17 · Language: Hinglish**
+> **Draft for review · Article {NN}/17 · Language: English**
 
 ![{descriptive alt text}]({https://i.ytimg.com/vi/{VIDEO_ID}/hqdefault.jpg} "AH Solution source video thumbnail")
 
@@ -25,11 +27,11 @@ the CSV/metadata proves what is in it.}
 
 {Body sections — 5 to 8 H2 sections, with H3s where genuinely useful.}
 
-## Troubleshooting aur limitations
+## Troubleshooting and limitations
 
 {Honest limitations of the topic/feature/tool + common failure cases and fixes.}
 
-## Safety aur privacy
+## Safety and privacy
 
 {Relevant safety/privacy considerations. If genuinely none, give the closest
 real ones — permissions, data handling, purchase risk — never filler.}
@@ -87,14 +89,15 @@ real ones — permissions, data handling, purchase risk — never filler.}
 6. Accuracy:
    - Never invent prices, benchmarks, benchmark numbers, app names, demo
      results or specifications. "Verify on official listing" notes are fine.
-   - Videos from 2020–2021 are historical context. Separate "video ke time
-     ka context" from "aaj ke liye practical advice".
+   - Videos from 2020–2021 are historical context. Keep the context of the
+     video separate from practical advice for the reader today.
    - If the CSV did not include facts (e.g. exact app names in listicle
      videos), do not fabricate them. Teach the evaluation framework and add a
      clearly marked verification note in the editorial section.
-7. Tone: practical, conversational Hinglish; technical terms stay in English.
-   Address the reader as "aap". No keyword stuffing, no English-template
-   feel.
+7. Tone: clear, professional, reader-friendly technology-publication English;
+   technical terms stay in English. Address the reader as "you". No keyword
+   stuffing, no machine-translation feel, no filler. Where a fact comes from
+   the source video, say so plainly and keep the honest caveats.
 8. Formatting: bold for key terms, lists for checklists, markdown pipe tables
    for comparisons (supported by the build script). No HTML except the
    iframe.

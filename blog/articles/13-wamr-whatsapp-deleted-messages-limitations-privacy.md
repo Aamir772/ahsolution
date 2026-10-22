@@ -1,138 +1,140 @@
-# WhatsApp Deleted Messages aur WAMR: Kaise Kaam Karta Hai?
+# WhatsApp Deleted Messages and WAMR: How It Actually Works
 
-> **Draft for review · Article 13/17 · Language: Hinglish**
+> **Draft for review · Article 13/17 · Language: English**
 
 ![WAMR deleted WhatsApp messages thumbnail](https://i.ytimg.com/vi/POFUUEFMCJQ/hqdefault.jpg "AH Solution source video thumbnail")
 
-WhatsApp par message aaya, aapne notification nahi dekhi, aur sender ne "Delete for Everyone" se message delete kar diya - ab wo gaya? Original AH Solution video (July 2020) isi frustration par hai: WAMR jaise apps ka tutorial jo deleted messages dikhane ka dawa karte hain.
+A message arrives on WhatsApp, you do not look at the notification, and the sender uses "Delete for Everyone" - is the message gone for good? The original AH Solution video (July 2020) addresses that frustration, with a tutorial for apps such as WAMR that promise to show deleted messages.
 
-Is article ka main kaam hai aapko **honest mechanism** samjhana: WAMR kaise kaam karta hai, kahan tak kaam karta hai aur kahan fail hota hai. Ek line mein seedhi baat: **koi bhi app WhatsApp ke end-to-end encryption ko bypass nahi kar sakta, aur 100% recovery possible nahi hai.** Jo dikh sakta hai wo sirf notification se aaya content hota hai, aur notification access dena ek bada privacy trade-off hai.
+The main job of this article is to explain the **honest mechanism**: how WAMR works, how far it reaches and where it fails. In one line: **no app can bypass WhatsApp's end-to-end encryption, and 100% recovery is not possible.** These apps show content that arrived as a notification, and notification access is a significant privacy trade-off.
 
 **Original video:** [How to Read Deleted WhatsApp Messages! 😱 | WAMR App Tutorial](https://www.youtube.com/watch?v=POFUUEFMCJQ)  
 **Video published:** 31 July 2020 · **Duration:** 04:35
 
 <!--TOC-->
 
-## 1. WhatsApp "Delete for Everyone" actually kya karta hai?
+## What "Delete for Everyone" actually does
 
-Jab sender "Delete for Everyone" use karta hai, toh WhatsApp server recipients ke devices ko message delete karne ka instruction bhejta hai. Recipient ki app message hata deti hai aur uski jagah "This message was deleted" likha aa jaata hai - official detail [WhatsApp Help Center](https://faq.whatsapp.com/1370476507114859) par.
+When a sender uses "Delete for Everyone", WhatsApp's server instructs the recipients' devices to delete the message. The recipient's app removes it and shows "This message was deleted" instead - see the [WhatsApp Help Center](https://faq.whatsapp.com/1370476507114859).
 
-Yahan do baatein important hain:
+Two points matter here:
 
-- **Encryption:** WhatsApp messages end-to-end encrypted hain - server bhi plain content nahi padhta (barring metadata). Isliye koi third party server se "deleted message" utha nahi sakta.
-- **Delete semantics:** Ye feature galti se bheje message ko wapas lene ke liye bana tha - sender ke liye "unsend", receiver ke liye "gayab".
+- **Encryption:** messages are end-to-end encrypted, so the server does not read the plain content either (apart from metadata). No third party can pull a deleted message back from the server.
+- **Delete semantics:** the feature recalls a message sent by mistake - an "unsend" for the sender, a disappearance for the receiver.
 
-Receiver ke device par message gayab ho jaata hai. Fir WAMR jaise apps kaise "dikhate" hain? Agle section mein.
+On the receiver's device the message is gone. So how do apps like WAMR still show it?
 
-## 2. WAMR kaise kaam karta hai - Notification Access ka truth
+## How WAMR works: the truth about notification access
 
-WAMR ka mechanism **Android Notification Access** par based hai:
+The WAMR mechanism is built on **Android Notification Access**:
 
-1. Aap WAMR ko **"Notification Access"** permission dete hain (Settings > Special app access > Notification access).
-2. Jab koi WhatsApp message aata hai, Android notification deta hai jisme message ka text (aur kabhi-kabhi sender name) hota hai.
-3. WAMR ye notification **padhta hai** aur uska local copy phone ke storage mein save karta hai.
-4. Sender delete kare toh WhatsApp apne database se delete karta hai - lekin WAMR ki saved copy us app ke paas rehti hai, jo aapko dikhayi deti hai.
+1. You grant WAMR **"Notification Access"** (Settings > Special app access > Notification access).
+2. When a WhatsApp message arrives, Android issues a notification with the message text and sometimes the sender's name.
+3. WAMR **reads** that notification and saves a local copy on the phone.
+4. When the sender deletes the message, WhatsApp removes it from its database - but WAMR's saved copy remains in that app, which shows it to you.
 
-**Simple analogy:** Jaise aap kisi cheez ki photocopy rakh lete hain - original jaaye, copy aapke paas hai.
+**A simple analogy:** it is like keeping a photocopy. The original can go, your copy stays with you.
 
-Limitations bhi isi se samajh aate hain: **notification hi nahi aayi** (phone off tha ya app background mein thi) toh WAMR ke paas copy hi nahi hogi.
+The same logic explains the limits: if **no notification was delivered at all** (the phone was off, or the app was restricted in the background), WAMR never had a copy.
 
-## 3. Recovery ki real limitations
+## The real limitations of recovery
 
-Limitations honestly jaan lein:
+Know the limits honestly:
 
-- **Notification honi zaroori hai:** Sirf notified messages save hote hain. Screen off tha, notification aayi hi nahi - wo recover nahi hoga.
-- **Media sirf download hone par:** Agar photo/video **pehle se download** thi toh file phone storage mein hai aur "delete" ke baad bhi mil sakti hai; warna nahi.
-- **100% kabhi nahi:** Network issues, app restrictions, phone restart, permission changes - kuch bhi recovery rok sakta hai.
-- **App par depend:** WhatsApp updates ke saath notification content kabhi-kabhi hide hota hai (jaise lock screen privacy), toh saved copy bhi affect ho sakti hai.
+- **A notification is required:** only notified messages are saved. If no notification arrived, the message cannot be recovered.
+- **Media only if it was already downloaded:** if a photo or video was **downloaded beforehand**, it is in the phone's storage and may survive the deletion. Otherwise it is not.
+- **Never 100%:** network issues, app restrictions, a restart or permission changes can stop recovery.
+- **It depends on the app:** WhatsApp updates sometimes hide notification content (lock screen privacy, for example), which can affect the saved copy.
 
-Video ke time (2020) ye apps kaafi chalti thin; aaj [notification permission](https://developer.android.com/develop/ui/compose/notifications/notification-permission) aur privacy stricter hai, isliye reliability aur bhi variable ho sakti hai. **Isliye kisi bhi app ke "100% recovery" dawe par bharosa na karein.**
+These apps were common around the time of the video (2020). Today the [notification permission](https://developer.android.com/develop/ui/compose/notifications/notification-permission) model and privacy expectations are stricter, so reliability is more variable. **Do not rely on any app's promise of "100% recovery".**
 
-## 4. Privacy implications - bada sawaal
+## Privacy implications: the big question
 
-Notification Access dene ka matlab hai **wo app aapke phone ke SAB notifications padh sakta hai**, sirf WhatsApp ke nahi - banking OTP, email, SMS, other apps ke messages bhi, aur un sabki local copy us app ke storage mein ban sakti hai.
+Granting Notification Access means **that app can read every notification on your phone**, not just WhatsApp's: banking OTPs, email, SMS and messages from other apps, and copies of all of that can end up in its storage.
 
 <figure class="article-figure">
-  <img src="/blog/assets/wamr-whatsapp-deleted-messages-limitations-privacy-explainer.svg" alt="Editorial illustration listing this article's topics - notification access, recovery limits aur privacy risks" width="1200" height="800" loading="lazy" decoding="async">
-  <figcaption>Editorial illustration - AH Solution: notification access, recovery limits aur privacy risks.</figcaption>
+  <img src="/blog/assets/wamr-whatsapp-deleted-messages-limitations-privacy-explainer.svg" alt="Editorial illustration listing this article's topics - notification access, recovery limits and privacy risks" width="1200" height="800" loading="lazy" decoding="async">
+  <figcaption>Editorial illustration - AH Solution: notification access, recovery limits and privacy risks.</figcaption>
 </figure>
 
-Aap soch rahe hain "sirf WhatsApp ke liye diya hai" - lekin permission app-level hoti hai. Sirf WhatsApp ki copy banana WAMR ka kaam hai, lekin **raw notification stream sabka** app ke paas aata hai.
+You may think "I gave it for WhatsApp only" - but the permission is granted at app level. Copying only WhatsApp messages is what WAMR does, while the **raw notification stream** reaches it in full.
 
-Isliye:
+So:
 
-1. **App verify karein** - developer kaun hai, reviews kya hain, data kahan ja raha hai (offline ya cloud sync).
-2. **Permission wapas lein** - zaroorat khatam ho toh Settings > Special access > Notification access se app disable karein.
-3. **Trust matters:** Unknown dev ka notification-access app kabhi na lagayein. App safety framework [guides/choose-android-apps-safely.html](/guides/choose-android-apps-safely.html) mein hai.
+1. **Verify the app** - who the developer is, what the reviews say, and where the data goes.
+2. **Revoke the permission** - when you no longer need it, disable the app under Settings > Special access > Notification access.
+3. **Trust matters:** never install a notification-access app from an unknown developer. The app safety framework is covered in our [guides/choose-android-apps-safely.html](/guides/choose-android-apps-safely.html) guide.
 
-Permissions ke broader perspective ke liye [privacy.html](/privacy.html) bhi dekh lein.
+For a broader view of permissions, see [privacy.html](/privacy.html).
 
-## 5. Built-in Android Notification History - bina kisi app ke
+## Built-in Android notification history: no app needed
 
-Android ka apna **Notification History** feature bina third-party app ke wahi kaam karta hai. Ye Android 11+ par available hai (OEMs ise optional kar sakte hain, isliye location thodi differ ho sakti hai; official steps [Google Support](https://support.google.com/android/answer/9079661) par):
+Android's own **Notification History** feature does the same job without any third-party app. It is available on Android 11 and later (manufacturers may treat it as optional, so the location can differ; the official steps are on [Google Support](https://support.google.com/android/answer/9079661)).
 
-**Settings > Notifications > Notification history** mein jaake **"Use notification history"** on karein. On karne ke baad recent dismissed notifications (default 24 ghante) dekhne ko milte hain; Samsung par path thoda alag ho sakta hai.
+Open **Settings > Notifications > Notification history** and turn on **"Use notification history"**. Once enabled, recently dismissed notifications (24 hours by default) can be reviewed; on Samsung the path differs.
 
-**Iska bhi same limit hai** - notification-based. Message kabhi notify hi nahi hua to history mein bhi nahi hoga. Lekin kisi unknown app ko notification access nahi deni padti - system khud handle karta hai. Isi built-in solution ko hum pehle try karne ke liye recommend karte hain.
+**It has the same limit** - it is notification-based. If a message was never notified, it will not be in the history either. And you do not have to give an unknown app notification access, because the system handles it. Try this built-in option first.
 
-## 6. Sahi expectations kaise set karein?
+## Setting realistic expectations
 
-Real-world scenario - "message delete ho gaya, ab kya?"
+A realistic scenario: the message has been deleted, so what now?
 
-- **Pehle check karein:** Notification aayi thi? Flash hui thi? Notification history on hai? Agar haan, text mil sakta hai.
-- **Media case:** File download ho chuki thi? Gallery/Downloads check karein - auto-download tha toh wahi file phone par rehti hai.
-- **Rozmarra use:** App install karne se pehle sochein - kya privacy trade-off worth hai?
-- **Legal case:** Notification-based app proof nahi hai - official WhatsApp export ya screenshot hi dependable hain.
+- **Check first:** did a notification arrive? Did it flash? Is notification history on? If yes, the text may be there.
+- **Media case:** was the file already downloaded? Check Gallery and Downloads - with auto-download it stays on the phone.
+- **Daily use:** think before installing any app - is the privacy trade-off worth it?
+- **Legal case:** a notification-based app is not proof; only an official WhatsApp export or a screenshot is dependable.
 
-## Troubleshooting aur limitations
+## Troubleshooting and limitations
 
-- **WAMR kuch save nahi kar raha:** Notification access permission check karein, phone restart karein, WhatsApp notifications on honi chahiyein.
-- **Messages missing hain:** Notification aayi thi? Phone silent tha? Background restrictions toh nahi?
-- **App Play Store se gayab:** Apps policy reasons se hat jaati hain - aise mein built-in Notification history use karein.
-- **Recovery nahi mili:** Ye normal hai - koi 100% tool exist nahi karta.
-- **Notification history nahi dikh rahi:** Phone/OEM ye feature deta hai kya - Settings > Notifications mein dhundhein.
+- **WAMR is not saving anything:** check notification access, restart the phone, and confirm WhatsApp notifications are on.
+- **Messages are missing:** did a notification arrive? Was the phone on silent? Are there background restrictions in place?
+- **The app disappeared from the Play Store:** apps are removed for policy reasons - use the built-in history instead.
+- **No recovery is found:** that is normal. No 100% tool exists.
+- **Notification history is not showing:** look for it under Settings > Notifications on your phone or OEM build.
 
-## Safety aur privacy
+## Safety and privacy
 
-- **Notification access:** Sabse bada point - sirf tab dein jab trusted app ho aur zaroorat ho.
-- **Offline > Cloud:** App agar "backup" option de toh soch lein - content kahin bheja ja raha hai.
-- **Permission revoke:** App uninstall karke permission automatic hat jaati hai, lekin Settings mein confirm kar lein.
-- **Sensitive notifications:** OTPs, banking alerts ki copy kisi app ke paas jaana serious risk hai. [privacy.html](/privacy.html) par guidelines padhein.
-- **Legal angle:** Kisi ka private message chhupa kar read karna Indian IT Act aur privacy norms ke under galat ho sakta hai - apne messages, apne device tak hi rakhein.
+- **Notification access:** the most important point - grant it only to a trusted app, and only when needed.
+- **Offline beats cloud:** if an app offers a "backup" option, think carefully - your content is sent somewhere.
+- **Revoking the permission:** uninstalling removes the permission automatically, but confirm it in Settings.
+- **Sensitive notifications:** copies of OTPs and banking alerts reaching a third-party app is a serious risk. Read the guidelines on [privacy.html](/privacy.html).
+- **Legal angle:** reading someone's private message without their knowledge may fall foul of the Indian IT Act and privacy norms. Keep to your own messages and device.
 
 ## Frequently asked questions
 
-### Kya WAMR deleted WhatsApp messages 100% recover kar leta hai?
-Nahi. Sirf notification-based copy banti hai jo pehle se aayi honi chahiye - koi bhi app 100% guarantee nahi de sakta.
+### Does WAMR really recover deleted WhatsApp messages 100% of the time?
 
-### End-to-end encryption se ye kaise possible hai?
-Encryption bypass nahi hoti. App sirf phone ki notification padhta hai, jo device par decrypt hokar aati hai.
+No. Only a notification-based copy is kept, and only if the notification arrived in the first place. No app guarantees 100%.
 
-### Media messages recover ho sakte hain?
-Sirf tab jab media pehle se download ho chuka ho - bina download ke file phone mein hai hi nahi.
+### How is this possible with end-to-end encryption?
 
-### Kya bina app ke dekh sakte hain?
-Haan - Android 11+ par built-in Notification history on karein: Settings > Notifications > Notification history. Ye 24 ghante tak ke dismissed notifications dikhata hai.
+The encryption is not bypassed. The app only reads the notification on your phone, which is decrypted on the device.
 
-### Notification access dena safe hai?
-Trusted, reputed app ho tabhi. Ye permission aapke sab notifications ka access deti hai - banking OTPs tak. Zaroorat khatam ho toh hata dein.
+### Can media messages be recovered?
 
-### "Delete for Everyone" ka kya matlab hai?
-Sender message ko dono sides se unsend kar deta hai - receiver ki app mein "deleted" likha aa jaata hai.
+Only when the media was already downloaded. Without a download, the file was never on the phone.
+
+### Can I see deleted messages without installing an app?
+
+Yes - turn on the built-in notification history on Android 11 and later: Settings > Notifications > Notification history. It shows dismissed notifications from the past 24 hours.
+
+### Is granting notification access safe?
+
+Only to a trusted, reputable app. The permission gives it all your notifications, banking OTPs included. Remove it as soon as you no longer need it.
 
 ## Final recommendations
 
-Agar bas "notification aa gaya tha, dekh paye" wala use case hai toh **WAMR jaise app ki zaroorat nahi** - Android ki built-in Notification history on kar lijiye: zero extra permission, zero privacy trade-off.
+If your use case is only "a notification did arrive, I want to see it", **you do not need an app like WAMR**. Switch on Android's built-in notification history: no extra permission, no trade-off.
 
-Koi bhi recovery app install karne se pehle teen sawaal poochhein: permission kitni de raha hoon, data kahan ja raha hai, aur app trusted hai? Jawab satisfying nahi toh install mat karein. App selection ke liye hamari [guides/choose-android-apps-safely.html](/guides/choose-android-apps-safely.html) guide follow karein.
+Before installing any recovery app, ask three questions: how much permission am I giving, where does the data go, and is the app trusted? If the answers are not satisfying, do not install it. Follow our [guides/choose-android-apps-safely.html](/guides/choose-android-apps-safely.html) guide.
 
-Aur sabse zaroori - deleted message recover karna kabhi guarantee nahi hota. Jahan important record chahiye, wahan pehle se screenshot/export rakhein.
+And the most important point: recovering a deleted message is never guaranteed. Where a record matters, take a screenshot or export in advance.
 
-## Resources aur official links
+## Resources and official links
 
-- [Google Support — Notifications aur Notification history](https://support.google.com/android/answer/9079661) — built-in notification history on karne ka official tarika.
-- [WhatsApp Help Center — Messages delete karna](https://faq.whatsapp.com/1370476507114859) — "Delete for Everyone" ka official matlab, do-din ki limit aur recovery rules.
-- [Android Developers — Notification runtime permission](https://developer.android.com/develop/ui/compose/notifications/notification-permission) — Android 13+ par notification permission ka official explanation.
+- [Google Support - Notifications and notification history](https://support.google.com/android/answer/9079661) - the official way to switch on notification history.
+- [WhatsApp Help Center - deleting messages](https://faq.whatsapp.com/1370476507114859) - the official meaning of "Delete for Everyone", the two-day limit and recovery rules.
+- [Android Developers - Notification runtime permission](https://developer.android.com/develop/ui/compose/notifications/notification-permission) - the official explanation of the notification permission on Android 13 and later.
 
 ## Watch the original AH Solution video
 
@@ -152,6 +154,7 @@ Aur sabse zaroori - deleted message recover karna kabhi guarantee nahi hota. Jah
 
 5. **Rights check:** confirm you own or may use each image. Generated concept art must not be presented as a real product screenshot.
 
+
 ---
 
-**Editorial note:** Video July 2020 ka hai - WAMR ka current Play Store availability, notification behavior aur Android notification privacy changes publish se pehle verify karein. Android Notification history ka exact path (Settings menus) alag-alag OEMs par differ karta hai - ek popular phone par test karke confirm karein. WhatsApp ke "Delete for Everyone" semantics official WhatsApp Help se dobara check karein.
+**Editorial note:** The video dates from July 2020 - verify WAMR's current Play Store availability, notification behaviour and Android notification privacy changes before publishing. The exact path for Android's notification history (Settings menus) differs between manufacturers - test and confirm it on a popular phone model. Re-check the semantics of WhatsApp's "Delete for Everyone" against the official WhatsApp Help pages.

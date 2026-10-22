@@ -87,9 +87,11 @@ ok('schema_type BlogPosting on all',
   rows.every((r) => r.schema_type === 'BlogPosting'));
 
 /* ------------------------------------------------------------- article md */
+/* The written articles are published in professional English, so the required
+   section headings are the English ones (blog/ARTICLE-FORMAT.md). */
 const requiredSections = [
-  '## Troubleshooting aur limitations',
-  '## Safety aur privacy',
+  '## Troubleshooting and limitations',
+  '## Safety and privacy',
   '## Frequently asked questions',
   '## Final recommendations',
   '## Watch the original AH Solution video',

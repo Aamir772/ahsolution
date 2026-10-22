@@ -1,130 +1,128 @@
-# iQOO Z5 5G Unboxing: Design, Display aur Key Features
+# iQOO Z5 5G Unboxing: Design, Display and Key Features
 
-> **Draft for review · Article 01/17 · Language: Hinglish**
+> **Draft for review · Article 01/17 · Language: English**
 
 ![YouTube thumbnail for iQOO Z5 5G 📱 Unboxing & First Look 🎁 #Shorts #smartphone](https://i.ytimg.com/vi/J3Q0LPCas7I/hqdefault.jpg "AH Solution source video thumbnail")
 
-December 2021 mein AH Solution par ek 13-second ka Short aaya tha jisme iQOO Z5 5G ka unboxing aur first look dikhaya gaya. Itna chhota format hota hai ki clip khatam hi ho jaati hai — na box ke har accessory par time milta hai, na koi verdict. Is article ka kaam wahi hai: us first-look ke aas-paas ki information ko kaam ke banaana.
+In December 2021, AH Solution published a 13-second Short showing the unboxing and first look of the iQOO Z5 5G. The format is far too short to do more: no time for every accessory, and no room for a verdict. This article turns the information around that first look into something you can use before buying.
 
-Yeh koi lab test ya long-term review nahi hai, aur yeh dawa bhi nahi ki humne video poora dekha ho. Yahan ki specifications public spec data se aayi hain. 2021 ki spec sheet aaj (2026) ka purchase decision nahi chala sakti, isliye end mein ek practical used-phone checklist bhi hai.
+This is not a laboratory test, a long-term review, or a claim that we watched the video in full; the specifications come from public spec data. A 2021 spec sheet cannot decide a purchase in 2026, hence the checklist at the end.
 
-Us waqt iQOO Z5 5G performance-focused mid-range phone tha: Snapdragon 778G 5G, 120Hz display, 64MP triple camera, 5,000mAh battery aur 44W FlashCharge. Aaj yeh model zyada tar used ya refurbished segment mein milne ki umeed hai, isliye price aur exact variant har source par alag ho sakte hain.
+At launch, the iQOO Z5 5G was a performance-focused mid-range phone: Snapdragon 778G 5G, a 120Hz display, a 64MP triple camera, a 5,000mAh battery and 44W FlashCharge. Today it appears mostly in the used or refurbished segment, so price and variant differ by seller.
 
 **Original video:** [iQOO Z5 5G 📱 Unboxing & First Look 🎁 #Shorts #smartphone](https://www.youtube.com/watch?v=J3Q0LPCas7I)  
 **Video published:** 22 December 2021 · **Duration:** 00:13
 
 <!--TOC-->
 
-## Short video se aap kya le sakte hain
+## What a 13-second short can actually tell you
 
-Ek 13-second ka Short sirf visual first look deta hai — phone ka look, hand mein size aur box-open ka feel. Itne kam time mein na benchmark chalta hai, na camera test hota hai; clip ko "review" maan kar buy decision lena galati hogi.
+A 13-second Short offers a visual first look only: how the phone looks and feels, and the box opening. There is no time for a benchmark or a camera test, so treating that clip as a "review" would be a mistake.
 
-Fayda sirf product ki identity confirm karna hai: model kaunsa hai, design kaisa hai. Baaki judgment official spec sheet aur hands-on test se aana chahiye. AH Solution ke chhote clips [vlogs.html#shorts](vlogs.html#shorts) par bhi hain, lekin har short ko teaser hi samjhein.
+Its real value is confirming product identity: which model this is and what the design looks like. Every other judgement has to come from the specification sheet and hands-on testing. AH Solution publishes more short clips on [vlogs.html#shorts](vlogs.html#shorts), each a teaser, not a verdict.
 
-## Specification sheet: 2021 ke highlights
+## Specification sheet: the 2021 highlights
 
-Yeh table 2021 ka public spec context hai — facts aur buying advice alag rakhi gayi hai: specification yahan, 2026 ka purchase guidance neeche checklist mein. Purchase se pehle official listing par match zaroor karein.
+The table below is the public specification context for 2021. Current-day purchase guidance lives in the checklist further down. Always match the figures against the official listing.
 
 <figure class="article-figure">
-  <img src="/blog/assets/iqoo-z5-5g-unboxing-first-look-explainer.svg" alt="Editorial graphic: iQOO Z5 5G unboxing article title aur category label" width="1200" height="800" loading="lazy" decoding="async">
-  <figcaption>Editorial illustration — AH Solution; product screenshot nahi.</figcaption>
+  <img src="/blog/assets/iqoo-z5-5g-unboxing-first-look-explainer.svg" alt="Editorial graphic showing the iQOO Z5 5G article title and category label" width="1200" height="800" loading="lazy" decoding="async">
+  <figcaption>Editorial illustration — AH Solution; not a product screenshot.</figcaption>
 </figure>
 
-| Component | Reported highlight | Verify kahan |
+| Component | Reported highlight | Where to verify |
 |---|---|---|
 | Processor | Snapdragon 778G 5G, Adreno 642L | [Official product page](https://www.qualcomm.com/smartphones/products/7-series/snapdragon-778g-5g-mobile-platform) |
 | Display | 6.67-inch FHD+ LCD, 120Hz | Panel type, brightness rating |
-| Cameras | 64MP triple rear, 16MP front | Seller ke samples, khud ka test |
-| Battery | 5,000mAh, 44W FlashCharge | Charger ka printed output |
-| RAM/storage | Variant-wise alag options | Exact India SKU, official listing |
-| Software | Android 11 base, Funtouch OS | Aaj ka update status |
+| Cameras | 64MP triple rear, 16MP front | Seller samples, your own test shots |
+| Battery | 5,000mAh, 44W FlashCharge | The charger's printed output rating |
+| RAM/storage | Options vary by variant | The exact India SKU, official listing |
+| Software | Android 11 base, Funtouch OS | Today's update status |
 
-**Variant par dhyan:** RAM/storage region ke hisaab se badalte hain — box, bill aur About phone teeno match hone chahiye.
+**A note on variants:** RAM and storage options change by region, so the box, invoice and About phone screen should match.
 
-## 120Hz display aur Snapdragon 778G ka practical matlab
+## What 120Hz and the Snapdragon 778G mean in practice
 
-### Refresh rate ka scope
+### The scope of the refresh rate
 
-120Hz supported content mein scrolling smoother banata hai, lekin akela display quality decide nahi karta — brightness, colour, touch response aur panel type (yahan LCD) bhi utne hi matter karte hain. Bahut se apps lower rate par chalte hain, isliye "120Hz = hamesha smooth" wala assumption kaam nahi karta.
+A 120Hz panel makes scrolling smoother in supported content, but brightness, colour, touch response and the panel type (an LCD) matter just as much. Many applications still run at a lower rate, so "120Hz always feels smooth" does not hold.
 
-### Processor ko kaise samjhein
+### How to think about the processor
 
-Snapdragon 778G us waqt mid-range ka strong performer tha, lekin naam akele real experience nahi batata — RAM, storage speed, thermals aur current software build mil kar feel decide karte hain. Used phone par 15–20 minute heavy app chalayein aur frame drops/heat khud feel karein.
+The Snapdragon 778G was a strong mid-range performer at the time, but the name alone does not describe the real experience. RAM, storage speed, thermals and the software build decide how the phone feels. On a used device, run a demanding app for 15–20 minutes and judge frame drops and heat yourself.
 
-## Camera aur battery se kya expect karein
+## What to expect from the camera and the battery
 
-**Camera.** 64MP ka number better photos ka guarantee nahi hai — low-light, autofocus aur processing hi result decide karte hain. Seller ke dikhaye samples par bharosa mat kijiye: khud night shot, portrait edges, video stabilisation aur front camera test karein.
+**Camera.** A 64MP number is no guarantee of better photos; low-light performance, autofocus and image processing decide the result. Test it yourself rather than trusting a seller's samples: take a night shot, check portrait edges and stabilisation.
 
-**Battery.** 5,000mAh capacity 2021 ke standards par achhi thi aur 44W charging tezi se charge hoti hai, lekin aaj uski health cycle count par depend karti hai. Charge test karein — time kitna laga, port garam to nahi hua, rated adapter hai ya nahi.
+**Battery.** A 5,000mAh capacity was generous by 2021 standards and 44W charging fills the phone quickly, but in 2026 the useful figure depends on the charge cycles the battery has seen. Test the charging: how long it took, whether the port became hot, and whether the adapter was rated.
 
-## 2026 mein used iQOO Z5 5G buying checklist
+## A used iQOO Z5 5G buying checklist for 2026
 
-Yeh woh hissa hai jo 13 seconds mein kabhi cover nahi ho sakta.
+### Hardware and physical checks
 
-### Hardware aur physical checks
+- **Model number:** the box, invoice and Settings/About phone screen should agree.
+- **Display:** look for dead pixels, uneven brightness, touch response, and confirm the 120Hz toggle works.
+- **Body:** check the frame for dents, the panel for gaps and the port for looseness.
+- **Cameras:** test each lens separately, plus autofocus, flash and front-camera video.
+- **Audio and network:** speakers, microphone, your carrier's bands, Wi-Fi, Bluetooth and GPS.
+- **Battery:** check whether drain is normal and the charger a rated unit.
 
-- **Model number:** box, bill aur Settings/About phone match honi chahiye.
-- **Display:** dead pixels, uneven brightness, touch response, 120Hz toggle kaam kare.
-- **Body:** frame par dent, panel gap, charging port ka looseness.
-- **Cameras:** har lens alag se, autofocus, flash, front video.
-- **Audio aur network:** speakers, mic, aapke carrier ke bands, Wi-Fi, Bluetooth, GPS.
-- **Battery:** drain rate normal hai ya nahi, charger rated hai ya nahi.
+### Software and paperwork checks
 
-### Software aur paperwork checks
+- **IMEI and ownership:** [match the IMEI](https://www.iqoo.com/in/support/IMEI) against the invoice, then check blacklist and loan-lock status.
+- **Account locks:** make sure no previous Google or brand account is still signed in.
+- **Security updates:** check the current Android security patch level; it matters most on a 2021 phone.
+- **Software state:** confirm the device is not rooted or running a custom ROM.
+- **Warranty and returns:** check you get a written warranty, return window and invoice.
+- **Price:** compare with current alternatives in the same condition, not 2021 launch figures.
 
-- **IMEI/ownership:** [IMEI](https://www.iqoo.com/in/support/IMEI) bill se match karein, blacklist aur loan-lock status check karein.
-- **Account locks:** koi purana Google ya brand account set to nahi reh gaya.
-- **Security updates:** current Android security patch level dekhein — 2021 phone ke liye critical.
-- **Software state:** device rooted ya custom ROM par to nahi chal raha.
-- **Warranty/return:** written warranty, return window aur invoice mil raha hai ya nahi.
-- **Price:** same condition ke current alternatives se compare karein, 2021 ke launch figures se nahi.
+## Troubleshooting and limitations
 
-## Troubleshooting aur limitations
+- **120Hz does not apply everywhere:** some apps and scenes run at a lower rate. Force it in Settings to check.
+- **Heat and throttling:** some drop during long gaming is normal; if the phone heats up quickly, check battery condition and cooling.
+- **Slow charging:** the usual cause is a non-rated adapter; test with an official rated charger first.
+- **Storage expandability:** some listings have no card slot, so confirm before buying.
+- **Bands and variants:** 5G depends on your carrier and region, and similarly named models differ. Read the full model number and check it against the [GSMArena band list](https://www.gsmarena.com/vivo_iqoo_z5-11118.php).
 
-- **120Hz har jagah nahi chalta:** kuch apps aur scenes par phone lower rate par chalta hai. Settings se manually force karke check karein.
-- **Heat aur throttling:** long gaming mein drop normal hai; jaldi hi bahut garam ho raha hai to battery/cooling par dhyan dein.
-- **Slow charging:** sabse aam wajah non-rated adapter hai — pehle official-rated charger se test karein.
-- **Storage expandability:** kuch listings mein card slot nahi hota, buying se pehle confirm kar lein.
-- **Bands aur variants:** 5G aapke carrier/area par depend karta hai, aur similar naam wale models alag ho sakte hain — full model number padhein, [GSMArena band list](https://www.gsmarena.com/vivo_iqoo_z5-11118.php) se cross-check karein.
+## Safety and privacy
 
-## Safety aur privacy
+The biggest risk with a used phone is one with no paperwork, or a stolen one. Match the IMEI against the invoice and check blacklist status: this protects you legally and the network.
 
-Used phone ka sabse bada risk documentless ya stolen device hai. IMEI bill ke saath match karein aur blacklist status check karein — yeh legal aur network dono tarah se safety hai.
-
-Device milte hi purane user ke saare accounts hataayein aur factory reset karein, taaki FRP lock aur purana data kahin na rahe. Battery swollen ho ya port sparking kare to device avoid karein; charger certified aur rated wala hi use karein. Nayi apps install karte waqt permissions par nazar rakhein — iske liye humari [choose-android-apps-safely.html](guides/choose-android-apps-safely.html) guide dekhein. Seller se invoice zaroor lein.
+On receipt, remove every account left by the previous owner and run a factory reset, so no old data or FRP lock survives. If the battery is swollen or the port sparks, avoid the device; use only a certified, rated charger. Watch permissions when installing new apps, and read our [choose-android-apps-safely.html](guides/choose-android-apps-safely.html) guide for the checklist. Always ask for an invoice.
 
 ## Frequently asked questions
 
-### iQOO Z5 5G mein kaunsa processor hai?
+### Which processor does the iQOO Z5 5G use?
 
-Reported spec ke mutabiq Qualcomm Snapdragon 778G 5G platform hai, jo us waqt mid-range performance segment mein aata tha. Real speed RAM/storage variant, software condition aur thermals par bhi depend karti hai. Exact configuration official listing ya phone ki About screen se confirm karein.
+According to the reported specification, it uses the Qualcomm Snapdragon 778G 5G platform, which sat in the mid-range performance segment at the time. Real-world speed also depends on the RAM and storage variant, software condition and thermals; confirm the configuration on the official listing.
 
-### Kya 120Hz ka matlab hai phone hamesha smooth chalega?
+### Does 120Hz mean the phone always feels smooth?
 
-Nahi. 120Hz sirf supported content par fayda deta hai; bahut se apps lower rate par chalte hain aur heavy load mein frame drops hote hain. Brightness aur panel type bhi utne important hain, isliye display ko sirf refresh rate par judge na karein.
+No. A 120Hz panel only helps with supported content; many applications run at a lower rate, and frame drops still happen under load. Never judge a display on refresh rate alone.
 
-### 44W FlashCharge aaj ke standards se fast hai?
+### Is 44W FlashCharge fast by today's standards?
 
-Speed adapter, temperature aur battery health par depend karti hai. Used phone mein original rated adapter missing ho to kaafi gir jaati hai. Charger ka printed output padhein aur claim ko apne 20–30 minute charge test se verify karein.
+Speed depends on the adapter, temperature and battery health. Without the original rated adapter, charging slows considerably on a used phone. Read the rating on the charger and verify with a 20–30 minute test.
 
-### Used iQOO Z5 kharidte waqt sabse pehle kya check karein?
+### What should I check first when buying a used iQOO Z5?
 
-Pehle IMEI aur bill match karein, phir account locks, display, battery drain, cameras, network bands aur security update status test karein. Yeh sab hone ke baad hi price par aayein — condition hi batati hai device kitni safe aur long-lasting hogi.
+Start by matching the IMEI against the invoice, then work through the checks above: account locks, display, battery drain, cameras, network bands and update status. Only then discuss the price — condition decides how safe the device is.
 
-### Kya iQOO Z5 5G abhi naya mil jaayega?
+### Can the iQOO Z5 5G still be bought new?
 
-2021 launch ke baad stock status kaafi badal chuka hai; kuch sources ise discontinued batate hain. Naya ya refurbished unit lene se pehle availability aur warranty official channels se verify karein, aur "new" claim ka written invoice maangein.
+Stock availability has changed since the 2021 launch, and some sources list the model as discontinued. Before buying a new or refurbished unit, verify availability and warranty through official channels, and ask for a written invoice behind any "new" claim.
 
 ## Final recommendations
 
-iQOO Z5 5G 2021 ke mid-range performance ka achha example hai: strong processor class, high-refresh display, bada battery aur fast charging. Lekin 2026 mein decision sirf in numbers par nahi honi chahiye. Pehle exact variant confirm karein, phir condition, battery health, update status aur seller warranty check karein, aur tabhi price compare karein. Checklist pass ho jati hai aur use casual hai to budget option ban sakta hai — warna usi budget ke current-generation alternatives dekhna zyada sensible hai. Official listing aur written invoice ko final maanein, video clip ko nahi.
+The iQOO Z5 5G was a strong mid-range phone in 2021, but in 2026 the decision should not rest on those numbers alone. Confirm the exact variant, then check condition, battery health, update status and the seller's warranty before comparing prices. If the checklist passes and the device is in casual use, it can work as a budget option; otherwise current-generation alternatives at the same budget are more sensible. Treat the official listing and written invoice as the final word — not the video clip.
 
-## Resources aur official links
+## Resources and official links
 
-- [iQOO India store official listing](https://shop.iqoo.com/in/product/2009) — exact variant aur stock yahan match karein.
-- [iQOO IMEI authentication page](https://www.iqoo.com/in/support/IMEI) — bill ka IMEI aur warranty status verify karein.
-- [Qualcomm Snapdragon 778G official page](https://www.qualcomm.com/smartphones/products/7-series/snapdragon-778g-5g-mobile-platform) — processor ki official specs.
-- [GSMArena iQOO Z5 specifications](https://www.gsmarena.com/vivo_iqoo_z5-11118.php) — bands aur detailed specs ke liye.
+- [iQOO India store official listing](https://shop.iqoo.com/in/product/2009) — match the exact variant and stock.
+- [iQOO IMEI authentication page](https://www.iqoo.com/in/support/IMEI) — verify the invoice IMEI and warranty.
+- [Qualcomm Snapdragon 778G official page](https://www.qualcomm.com/smartphones/products/7-series/snapdragon-778g-5g-mobile-platform) — official processor specifications.
+- [GSMArena iQOO Z5 specifications](https://www.gsmarena.com/vivo_iqoo_z5-11118.php) — bands and full specifications.
 
 ## Watch the original AH Solution video
 
@@ -149,4 +147,4 @@ iQOO Z5 5G 2021 ke mid-range performance ka achha example hai: strong processor 
 
 ---
 
-**Editorial note:** Specs (Snapdragon 778G, 120Hz FHD+ LCD, 64MP triple camera, 5,000mAh/44W) general public spec sheets se confirm kiye gaye hain — 13-second clip se koi fact claim nahi kiya gaya. Human verification before publish: (1) exact India RAM/storage SKU aur current new/used availability official listing par confirm karein, (2) koi bhi price sirf live check ke baad add karein, (3) aaj ka Android/security update status product page se check karein, (4) thumbnail aur in-article visual ke rights confirm karein, (5) agar original video dekh kar usme dikhaye box contents ka zikr add karna hai to timestamp note karein.
+**Editorial note:** The specifications (Snapdragon 778G, 120Hz FHD+ LCD, 64MP triple camera, 5,000mAh/44W) were confirmed against general public spec sheets — no fact was claimed from the 13-second clip. Human verification before publish: (1) confirm the exact India RAM/storage SKU and current new/used availability on the official listing, (2) add any price only after a live check, (3) check today's Android/security update status on the product page, (4) confirm the rights for the thumbnail and the in-article visual, (5) if box contents shown in the original video should be added, record the timestamp.

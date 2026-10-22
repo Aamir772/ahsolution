@@ -1,23 +1,23 @@
-# Image Brief — Article 08: 8 Android Apps aur Free Alternatives: Install Karne Se Pehle Yeh Check Karein
+# Image Brief — Article 08: 8 Android Apps and Free Alternatives: What to Check Before Installing
 
 Brand system: AH Solution, premium near-black background (#08080B), restrained crimson accent (#E11D48), clean editorial technology aesthetic, high contrast, realistic materials, no fake UI text, no invented product claims, no watermark.
 
 ## 1. Featured / social image
 - Filename: `eight-android-apps-free-alternatives-guide-cover.webp`
 - Canvas: 1200×630 px (1.91:1)
-- Subject: 8 Android Apps aur Free Alternatives: Install Karne Se Pehle Yeh Check Karein
-- Prompt: Create a polished editorial cover image for an AH Solution Hinglish technology article about “8 Android Apps aur Free Alternatives: Install Karne Se Pehle Yeh Check Karein”. Topic-specific hero subject: Android Apps. Use premium realistic product/editorial photography, near-black environment, restrained crimson edge lighting, subtle depth, clean composition, ample negative space for a headline to be typeset later. No logos or readable text unless supplied as licensed source assets. Do not invent product features or claim a fictional interface is real.
-- Alt text suggestion: “Editorial visual illustrating 8 Android Apps aur Free Alternatives: Install Karne Se Pehle Yeh Check Karein.”
+- Subject: 8 Android Apps and Free Alternatives: What to Check Before Installing
+- Prompt: Create a polished editorial cover image for an AH Solution English technology article about “8 Android Apps and Free Alternatives: What to Check Before Installing”. Topic-specific hero subject: Android Apps. Use premium realistic product/editorial photography, near-black environment, restrained crimson edge lighting, subtle depth, clean composition, ample negative space for a headline to be typeset later. No logos or readable text unless supplied as licensed source assets. Do not invent product features or claim a fictional interface is real.
+- Alt text suggestion: “Editorial visual illustrating 8 Android Apps and Free Alternatives: What to Check Before Installing.”
 
 ## 2. Blog listing thumbnail
 - Filename: `eight-android-apps-free-alternatives-guide-thumbnail.webp`
 - Canvas: 640×360 px (16:9)
-- Prompt: Create a simplified crop-friendly editorial thumbnail for “8 Android Apps aur Free Alternatives: Install Karne Se Pehle Yeh Check Karein”, subject centered, crisp silhouette, black and crimson AH Solution visual style, minimal background detail, no small text, no watermark. It must remain legible at small sizes.
+- Prompt: Create a simplified crop-friendly editorial thumbnail for “8 Android Apps and Free Alternatives: What to Check Before Installing”, subject centered, crisp silhouette, black and crimson AH Solution visual style, minimal background detail, no small text, no watermark. It must remain legible at small sizes.
 
 ## 3. In-article explainer visual
 - Filename: `eight-android-apps-free-alternatives-guide-explainer.webp`
 - Canvas: 1200×800 px (3:2)
-- Prompt: Create an explanatory visual that helps a reader understand this topic: 8 Android Apps aur Free Alternatives: Install Karne Se Pehle Yeh Check Karein. Use a clean editorial diagram or staged illustrative scene, clearly distinguish illustration from an actual screenshot, no fabricated specifications, no fake app UI, no fake benchmarks, no brand impersonation. Black/charcoal base with restrained crimson accents; prioritize clarity and accessibility.
+- Prompt: Create an explanatory visual that helps a reader understand this topic: 8 Android Apps and Free Alternatives: What to Check Before Installing. Use a clean editorial diagram or staged illustrative scene, clearly distinguish illustration from an actual screenshot, no fabricated specifications, no fake app UI, no fake benchmarks, no brand impersonation. Black/charcoal base with restrained crimson accents; prioritize clarity and accessibility.
 
 ## Existing source thumbnail
 https://i.ytimg.com/vi/JcPIuXo7RtM/hqdefault.jpg

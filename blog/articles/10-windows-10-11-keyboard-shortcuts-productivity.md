@@ -1,139 +1,146 @@
-# Windows 10/11 ke 10 Keyboard Shortcuts Jo Roz Kaam Aayenge
+# 10 Windows 10/11 Keyboard Shortcuts Worth Using Every Day
 
-> **Draft for review · Article 10/17 · Language: Hinglish**
+> **Draft for review · Article 10/17 · Language: English**
 
 ![Windows 10/11 keyboard shortcuts thumbnail](https://i.ytimg.com/vi/V54qm71s0r0/hqdefault.jpg "AH Solution source video thumbnail")
 
-Keyboard shortcuts mouse clicks ko kam karke aapka kaam bohot fast bana sakte hain. Har baar mouse uthana aur click karna time waste karta hai, jabki ek simple shortcut se wahi kaam kuch hi seconds mein ho jaata hai. Windows 10 aur Windows 11 dono mein kaafi useful shortcuts hain jo rozana ke kaam mein directly help karte hain.
+Reaching for the mouse for something the keyboard can do in a fraction of a second is the most common avoidable delay in a Windows workflow. Every click that needs you to lift your hand and aim at a small target is one you could have skipped.
 
-Is article mein hum aapko Windows ke 10 most practical shortcuts denge jo har user ko yaad rakhne chahiye. Hum shortcut, kya karta hai aur kab use karein - ye sab table mein explain karenge. Video 2021 ka hai, lekin ye shortcuts stable hain aur aaj bhi kaam karte hain. Version differences par neeche dedicated notes hain.
+The original AH Solution video, published in March 2021, is a short tour of the shortcuts that replace the most common mouse work. That format suits the subject: a shortcut only earns its place once you have seen it, so the video shows the combinations, not the theory.
+
+This article turns that list into a reference you can keep on screen: what each combination does, when it is worth using, and the version details that decide whether it works on your machine. Because the video dates from 2021, version differences are covered openly.
 
 **Original video:** [10 Amazing Windows 10/11 Keyboard Shortcuts You Must Know! 💻🔥](https://www.youtube.com/watch?v=V54qm71s0r0)  
 **Video published:** 15 March 2021 · **Duration:** 03:44
 
 <!--TOC-->
 
-## 1. Navigation aur Quick Access Shortcuts
+## Navigation and quick access shortcuts
 
-Sabse pehle hum basic navigation shortcuts dekhte hain - ye shortcuts aapko har roz use honge. Inse file explorer, settings aur lock screen tak turant access milta hai. Official Microsoft documentation mein Windows 10/11 ke sabhi built-in shortcuts ki [complete keyboard shortcuts list](https://support.microsoft.com/en-us/windows/keyboard-shortcuts-in-windows-dcc61a57-8ff0-cffe-9796-cb9706c75eec) milti hai - naya shortcut mile toh wahan cross-check karein.
+These are the ones you will reach for most often: they open what you need without hunting through the taskbar or the Start menu. Microsoft's [complete keyboard shortcuts list](https://support.microsoft.com/en-us/windows/keyboard-shortcuts-in-windows-dcc61a57-8ff0-cffe-9796-cb9706c75eec) for Windows 10 and 11 is where to cross-check anything new.
 
 <figure class="article-figure">
   <img src="/blog/assets/windows-10-11-keyboard-shortcuts-productivity-explainer.svg" alt="Editorial title card listing what this shortcuts guide covers - everyday navigation shortcuts, screenshot and clipboard moves, and a shortcut to use case table" width="1200" height="800" loading="lazy" decoding="async">
-  <figcaption>Editorial illustration - AH Solution. Is guide ke 3 anchor: navigation, screenshots plus clipboard, aur shortcut se use-case tak wali table.</figcaption>
+  <figcaption>Editorial illustration - AH Solution. The three anchors of this guide: navigation, screenshots plus clipboard, and the shortcut-to-use-case table.</figcaption>
 </figure>
 
-| Shortcut | Kya karta hai | Kab use karein |
+| Shortcut | What it does | When to use it |
 |---|---|---|
-| **Win + E** | File Explorer kholta hai | Files dhundhne ya open karne ke liye |
-| **Win + I** | Settings window kholta hai | WiFi, display ya system settings change karne ke liye |
-| **Win + D** | Desktop show/hide karta hai | Sab windows chhupakar desktop dekhne ke liye |
-| **Win + L** | PC lock karta hai | Jab aap thodi der ke liye chhor ke jaate hain |
-| **Alt + Tab** | Open apps switch karta hai | Ek app se dusre app mein turant switch karne ke liye |
+| **Win + E** | Opens File Explorer | Finding or opening files |
+| **Win + I** | Opens the Settings window | Changing Wi-Fi, display or system settings |
+| **Win + D** | Shows or hides the desktop | Clearing the screen of open windows |
+| **Win + L** | Locks the PC | Stepping away from it for a moment |
+| **Alt + Tab** | Switches between open apps | Jumping from one app to another instantly |
 
-## 2. Screenshot aur Clipboard Shortcuts
+## Screenshot and clipboard shortcuts
 
-Screenshot lena aur copy-paste karna roz ka kaam hai. Windows mein inke liye bohot flexible shortcuts hain.
+Taking a screenshot and moving text around are everyday tasks, and Windows has shortcuts for both.
 
-| Shortcut | Kya karta hai | Kab use karein |
+| Shortcut | What it does | When to use it |
 |---|---|---|
-| **Win + Shift + S** | Snipping Tool/Snip & Sketch style capture kholta hai | Part ka screenshot lena ho (region, window ya full screen) |
-| **Win + V** | Clipboard history kholta hai | Pehle copy kiya hua text/image wapas paste karne ke liye |
-| **Ctrl + C / Ctrl + X** | Copy / Cut | Text, files copy/cut karne ke liye |
-| **Ctrl + V** | Paste | Copy kiya hua content paste karne ke liye |
+| **Win + Shift + S** | Opens the Snipping Tool / Snip & Sketch capture view | Capturing part of the screen: region, window or full screen |
+| **Win + V** | Opens clipboard history | Pasting text or an image copied earlier |
+| **Ctrl + C / Ctrl + X** | Copy / Cut | Copying or cutting text and files |
+| **Ctrl + V** | Paste | Pasting copied content |
 
-**Version aur hardware notes:**
-- `Win + V` clipboard history Windows 10 (October 2018 update onwards) aur Windows 11 par hai. Agar ye kaam na kare, toh Settings > System > Clipboard mein enable check karein.
-- `Win + Shift + S` modern Snipping Tool capture Windows 10 ke recent builds aur Windows 11 par available hai - [Microsoft ka Snipping Tool guide](https://support.microsoft.com/en-us/windows/use-snipping-tool-to-capture-screenshots-00246869-1843-655f-f220-97299b865f6b) shortcuts aur modes detail mein batata hai. Purane systems par classic PrintScreen hi kaam karta hai.
+**Version and hardware notes:**
 
-## 3. Window Management aur Multitasking
+- `Win + V` clipboard history is available on Windows 10 from the October 2018 update onwards, and on Windows 11. If it does nothing, check it is switched on in Settings > System > Clipboard.
+- `Win + Shift + S` in its modern Snipping Tool form needs recent Windows 10 builds or Windows 11. Microsoft's [Snipping Tool guide](https://support.microsoft.com/en-us/windows/use-snipping-tool-to-capture-screenshots-00246869-1843-655f-f220-97299b865f6b) lists the shortcuts and capture modes. On older systems the classic PrintScreen still works.
 
-Jab ek saath multiple windows chalti hain, tab window management shortcuts bohot help karte hain. Windows 11 mein snap layouts aur bhi better hain, lekin ye basic shortcuts har jagah kaam karte hain. Virtual desktops bhi isi group ka hissa hain - ek desktop par kaam, dusre par personal.
+## Window management and multitasking
 
-| Shortcut | Kya karta hai | Kab use karein |
+Window management shortcuts decide whether the desktop stays tidy when several windows are open. Windows 11 adds snap layouts on top, but the combinations below work in both versions. Virtual desktops are the same family: one for work, another for personal browsing.
+
+| Shortcut | What it does | When to use it |
 |---|---|---|
-| **Win + ← / →** | Active window ko left/right snap karta hai | Do windows side-by-side compare karne ke liye |
-| **Win + ↑ / ↓** | Window maximize/minimize ya restore karta hai | Screen space manage karne ke liye |
-| **Win + Tab** | Task View kholta hai (all windows + virtual desktops) | Overview dekhna ho sab open windows ka |
-| **Win + P** | Project mode (screen output) toggle karta hai | Laptop ko external display par connect karte waqt |
-| **Win + Ctrl + D** | Naya virtual desktop bana deta hai | Kaam aur personal tabs alag rakhne ke liye |
-| **Win + Ctrl + ← / →** | Virtual desktops ke beech switch karta hai | Desktops ke beech turant jaane ke liye |
-| **Win + Ctrl + F4** | Current virtual desktop close karta hai | Temporary desktop khatam karne ke liye |
+| **Win + ← / →** | Snaps the active window left or right | Comparing two windows side by side |
+| **Win + ↑ / ↓** | Maximises, minimises or restores the window | Managing screen space |
+| **Win + Tab** | Opens Task View (all windows plus virtual desktops) | Seeing everything that is open |
+| **Win + P** | Toggles the project mode (screen output) | Connecting a laptop to an external display |
+| **Win + Ctrl + D** | Creates a new virtual desktop | Keeping work and personal tabs separate |
+| **Win + Ctrl + ← / →** | Switches between virtual desktops | Moving from one desktop to another |
+| **Win + Ctrl + F4** | Closes the current virtual desktop | Clearing away a temporary desktop |
 
-## 4. Productivity aur System Shortcuts
+## Productivity and system shortcuts
 
-Ye shortcuts thode less common hain lekin ek baar yaad ho jaayein toh bohot baar kaam aayenge.
+These are less commonly memorised, but once they are in your fingers you will use them often.
 
-| Shortcut | Kya karta hai | Kab use karein |
+| Shortcut | What it does | When to use it |
 |---|---|---|
-| **Ctrl + Shift + Esc** | Task Manager direct kholta hai | App hang ho jaaye ya CPU/RAM check karna ho |
-| **Win + .** (dot) | Emoji panel kholta hai | Chat ya document mein emoji insert karne ke liye |
-| **Win + ,** (comma) | Desktop peek karta hai (temporarily) | Files check karne ke liye bina minimize kiye |
-| **Win + R** | Run dialog kholta hai | Apps ya commands turant run karne ke liye |
-| **Alt + F4** | Current window/app close karta hai | App turant band karne ke liye |
+| **Ctrl + Shift + Esc** | Opens Task Manager directly | An app hangs, or you need to check CPU and RAM usage |
+| **Win + .** (dot) | Opens the emoji panel | Inserting an emoji in a chat or document |
+| **Win + ,** (comma) | Peeks at the desktop temporarily | Checking files without minimising everything |
+| **Win + R** | Opens the Run dialog | Launching apps or commands immediately |
+| **Alt + F4** | Closes the current window or app | Dismissing an app quickly |
 
-## 5. Text editing Shortcuts
+## Text editing shortcuts
 
-Editing ke waqt mouse aur arrow keys chhod kar text jaldi select aur fix ho jaata hai - ye shortcuts likhne-wale har kaam mein kaam aate hain.
+Editing is where mouse-free work pays off most: text can be selected and corrected without leaving the arrow keys, which is why these combinations matter to writers.
 
-| Shortcut | Kya karta hai | Kab use karein |
+| Shortcut | What it does | When to use it |
 |---|---|---|
-| **Ctrl + Shift + ← / →** | Word-by-word select karta hai | Lamba text jaldi highlight karne ke liye |
-| **Ctrl + Home / End** | Document ke shuru/end par jump | Long file ke top/bottom turant pahunchna |
-| **Ctrl + Z / Ctrl + Y** | Undo / Redo | Galti wapas lena ya wapas laana |
+| **Ctrl + Shift + ← / →** | Selects word by word | Highlighting a long passage quickly |
+| **Ctrl + Home / End** | Jumps to the start or end of a document | Reaching the top or bottom of a long file |
+| **Ctrl + Z / Ctrl + Y** | Undo / Redo | Reversing a mistake, or bringing it back |
 
-## 6. In Shortcuts ko Yaad Kaise Rakhein
+## How to make these shortcuts stick
 
-Har cheez ek saath yaad karne ki koshish na karein. Pehle 3–4 shortcuts choose karein jo aap sabse zyada use karte hain - jaise `Win + E`, `Alt + Tab`, `Win + Shift + S`. Jab ye habit ban jaaye, phir next set add karein.
+Trying to memorise everything at once is the fastest way to remember nothing. Start with three or four you would use anyway, such as `Win + E`, `Alt + Tab` and `Win + Shift + S`, and let those become automatic before adding more.
 
-Apne daily workflow mein consciously use karein. Har baar mouse use karne ke bajaye shortcut try karein - pehli baar thoda slow lagega, lekin 1–2 hafte mein muscle memory ban jaata hai.
+Use them deliberately in daily work. The first attempts feel slower than reaching for the mouse, but regular use builds the habit within a week or two. Keyboard layouts and Windows versions can change how a combination behaves, so check the layout and the version notes if one does nothing. Our [tutorials.html](/tutorials.html) page has more Windows tips.
 
-Windows version differ karne par key combos thode change ho sakte hain. Shortcut kaam na kare toh layout aur version notes check karein - [tutorials.html](/tutorials.html) par hum aur Windows tips share karte hain.
+## Troubleshooting and limitations
 
-## Troubleshooting aur limitations
+- **A shortcut does nothing:** check the active keyboard layout, since a Hindi/English layout changes which key produces a character. On some laptops the Fn lock also matters.
+- **`Win + V` does not open:** enable Clipboard history under Settings > System > Clipboard. It is a Windows 10 and Windows 11 feature and will not exist on older builds.
+- **Application-specific overrides:** some applications define their own shortcuts and take precedence; then read the app's own list.
 
-- **Shortcut kaam nahi karta:** Keyboard layout check karein (Hindi/English layout). Kuch laptops par function lock (Fn) affect kar sakta hai.
-- **Win + V nahi chal raha:** Settings > System > Clipboard > Clipboard history enable karein. Ye Windows 10/11 ka feature hai, purane versions par nahi hoga.
-- **App-specific shortcuts:** Kuch apps apne own shortcuts override kar lete hain. Aise mein app ke shortcuts dekhein.
+## Safety and privacy
 
-## Safety aur privacy
-
-- **Clipboard history:** Shared PC use karte hain toh clipboard history clear kar dein ya disable karein. Sensitive info (passwords, OTPs) copy kiye hain toh dhyaan rakhein.
-- **Lock screen:** Jab bahar jaate hain toh hamesha `Win + L` use karein. Ye simple habit bohot important hai.
-- **Task Manager access:** `Ctrl + Shift + Esc` direct open karta hai - ye safe hai, lekin unknown processes band karte waqt dhyaan rakhein.
+- **Clipboard history:** on a shared PC, clear or disable it. Be careful with sensitive items such as passwords or OTPs, which a saved history keeps available.
+- **Locking the screen:** use `Win + L` every time you leave. Small habit, large effect.
+- **Task Manager access:** `Ctrl + Shift + Esc` opens it directly, but think before ending unknown processes.
 
 ## Frequently asked questions
 
-### Kya ye shortcuts Windows 10 aur 11 dono mein kaam karte hain?
-Haan, zyada tar shortcuts same hain. Win + V, Win + Shift + S jaise modern shortcuts dono par support hote hain. UI thoda differ ho sakta hai.
+### Do these shortcuts work in both Windows 10 and Windows 11?
 
-### Sabse pehla kaunsa shortcut yaad karun?
-`Alt + Tab` aur `Win + D` sabse practical hain. Shuruaat yahi se karein.
+Yes, most are identical. Modern combinations such as `Win + V` and `Win + Shift + S` work on both, though the interface around them may differ slightly.
 
-### Windows + V clipboard history kaam na kare toh kya karun?
-Settings > System > Clipboard open karke "Clipboard history" on karein. Agar option nahi dikhe, toh Windows update check karein.
+### Which shortcut should I learn first?
 
-### Kya shortcuts se PC slow hota hai?
-Nahi. Shortcuts hardware level par handle hote hain. Ye speed badhate hain, slow nahi karte.
+`Alt + Tab` and `Win + D` are the most immediately practical. Start there.
 
-### Kya main inhe customize bhi kar sakta hoon?
-Haan - Microsoft ka free [PowerToys Keyboard Manager](https://learn.microsoft.com/en-us/windows/powertoys/keyboard-manager) keys remap kar deta hai (jaise Caps Lock ko Ctrl banana). Default shortcuts mostly fixed hain, lekin zarurat pade toh remap option hai.
+### What should I do if Win + V clipboard history does not work?
 
-### Laptop par Fn key se koi issue hota hai?
-Kuch laptops par `Fn + key` combo chalta hai. BIOS/Keyboard settings mein Fn lock check kar sakte hain.
+Open Settings > System > Clipboard and turn on "Clipboard history". If the option is not shown at all, check for a pending Windows update.
+
+### Do shortcuts slow the PC down?
+
+No. Shortcuts are handled at the operating system level, so they make work faster.
+
+### Can I customise these shortcuts?
+
+Yes. Microsoft's free [PowerToys Keyboard Manager](https://learn.microsoft.com/en-us/windows/powertoys/keyboard-manager) can remap keys, for example turning Caps Lock into Ctrl. Most default shortcuts are fixed.
+
+### Does the Fn key cause problems on laptops?
+
+On some laptops combinations are triggered as `Fn + key`. Check the Fn lock setting in the BIOS or the keyboard settings.
 
 ## Final recommendations
 
-Shortcuts seekhne ka sabse acha tareeka hai - "learn by doing". Rozana apne workflow mein 2–3 naye shortcuts introduce karein. Ek mahine mein aap dekhenge ki mouse use kaafi kam ho chuka hai.
+The most effective way to learn shortcuts is to use them. Introduce two or three new combinations into your workflow each week, and within a month you will rely on the mouse far less.
 
-Humara top recommendation hai pehle ye 5 master karein: `Win + E`, `Alt + Tab`, `Win + D`, `Win + L`, `Win + Shift + S`. Ye 5 shortcuts aapke 80% mouse clicks kam kar denge.
+AH Solution's own recommendation is to master these five first: `Win + E`, `Alt + Tab`, `Win + D`, `Win + L` and `Win + Shift + S`. In the original draft they were estimated to cover roughly 80% of routine mouse clicks in a working day.
 
-Yaad rakhein - perfection nahi, consistency chahiye. Har roz thoda practice karke dheere-dheere build karein. [blog.html](/blog.html) par aur productivity tips bhi milenge.
+Consistency matters more than perfection. A few minutes of practice each day is enough, and our [blog.html](/blog.html) page has more productivity tips.
 
-## Resources aur official links
+## Resources and official links
 
-- [Microsoft - Windows keyboard shortcuts (full list)](https://support.microsoft.com/en-us/windows/keyboard-shortcuts-in-windows-dcc61a57-8ff0-cffe-9796-cb9706c75eec) - Windows 10/11 ke saare built-in shortcuts ek hi official page par.
-- [Microsoft - Snipping Tool se screenshots lena](https://support.microsoft.com/en-us/windows/use-snipping-tool-to-capture-screenshots-00246869-1843-655f-f220-97299b865f6b) - `Win + Shift + S` aur capture modes ki official guide.
-- [Microsoft Learn - PowerToys Keyboard Manager](https://learn.microsoft.com/en-us/windows/powertoys/keyboard-manager) - default keys remap karne ka official tarika.
+- [Microsoft - Windows keyboard shortcuts (full list)](https://support.microsoft.com/en-us/windows/keyboard-shortcuts-in-windows-dcc61a57-8ff0-cffe-9796-cb9706c75eec) - every built-in shortcut on one official page.
+- [Microsoft - taking screenshots with the Snipping Tool](https://support.microsoft.com/en-us/windows/use-snipping-tool-to-capture-screenshots-00246869-1843-655f-f220-97299b865f6b) - the official guide to `Win + Shift + S`.
+- [Microsoft Learn - PowerToys Keyboard Manager](https://learn.microsoft.com/en-us/windows/powertoys/keyboard-manager) - the official way to remap keys.
 
 ## Watch the original AH Solution video
 
@@ -153,6 +160,7 @@ Yaad rakhein - perfection nahi, consistency chahiye. Har roz thoda practice kark
 
 5. **Rights check:** confirm you own or may use each image. Generated concept art must not be presented as a real product screenshot.
 
+
 ---
 
-**Editorial note:** Ye shortcuts mostly stable hain lekin Windows versions (22H2, 23H2 etc) par minor UI differences ho sakte hain. Clipboard history, Snap layouts aur Task View ke exact behaviour apne Windows build par verify karein. Keyboard layout aur regional settings bhi affect kar sakte hain.
+**Editorial note:** These shortcuts are largely stable, but minor interface differences appear across Windows versions such as 22H2 and 23H2. Verify the exact behaviour of clipboard history, snap layouts and Task View on your own Windows build. The active keyboard layout and regional settings can also affect how a combination is registered.

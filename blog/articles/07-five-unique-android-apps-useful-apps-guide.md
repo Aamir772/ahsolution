@@ -1,144 +1,145 @@
-# 5 Unique Android Apps: Useful Features aur Privacy Checks
+# 5 Unique Android Apps: Useful Features and Privacy Checks
 
-> **Draft for review · Article 07/17 · Language: Hinglish**
+> **Draft for review · Article 07/17 · Language: English**
 
-![Editorial visual illustrating 5 Unique Android Apps: Useful Features aur Privacy Checks](https://i.ytimg.com/vi/StUH6IwFz-k/hqdefault.jpg "AH Solution source video thumbnail")
+![Editorial visual illustrating 5 Unique Android Apps: Useful Features and Privacy Checks](https://i.ytimg.com/vi/StUH6IwFz-k/hqdefault.jpg "AH Solution source video thumbnail")
 
-Android ecosystem mein har roz naye apps aate hain, lekin zyada tar viral apps sirf gimmick hote hain. Is article ka focus hai — "unique" apps blindly install karne se pehle kaise evaluate karein.
+New apps reach the Android ecosystem every day, and most viral apps turn out to be gimmicks. This article focuses on the framework to use before installing an app described as "unique".
 
-Video ke official description mein saare app names, developer hints aur Play Store links mile, jo neeche list kiye gaye hain. Phir bhi install se pehle evaluation framework zaruri hai — isliye wo bhi diya gaya hai jisse aap khud decide kar sakein. Safe installation ke liye [choose-android-apps-safely.html](guides/choose-android-apps-safely.html) guide bhi hai.
+The video's official description contains the app names, developer hints and Play Store links, all reproduced below. The evaluation framework still matters; for safe installation see the [choose-android-apps-safely.html](guides/choose-android-apps-safely.html) guide.
 
-**Original video:** [5 Unique Android Apps You Should Try! 🤯 Cool Apps + Bonus App](https://www.youtube.com/watch?v=StUH6IwFz-k)
+**Original video:** [5 Unique Android Apps You Should Try! 🤯 Cool Apps + Bonus App](https://www.youtube.com/watch?v=StUH6IwFz-k)  
 **Video published:** 2021-05-12T05:30:02Z · **Duration:** 07:08
 
 <!--TOC-->
 
-## Viral Apps Ko Evaluate Karne Ka Framework
+## A framework for evaluating viral apps
 
-Koi app "unique" dikhe ya viral ho — pehle ye puchhein: kya ye meri daily life mein real problem solve karta hai? Ya bas interesting lag raha hai? Agar solution real need se nahi judta, to uninstall ka probability high hota hai.
+Whether an app looks "unique" or has gone viral, ask one question first: does it solve a real problem in your daily life, or only look interesting? If it does not connect to a real need, you will probably uninstall it.
 
 <figure class="article-figure">
-  <img src="/blog/assets/five-unique-android-apps-useful-apps-guide-explainer.svg" alt="Editorial graphic jisme article title category label aur teen takeaway points dikhaye gaye hain" width="1200" height="800" loading="lazy" decoding="async">
-  <figcaption>Editorial illustration — AH Solution. Ye process graphic hai, app list nahi: framework, permission hygiene aur verification — video ki list ab description se verify ho chuki hai.</figcaption>
+  <img src="/blog/assets/five-unique-android-apps-useful-apps-guide-explainer.svg" alt="Editorial graphic showing the article title, a category label and three takeaway points" width="1200" height="800" loading="lazy" decoding="async">
+  <figcaption>Editorial illustration — AH Solution. This is a process graphic, not an app list: framework, permission hygiene and verification.</figcaption>
 </figure>
 
 **Evaluation framework:**
 
-- **Need check:** Kya main pehle se bhi yahi kaam kisi aur tareeke se kar leta tha? Agar haan, to kya ye tareeka clearly better hai?
-- **Value vs friction:** App install karne se time/save milega ya bas time waste hoga?
-- **Longevity:** Kya main is app ko roz use karunga ya ek baar try karke bhool jaunga?
+- **Need check:** were you already doing this task another way, and is that way clearly worse?
+- **Value against friction:** will the app save time, or only consume it?
+- **Longevity:** will you use it daily, or try it once and forget it?
 
-Ye simple questions viral hype se bahar niklane mein help karte hain.
+## Permission hygiene: the most important check
 
-## Permission Hygiene: Sabse Important Check
+Android apps request permissions, and every permission should be justified. A calculator app asking for camera access is a red flag.
 
-Android apps permissions maangte hain. Har permission justify hona chahiye. Agar koi calculator app camera permission maang raha hai, to red flag hai.
+**How to check permissions:**
 
-**Permissions check karne ka tareeka:**
+- **Review runtime permissions:** you can still revoke them from app settings after installation.
+- **Apply least privilege:** an app should receive only the access its function requires.
+- **Watch for unusual permissions:** SMS, contacts, microphone, location and file access deserve scrutiny.
 
-- **Runtime permissions dekhein:** Install ke baad bhi app settings se permissions revoke kar sakte hain.
-- **Least privilege principle:** App ko utna hi access dena chahiye jitna uske function ke liye zaruri hai.
-- **Unusual permissions pe alert raho:** SMS, contacts, mic, location, files access — inhe especially scrutinize karein.
+The official [Android permissions manager guide](https://support.google.com/android/answer/9431959) explains the steps and the permission types.
 
-Permission audit boring lagta hai, lekin long term privacy ke liye zaruri hai — official [Android permissions manager guide](https://support.google.com/android/answer/9431959) steps aur permission types samjhaata hai.
+## Battery, data and performance impact
 
-## Battery, Data aur Performance Impact
+Some apps run in the background and drain the battery, and ad-supported apps consume data — noticeable on low-end devices.
 
-Kuch apps background mein chalti hain aur battery drain karti hain. Ads wale apps data bhi consume karte hain. Ye factors especially low-end devices pe noticeable hote hain.
-
-| Factor | Kya Check Karein |
+| Factor | What to check |
 |---|---|
-| **Battery usage** | Settings > Battery > App usage dekhein — abnormal drain dikh raha hai kya? |
-| **Data usage** | Mobile data aur WiFi dono pe kitna consume karta hai dekhein |
-| **Background activity** | Kya app unnecessarily background mein run karta hai? |
-| **Storage** | App size + cache kaafi bada hai kya unnecessary? |
+| **Battery usage** | Settings > Battery > App usage — is abnormal drain visible? |
+| **Data usage** | How much it consumes on mobile data and on Wi-Fi |
+| **Background activity** | Does the app run in the background with no reason to? |
+| **Storage** | Is the app size plus cache unusually large? |
 
-## Ads, Tracking aur Monetization Model
+## Ads, tracking and the monetisation model
 
-Free apps monetize kaise hote hain ye samajhna zaruri hai — ads common hain, tracking bhi hoti hai.
+Understanding how free apps make money matters: ads are common and tracking happens too.
 
-- **Ad frequency:** Ads har action pe dikh rahe hain ya reasonable hain?
-- **In-app purchases:** Kya free app forcefully paid path dikha raha hai?
-- **Privacy policy:** Simple check — kya data collect karte hain, share karte hain?
-- **FOSS vs closed source:** FOSS apps usually transparent hote hain, lekin har case mein ye guarantee nahi.
+- **Ad frequency:** do ads appear on every action, or is the frequency reasonable?
+- **In-app purchases:** is a free app pushing a paid path aggressively?
+- **Privacy policy:** a simple check — what data is collected and shared?
+- **FOSS versus closed source:** FOSS apps are usually more transparent, though that is not guaranteed.
 
-## Google Play Store Verification Steps
+## Google Play Store verification steps
 
-Play Store se install karte waqt kuch quick checks se risk kam ho jata hai.
+A few quick checks at install time reduce the risk.
 
-1. **Developer info check karein:** Developer genuine lag raha hai kya, other apps bhi hain kya?
-2. **Reviews skim karein:** Recent 1-star reviews padhein — pattern dekhein (bugs, spam, permissions).
-3. **Downloads count:** New app + low downloads ho to zyada care chahiye.
-4. **Update frequency:** Kab last update hua hai? Abandoned apps risky ho sakte hain security-wise.
-5. **Permissions list:** Play Store pe "App permissions" section dekhein pehle install se.
+1. **Check the developer information:** does the developer look genuine, and do they publish other apps?
+2. **Skim the reviews:** read recent 1-star reviews and look for a pattern (bugs, spam, permissions).
+3. **Downloads count:** a new app with a low download count deserves more caution.
+4. **Update frequency:** when was the last update? Abandoned apps can be risky security-wise.
+5. **Permissions list:** read the "App permissions" section before installing.
 
-Ye steps 2 minute mein ho jaate hain. Saath [Google Play Protect](https://support.google.com/googleplay/answer/2812853) on rakhein — install se pehle apps scan karke risky permissions par alert deta hai.
+These steps take about two minutes. Keep [Google Play Protect](https://support.google.com/googleplay/answer/2812853) enabled — it scans apps before installation and alerts you to risky permissions.
 
-## Video Ke Apps: Verified List aur Practical Notes
+## The apps from the video: a verified list with practical notes
 
-Ye list video ke official description se li gayi hai — video claim, editorial guess nahi. Har app ke saath developer, verified listing, privacy note aur limitation:
+This list comes from the video's official description, so it is a video claim, not an editorial guess.
 
 ### 1. Reface — NEOCORTEXT, INC.
-[Reface Play Store listing](https://play.google.com/store/apps/details?id=video.reface.app) — selfies/videos par instant face-swap aur AI effects. Install karke samples par try karein. Ads aur IAP; data safety mein photos/videos share ka declaration. Free tier limited, subscription push reviews mein dikhta hai. **Alternative:** ToonMe.
+[Reface Play Store listing](https://play.google.com/store/apps/details?id=video.reface.app) — instant face swap and AI effects on selfies and videos. It carries ads and in-app purchases, and its data safety section declares that photos and videos are shared. The free tier is limited, and reviews mention pressure to subscribe. **Alternative:** ToonMe.
 
 ### 2. ToonMe — PHOTO LAB DMCC
-[ToonMe Play Store listing](https://play.google.com/store/apps/details?id=com.vicman.toonmeapp) — photo ko cartoon/vector portrait banata hai. Selfie select karke styles browse karein. Ads aur IAP; personal info aur photos/videos collect hote hain. Daily limits/paid effects par complaints hain. **Alternative:** ToonApp (Lyrebird Studio).
+[ToonMe Play Store listing](https://play.google.com/store/apps/details?id=com.vicman.toonmeapp) — turns a photo into a cartoon or vector portrait; select a selfie, then browse the styles. It carries ads and in-app purchases and collects personal information plus photos and videos. Complaints mention daily limits and paid effects. **Alternative:** ToonApp (Lyrebird Studio).
 
 ### 3. Price History — Price History (PRIXHISTORY TECHNOLOGIES)
-[Price History Play Store listing](https://play.google.com/store/apps/details?id=in.pricehistory.app) — Indian sites par price chart, drop alert aur fake discount check. Product link paste karein. Ads, IAP, device IDs share; notification permission sensible, baaki scrutinise karein. Alert/data accuracy par shikayatein. **Alternative:** Buyhatke (Buyhatke Online Shopping).
+[Price History Play Store listing](https://play.google.com/store/apps/details?id=in.pricehistory.app) — price charts, drop alerts and fake-discount checks for Indian sites; paste a product link to use it. It carries ads and in-app purchases and shares device IDs; the notification permission is sensible, but review the rest. Complaints concern alert and data accuracy. **Alternative:** Buyhatke (Buyhatke Online Shopping).
 
 ### 4. Unlim — Unlim (Kamoliddin Valiev)
-[Unlim Play Store listing](https://play.google.com/store/apps/details?id=com.kratosle.unlim) — Telegram ke "Saved Messages" ko free unlimited cloud storage banana. Telegram account connect karein. Photos/videos access, ads, abhi Beta stage; storage Telegram par depend hai. **Alternative:** Google Drive jaisa official cloud storage.
+[Unlim Play Store listing](https://play.google.com/store/apps/details?id=com.kratosle.unlim) — turns Telegram's "Saved Messages" into free, unlimited cloud storage once you connect a Telegram account. It accesses photos and videos, carries ads and is at the Beta stage; the storage depends on Telegram itself. **Alternative:** official cloud storage such as Google Drive.
 
-### 5. Motion Stills — Google namespace app (listing ab unavailable)
-Video ke description ke mutabiq motion photos aur short video effects. Package id `com.google.android.apps.motionstills` hai, lekin listing is session mein 404 aayi — install link verify nahi ho paya.
-<!-- pending verification: https://play.google.com/store/apps/details?id=com.google.android.apps.motionstills — listing 404, availability confirm karke hi link karein -->
-Availability region par depend karti hai; equivalent kaam Google Photos ke built-in motion photo tools se ho sakta hai.
+### 5. Motion Stills — Google namespace app (listing currently unavailable)
+The video description says it offers motion photos and short video effects. The package id is `com.google.android.apps.motionstills`, but the listing returned a 404 in this session, so the install link could not be verified.
+<!-- pending verification: https://play.google.com/store/apps/details?id=com.google.android.apps.motionstills — the listing returned a 404, so link it only after confirming availability -->
+Availability depends on the region, and Google Photos has built-in motion photo tools that do the same job.
 
 ### 6. Wavelet — pittvandewitt (bonus app)
-[Wavelet Play Store listing](https://play.google.com/store/apps/details?id=com.pittvandewitt.wavelet) — headphones ka system-wide equalizer AutoEq profiles ke saath; headphone profile select karein. Play par "no data collected", ads nahi, IAP hain. Advanced features device/Android version par depend karti hain. **Alternative:** Poweramp Equalizer.
+[Wavelet Play Store listing](https://play.google.com/store/apps/details?id=com.pittvandewitt.wavelet) — a system-wide headphone equaliser with AutoEq profiles; select the one matching your headphones. The Play listing states "no data collected"; it carries no ads and has in-app purchases. Advanced features depend on the device and Android version. **Alternative:** Poweramp Equalizer.
 
-## Troubleshooting aur limitations
+## Troubleshooting and limitations
 
-Apps evaluate karte waqt realistic limitations samajhne chahiye:
+Realistic limitations matter:
 
-- **Reviews biased ho sakte hain** — incentivized reviews hote hain.
-- **Permissions evolve ho sakte hain** — app update karke naye permissions maang sakta hai.
-- **Device specific behavior** — same app alag phones pe alag chalta hai.
-- **Viral doesn't mean useful** — hype cycle short hota hai.
+- **Reviews can be biased** — incentivised reviews exist.
+- **Permissions can change** — an update may request new permissions.
+- **Device-specific behaviour** — the same app behaves differently on other phones.
+- **Viral does not mean useful** — the hype cycle is short.
 
-## Safety aur privacy
+## Safety and privacy
 
-Privacy-first approach rakhein: doubt ho to skip, third-party stores avoid, aur APK zaroori ho to source verify karke [choose-android-apps-safely.html](guides/choose-android-apps-safely.html) checklist follow karein.
+Take a privacy-first approach: if you have doubts, skip the app; avoid third-party stores; and if an APK is necessary, verify the source and follow the [choose-android-apps-safely.html](guides/choose-android-apps-safely.html) checklist.
 
 ## Frequently asked questions
 
-### Video mein bataye 5 apps kaunse hain?
-Video ke official description se: Reface, ToonMe, Price History, Unlim aur Motion Stills, plus bonus Wavelet — notes aur verified listing upar di sections mein; Motion Stills ki listing ab load nahi hoti.
+### Which five apps appear in the video?
 
-### Kya har unique app try karna chahiye?
-Sirf wahi try karein jo real need solve kare; trial period limited rakhein aur use na ho to uninstall karein.
+From the official description: Reface, ToonMe, Price History, Unlim and Motion Stills, plus the bonus Wavelet. Notes and verified listings appear above; the Motion Stills listing does not load.
 
-### Play Store pe top apps hi safe hote hain kya?
-Random APK se safer hain, lekin top list ka matlab privacy-friendly nahi — permissions aur reviews check karna ab bhi zaruri hai.
+### Should you try every "unique" app?
 
-### Battery drain detect kaise karein?
-Settings > Battery usage dekhein; bina reason ke high drain dikhe to app restrict ya uninstall karein.
+Try only those that solve a real need, keep the trial period short, and uninstall what you do not use.
 
-### Kya bonus app bhi same checks apply karte hain?
-Bonus app pe bhi wahi scrutiny apply ho — "Bonus" likhne se app safe nahi ho jata.
+### Are top Play Store apps automatically safe?
+
+They are safer than a random APK, but a high position on a top chart does not mean an app is privacy-friendly. Permissions and reviews still need checking.
+
+### How do you detect battery drain?
+
+Check Settings > Battery usage. If drain is high without a reason, restrict or uninstall the app.
+
+### Do the same checks apply to the bonus app?
+
+Yes — labelling something "Bonus" does not make it safe.
 
 ## Final recommendations
 
-Unique apps discover karna fun hai, lekin smart selection zyada important hai — need check, permissions, ads/tracking aur Play Store steps follow karo.
+Careful selection matters more than discovery: run the need check, read the permissions, examine the ads and tracking, and follow the Play Store steps. One genuinely useful app beats five gimmicky ones, and the framework applies to every entry in the list.
 
-Hype se influence mat ho, actual usage par focus karo; ek genuinely useful app 5 gimmicky apps se better hai. Names video description se confirm hain, par framework har app pe apply karo.
+## Resources and official links
 
-## Resources aur official links
-
-- [Android Help: apps kahan se download karein](https://support.google.com/android/answer/9457058) — unknown sources se install karne par device aur data risk kya hai.
-- [Google Play refund policies](https://support.google.com/googleplay/answer/2479637) — in-app purchases ya subscriptions par refund kaise maangein.
-- [F-Droid](https://f-droid.org/) — open-source (FOSS) apps ka repository, jahan ads/tracking wale free apps kam milte hain.
+- [Android Help: where to download apps](https://support.google.com/android/answer/9457058) — the risks of installing from unknown sources.
+- [Google Play refund policies](https://support.google.com/googleplay/answer/2479637) — how to request a refund for in-app purchases or subscriptions.
+- [F-Droid](https://f-droid.org/) — a repository of open-source (FOSS) apps without ads or tracking.
 
 ## Watch the original AH Solution video
 
@@ -151,9 +152,9 @@ Hype se influence mat ho, actual usage par focus karo; ek genuinely useful app 5
 1. **Featured image / social preview:** `five-unique-android-apps-useful-apps-guide-cover.webp` (1200×630 target)
 2. **Listing thumbnail:** `five-unique-android-apps-useful-apps-guide-thumbnail.webp` (640×360 target)
 3. **In-article visual:** `five-unique-android-apps-useful-apps-guide-explainer.webp` (1200×800 target)
-4. **Alt text guidance:** Use "Android apps evaluation framework aur privacy checks visual"
-5. **Rights check reminder:** Thumbnail YouTube source se derive hai; publication se pehle licensing/attribution confirm karein
+4. **Alt text guidance:** use "Android apps evaluation framework and privacy checks visual"
+5. **Rights check reminder:** the thumbnail is derived from the YouTube source; confirm licensing and attribution before publication
 
 ---
 
-**Editorial note:** Video ke official description se exact app names, developer hints aur Play Store links verify kiye gaye hain (Reface, ToonMe, Price History, Unlim, Motion Stills + bonus Wavelet). Motion Stills ki Play listing is pass mein 404 aayi, usse pending-verification comment se mark kiya gaya hai. List video claim hai — install se pehle evaluation framework aur permission checks har app pe apply karein; article ka purpose safe selection teach karna hai.
+**Editorial note:** The exact app names, developer hints and Play Store links were verified against the official video description (Reface, ToonMe, Price History, Unlim, Motion Stills, plus the bonus Wavelet). The Motion Stills Play listing returned a 404 on this pass and is marked with a pending-verification comment. The list remains a video claim — apply the evaluation framework and the permission checks to each app before installing; the purpose of the article is safe selection, not promotion.
