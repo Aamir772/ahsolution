@@ -432,7 +432,8 @@ ${bodyHtml}
 ${FOOTER}
 ${DEVICE_TAIL}
 <script src="${PAGE_PREFIX}assets/js/device.js" defer></script>
-<script src="${PAGE_PREFIX}assets/js/main.js" defer></script>
+    <script src="${PAGE_PREFIX}assets/js/main.js" defer></script>
+    <script src="${PAGE_PREFIX}assets/js/localize.js" defer></script>
 <script src="${PAGE_PREFIX}assets/js/cms.js" defer></script>
 </body>
 </html>`;

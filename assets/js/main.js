@@ -119,7 +119,7 @@
    * 3b. 3D social icons (hero lower area; footer brand as fallback)
    * ------------------------------------------------------------------ */
   (function socialIcons() {
-    const host = $('.hero-copy') || $('.footer-brand');
+    const host = $('.footer-brand') || $('.hero-copy');
     if (!host || $('.social-3d', host)) return;
     const ICONS = [
       { cls: 'social-3d__btn--yt', label: 'AH Solution on YouTube', href: 'https://www.youtube.com/channel/UC_LdZmWha8cvotco41D77fw',
@@ -368,9 +368,62 @@
     function setStatus(text, cached) {
       statusEls.forEach(el => {
         el.innerHTML = '<span class="data-badge' + (cached ? ' is-cache' : '') + '"><span class="dot"></span>' +
-          (cached ? 'Cached snapshot' : 'Live channel data') + '</span><span>' + esc(text) + '</span>';
+          (cached ? 'Cached snapshot' : 'Live channel data') + '</span><span>' + esc(text) + '</span>' +
+          '<button type="button" class="data-info-btn" data-yt-data-about>About YouTube channel data</button>';
       });
     }
+
+    /* Accessible "About YouTube channel data" dialog (created once per page). */
+    function ensureDataModal() {
+      let modal = document.getElementById('yt-data-modal');
+      if (modal) return modal;
+      modal = document.createElement('div');
+      modal.id = 'yt-data-modal';
+      modal.hidden = true;
+      const panel = document.createElement('div');
+      panel.className = 'yt-data-panel';
+      panel.setAttribute('role', 'dialog');
+      panel.setAttribute('aria-modal', 'true');
+      panel.setAttribute('aria-labelledby', 'yt-data-title');
+      panel.innerHTML =
+        '<div class="yt-data-backdrop" data-yt-data-close aria-hidden="true"></div>' +
+        '<div class="yt-data-card">' +
+        '<h2 id="yt-data-title">About YouTube channel data</h2>' +
+        '<ul>' +
+        '<li>Video lists, view counts and like counts shown on this site come from <strong>AH Solution&rsquo;s own public YouTube channel data</strong>.</li>' +
+        '<li>We refresh that data periodically rather than showing live numbers, so figures can briefly trail the channel page on YouTube.</li>' +
+        '<li>This is channel metadata only — browsing this site does not connect you to YouTube and nothing about you is shared.</li>' +
+        '</ul>' +
+        '<button type="button" class="button button-primary" data-yt-data-close>Got it</button>' +
+        '</div>';
+      modal.appendChild(panel);
+      document.body.appendChild(modal);
+      let lastFocus = null;
+      const close = () => {
+        modal.hidden = true;
+        modal.removeEventListener('keydown', escListener);
+        if (lastFocus && lastFocus.focus) lastFocus.focus();
+        lastFocus = null;
+      };
+      const escListener = (e) => { if (e.key === 'Escape') close(); };
+      modal.addEventListener('click', (e) => {
+        if (e.target.closest('[data-yt-data-close]') || e.target.classList.contains('yt-data-backdrop')) close();
+      });
+      modal.openFor = (opener) => {
+        lastFocus = opener instanceof Element ? opener : document.activeElement;
+        modal.hidden = false;
+        modal.addEventListener('keydown', escListener);
+        const btn = panel.querySelector('button[data-yt-data-close]');
+        if (btn) btn.focus();
+      };
+      modal.close = close;
+      return modal;
+    }
+
+    document.addEventListener('click', (e) => {
+      const trigger = e.target.closest ? e.target.closest('[data-yt-data-about]') : null;
+      if (trigger) { e.preventDefault(); ensureDataModal().openFor(trigger); }
+    });
 
     /* Chunked stream renderer: paints the first batch immediately, then
        appends further batches as a sentinel scrolls into view. Keeps the
@@ -483,7 +536,8 @@
       });
 
       const when = data.generatedAt ? new Date(data.generatedAt).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' }) : 'unknown date';
-      setStatus(`Source: YouTube public feed · refreshed ${when}. Stats update when the data file is rebuilt (npm run fetch:videos).`, cached);
+      const hasRealDate = !!data.generatedAt && !Number.isNaN(Date.parse(data.generatedAt));
+      setStatus('Source: YouTube channel data' + (hasRealDate ? ' · refreshed ' + when : '') + '. Figures can briefly trail the channel on YouTube.', cached);
     }
 
     fetch(base + 'assets/data/videos.json', { cache: 'no-cache' })

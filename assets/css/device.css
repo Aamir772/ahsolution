@@ -381,6 +381,9 @@ html.is-locked .device-screen{overflow:hidden}
   .device-stand{display:none}
   .device-toggle{display:none}
   .site-header{top:var(--dw-phone-b)}
+  /* the sticky header must respect the rounded frame: when scrolled (stuck at
+     the top inset) its square corners collide with the 42px bezel curve */
+  .site-header.scrolled{border-radius:26px 26px 0 0}
   html.is-locked,html.is-locked body{overflow:hidden}
 }
 @media (max-width:420px){

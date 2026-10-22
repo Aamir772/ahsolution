@@ -68,6 +68,12 @@
   to = "/.netlify/functions/videos-fresh"
   status = 200
 
+# Gemini-powered localization for the language selector
+[[redirects]]
+  from = "/api/localize"
+  to = "/.netlify/functions/localize"
+  status = 200
+
 [[redirects]]
   from = "/article/*"
   to = "/article.html?slug=:splat"

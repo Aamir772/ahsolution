@@ -209,7 +209,7 @@ body.theme-editorial .device-screen::-webkit-scrollbar-thumb{
   font-size:14.5px;line-height:1.7;-webkit-line-clamp:4;color:var(--ed-ink-2);margin-top:12px;
 }
 .editorial-grid>.is-feature .card-image::before{
-  content:"Editor's pick";position:absolute;z-index:2;left:15px;top:14px;
+  content:"Editor's pick";position:absolute;z-index:2;right:15px;top:14px;
   display:inline-flex;align-items:center;gap:7px;
   padding:6px 11px;border-radius:6px;background:var(--ed-accent-deep);color:#fff;
   font-size:9.5px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;
@@ -340,8 +340,20 @@ body.article-page .breadcrumbs a:focus-visible{
 /* FAQ: question headings and their answers use the same high-contrast pair */
 body.article-page .article-body h2#frequently-asked-questions{
   border-top:1px solid var(--ed-line);padding-top:28px;margin-top:44px;
+  counter-reset:faq-q;
 }
-body.article-page .article-body h2#frequently-asked-questions ~ h3{color:var(--ed-ink)}
+body.article-page .article-body h2#frequently-asked-questions ~ h3{color:var(--ed-ink);}
+/* auto-number the FAQ questions (01/02/03, crimson accent, reset per section) */
+body.article-page .article-body h2#frequently-asked-questions ~ h3{
+  position:relative;counter-increment:faq-q;
+  display:flex;align-items:baseline;gap:12px;
+}
+body.article-page .article-body h2#frequently-asked-questions ~ h3::before{
+  content:counter(faq-q, decimal-leading-zero);
+  flex:none;color:var(--ed-accent);
+  font:800 15px/1 var(--font-display);letter-spacing:.06em;
+  padding-top:2px;
+}
 body.article-page .article-body h2#frequently-asked-questions ~ h3 + p,
 body.article-page .article-body h2#frequently-asked-questions ~ p{color:var(--ed-ink-2)}
 
@@ -507,6 +519,20 @@ body.theme-editorial .site-footer{color-scheme:dark}
   .theme-editorial .video-block{padding:18px}
   .theme-editorial .article-toc{padding:16px 18px}
   .theme-editorial .article-body ol>li{padding-left:38px}
+  /* mobile article surface: tighter inset leaves room for related cards */
+  body.article-page .article-main{padding:24px 18px 22px}
+  /* related cards are ~300px wide at this width: a fixed 206px image box
+     crops the 640x360 artwork's drawn labels off — keep the cover's aspect */
+  .theme-editorial .card-image{height:auto;aspect-ratio:640/360}
+  /* tables: let headers wrap so cells stop hard-clipping at the screen edge; the
+     wrap keeps horizontal scroll as a last resort */
+  body.article-page .article-body th{white-space:normal;line-height:1.4}
+  body.article-page .article-body th,
+  body.article-page .article-body td{padding:9px 10px;font-size:13px}
+  /* touch viewports: no 3D tilt / inset depth on editorial cards (prevents the
+     clipped-edges look on hover-lift/scale) */
+  .theme-editorial .editorial-grid .content-card{transform:none !important;transform-style:flat}
+  .theme-editorial .editorial-grid .card-body{transform:none}
 }
 
 /* ============================== reduced motion =========================== */

@@ -291,3 +291,40 @@ No real Supabase project, browser, or network access is required.
   breaks a read.
 - **Never commit `.env` files or expose `SUPABASE_SERVICE_ROLE_KEY`** in any client
   repository or deployment artifact.
+
+## Global language selector & Gemini localization
+
+The public site ships an accessible language selector in the header (desktop
+and mobile; English by default — **no** IP/geo auto-detection). When a visitor
+explicitly picks a language, the page content is translated on demand by the
+`localize` Netlify Function, which calls the **Gemini API** server-side.
+
+- **Endpoint:** `/api/localize` (rewrite to `netlify/functions/localize`).
+  `GET` → status/config; `POST` → `{ lang, items: [string, …] }` → translated
+  strings. Supports 18 languages (English, Hindi, Bengali, Tamil, Telugu,
+  Marathi, Gujarati, Kannada, Malayalam, Punjabi, Spanish, French, German,
+  Portuguese, Arabic (RTL), Japanese, Korean, Chinese).
+- **Model:** `gemini-2.5-flash` (fixed, documented; override with
+  `LOCALIZE_MODEL`). Frontend requests can never change the model.
+- **Key handling:** set `GEMINI_API_KEY` in the Netlify dashboard (Site →
+  Environment variables). It is read only server-side — never in frontend
+  JavaScript, HTML, or committed files. Local dev: copy `.env.example` → `.env`
+  (git-ignored).
+- **Translation scope:** visible text nodes, image `alt` text, input
+  placeholders, and the document title. Code blocks, commands, URLs, the
+  admin panel, and the SOLUTION AI widget are never translated. SEO URLs and
+  canonical metadata stay English (the static HTML is never modified; only the
+  in-memory DOM of an explicit visitor session is translated).
+- **Caching:** server keeps a small per-instance in-memory cache (24 h); the
+  browser keeps the persistent cache in `localStorage` keyed by target
+  language + exact source text — a source-content change misses the cache
+  automatically. No extra paid dependency is used for caching.
+- **Rate limiting:** per-IP limiter (Upstash when configured, otherwise a
+  best-effort in-memory limiter). Safety default `LOCALIZE_REQUIRE_DURABLE_LIMIT=1`
+  keeps translation disabled until a durable limiter exists; set it to `0`
+  once Upstash is configured (or to run with the in-memory limiter only).
+- **Failure behavior:** missing key / no durable limiter → friendly notice and
+  unchanged English content (never fake translations). Rate limit, upstream
+  errors, timeouts, and malformed responses → clear status chip with retry.
+- **RTL:** Arabic (and any `dir="rtl"` language) flips the document direction
+  and reading order; code stays LTR and decorative art is unchanged.

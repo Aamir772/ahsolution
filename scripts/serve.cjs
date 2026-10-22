@@ -62,6 +62,36 @@ const server = http.createServer(function (req, res) {
       res.end(fs.existsSync(feed) ? fs.readFileSync(feed) : JSON.stringify({ error: 'feed unavailable' }));
       return;
     }
+    // Mirrors the production /api/localize rewrite (netlify.toml): the local
+    // dev server runs the real localize function in-process, so the language
+    // selector behaves exactly like production during QA. With no key set the
+    // function answers 503 not_configured, which keeps tests deterministic.
+    if (url === '/api/localize') {
+      const chunks = [];
+      req.on('data', function (c) { chunks.push(c); });
+      req.on('end', function () {
+        let fn;
+        try { fn = require(path.join(ROOT, 'netlify', 'functions', 'localize', 'localize.js')); }
+        catch (e) {
+          res.writeHead(502, { 'Content-Type': 'application/json; charset=utf-8' });
+          res.end(JSON.stringify({ ok: false, error: 'fn_load', message: 'localize function failed to load' }));
+          return;
+        }
+        const body = Buffer.concat(chunks).toString('utf8');
+        Promise.resolve(fn.handler({
+          httpMethod: req.method,
+          headers: Object.assign({ origin: 'http://localhost:' + PORT }, req.headers),
+          body: req.method === 'POST' ? body : undefined
+        })).then(function (r) {
+          res.writeHead(r.statusCode || 200, r.headers || {});
+          res.end(r.body == null ? '' : r.body);
+        }).catch(function () {
+          res.writeHead(502, { 'Content-Type': 'application/json; charset=utf-8' });
+          res.end(JSON.stringify({ ok: false, error: 'fn_error' }));
+        });
+      });
+      return;
+    }
     let file = path.normalize(path.join(ROOT, url));
     if (!file.startsWith(ROOT)) { res.writeHead(403); res.end('forbidden'); return; }
 
