@@ -1,0 +1,11 @@
+{
+  "meta": {
+    "locale": "pa",
+    "dir": "ltr",
+    "langTag": "pa-IN",
+    "complete": false,
+    "generated": null,
+    "note": "Pending controlled Gemini generation step (scripts/i18n-generate.cjs + GEMINI_API_KEY). Runtime treats this locale as incomplete and keeps the canonical copy for UI strings; article/dynamic content translation stays available on demand."
+  },
+  "strings": {}
+}

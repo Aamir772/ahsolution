@@ -295,36 +295,68 @@ No real Supabase project, browser, or network access is required.
 ## Global language selector & Gemini localization
 
 The public site ships an accessible language selector in the header (desktop
-and mobile; English by default — **no** IP/geo auto-detection). When a visitor
-explicitly picks a language, the page content is translated on demand by the
-`localize` Netlify Function, which calls the **Gemini API** server-side.
+and mobile; the site's canonical copy stays the default for everyone — **no**
+IP/geo auto-detection, no language flash on first paint).
 
+### Locale model (10 configured locales)
+- **`hinglish`** — the site's existing canonical mixed-language copy, extracted
+  verbatim into `assets/i18n/locales/hinglish.json`. It is the source of truth;
+  existing content is never rewritten, normalized, or translated during
+  initialization.
+- **9 translation targets:** `hi` Hindi, `bn` Bengali, `ta` Tamil, `te` Telugu,
+  `mr` Marathi, `gu` Gujarati, `kn` Kannada, `ml` Malayalam, `pa` Punjabi.
+- **HTML tagging limitation:** Hinglish has no standard BCP47 locale. When
+  `hinglish` is explicitly selected the runtime sets a private-use tag
+  (`en-IN-x-hinglish`) on `<html lang>`; this is best-effort metadata — HTML
+  language tags cannot precisely represent mixed Hinglish text. The default
+  copy keeps `lang="en"` / `lang="en-IN"` as authored.
+
+### Separation of generation and runtime (important)
+- **Generation (offline, controlled):** `node scripts/i18n-generate.cjs` reads
+  `GEMINI_API_KEY` from the local environment only, calls the **Gemini API**'
+  (`gemini-2.5-flash` by default, `LOCALIZE_MODEL` override), validates every
+  batch (count, non-empty strings, `{placeholder}` preservation, brand term
+  preservation, untrusted-data prompt), and writes the validated result to
+  `assets/i18n/locales/<locale>.json` with `meta.complete: true` — only when
+  **all** keys are translated. A rejected batch aborts the run without
+  partial writes.
+- **Validation:** `node scripts/i18n-validate.cjs` reports and enforces
+  missing/extra/duplicate keys, empty values, placeholder drift, meta
+  truthfulness, and rejects untruthful `complete` flags.
+- **Runtime (production):** locale switches for UI strings load the local
+  JSON dictionaries — **zero API calls for interface strings**. Only
+  article/video/dynamic content is translated on demand through the secure
+  backend endpoint, with caching and fallback to the canonical copy.
+- **Pending locales:** a dictionary with `meta.complete: false` (initial
+  state for the 9 targets until generation runs with a key) falls back to the
+  canonical copy for UI strings and is never presented as a finished
+  translation; article/content translation on demand remains available.
+
+### On-demand content translation (Gemini, server-side only)
 - **Endpoint:** `/api/localize` (rewrite to `netlify/functions/localize`).
-  `GET` → status/config; `POST` → `{ lang, items: [string, …] }` → translated
-  strings. Supports 18 languages (English, Hindi, Bengali, Tamil, Telugu,
-  Marathi, Gujarati, Kannada, Malayalam, Punjabi, Spanish, French, German,
-  Portuguese, Arabic (RTL), Japanese, Korean, Chinese).
+  `GET` → status/config (10 locales, 9 targets); `POST` →
+  `{ lang, items: [string, …] }` → translated strings. Targets only
+  (`hinglish` and the default copy are never "translated into themselves").
 - **Model:** `gemini-2.5-flash` (fixed, documented; override with
   `LOCALIZE_MODEL`). Frontend requests can never change the model.
 - **Key handling:** set `GEMINI_API_KEY` in the Netlify dashboard (Site →
-  Environment variables). It is read only server-side — never in frontend
-  JavaScript, HTML, or committed files. Local dev: copy `.env.example` → `.env`
-  (git-ignored).
-- **Translation scope:** visible text nodes, image `alt` text, input
-  placeholders, and the document title. Code blocks, commands, URLs, the
-  admin panel, and the SOLUTION AI widget are never translated. SEO URLs and
-  canonical metadata stay English (the static HTML is never modified; only the
-  in-memory DOM of an explicit visitor session is translated).
-- **Caching:** server keeps a small per-instance in-memory cache (24 h); the
-  browser keeps the persistent cache in `localStorage` keyed by target
-  language + exact source text — a source-content change misses the cache
-  automatically. No extra paid dependency is used for caching.
+  Environment variables) or locally via `.env` (git-ignored). It is read only
+  server-side — never in frontend JavaScript, HTML, or committed files.
+- **Scope:** article bodies, cards, video titles/descriptions, alt text,
+  captions. Code blocks, commands, URLs, the admin panel, and the SOLUTION AI
+  widget are never translated. SEO URLs and canonical metadata stay as
+  authored (the static HTML files are never modified at runtime).
+- **Caching:** server keeps a small per-instance cache (24 h); the browser
+  keeps the persistent cache in `localStorage` keyed by target locale + exact
+  source text — a source-content change misses the cache automatically. No
+  extra paid dependency is used for caching.
 - **Rate limiting:** per-IP limiter (Upstash when configured, otherwise a
   best-effort in-memory limiter). Safety default `LOCALIZE_REQUIRE_DURABLE_LIMIT=1`
-  keeps translation disabled until a durable limiter exists; set it to `0`
-  once Upstash is configured (or to run with the in-memory limiter only).
+  keeps on-demand translation disabled until a durable limiter exists; set it
+  to `0` once Upstash is configured (or to run with the in-memory limiter
+  only).
 - **Failure behavior:** missing key / no durable limiter → friendly notice and
-  unchanged English content (never fake translations). Rate limit, upstream
+  unchanged canonical content (never fake translations). Rate limit, upstream
   errors, timeouts, and malformed responses → clear status chip with retry.
-- **RTL:** Arabic (and any `dir="rtl"` language) flips the document direction
-  and reading order; code stays LTR and decorative art is unchanged.
+- **RTL:** the runtime flips `dir`/`lang` for any RTL locale (`meta.dir`);
+  code stays LTR and decorative art is unchanged.

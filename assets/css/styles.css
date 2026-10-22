@@ -1199,6 +1199,7 @@ html.booted .hero-visual{animation:heroFade var(--dur-slower) var(--ease-out) va
 .lang-list li:hover,.lang-list li.focus{background:rgba(255,82,107,.12);color:#fff}
 .lang-list li[aria-selected="true"]{color:#fff;background:rgba(255,82,107,.18)}
 .lang-list li[aria-selected="true"] .lang-code{color:#ff92a8}
+.lang-list .lang-soon{color:#ff92a8;font-weight:700}
 .lang-list li:focus-visible{outline:var(--focus-ring);outline-offset:-2px}
 .lang-list .lang-empty{cursor:default;color:#7d828f}
 .lang-list .lang-empty:hover{background:transparent}

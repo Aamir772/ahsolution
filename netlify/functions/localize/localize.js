@@ -26,9 +26,14 @@
 
 const crypto = require('crypto');
 
-/* Carefully verified language inventory (native names, direction). */
+/* Configured locale inventory.
+   Canonical source: the site's own Hinglish copy — `hinglish` and the
+   default display locale are not valid translation TARGETS. Translation
+   targets = the 9 available Indian locales. UI chrome strings for these
+   locales ship as validated local JSON dictionaries (assets/i18n/locales);
+   this endpoint translates on-demand CONTENT only. */
 const LANGUAGES = {
-  en: { name: 'English', dir: 'ltr' },
+  hinglish: { name: 'Hinglish (canonical source)', dir: 'ltr' },
   hi: { name: 'हिन्दी', dir: 'ltr' },
   bn: { name: 'বাংলা', dir: 'ltr' },
   ta: { name: 'தமிழ்', dir: 'ltr' },
@@ -37,17 +42,10 @@ const LANGUAGES = {
   gu: { name: 'ગુજરાતી', dir: 'ltr' },
   kn: { name: 'ಕನ್ನಡ', dir: 'ltr' },
   ml: { name: 'മലയാളം', dir: 'ltr' },
-  pa: { name: 'ਪੰਜਾਬੀ', dir: 'ltr' },
-  es: { name: 'Español', dir: 'ltr' },
-  fr: { name: 'Français', dir: 'ltr' },
-  de: { name: 'Deutsch', dir: 'ltr' },
-  pt: { name: 'Português', dir: 'ltr' },
-  ar: { name: 'العربية', dir: 'rtl' },
-  ja: { name: '日本語', dir: 'ltr' },
-  ko: { name: '한국어', dir: 'ltr' },
-  zh: { name: '中文', dir: 'ltr' }
+  pa: { name: 'ਪੰਜਾਬੀ', dir: 'ltr' }
 };
 const DEFAULT_LANG = 'en';
+const TARGETS = ['hi', 'bn', 'ta', 'te', 'mr', 'gu', 'kn', 'ml', 'pa'];
 const DEFAULT_MODEL = 'gemini-2.5-flash';
 
 const MAX_BODY_BYTES = 30000;
@@ -270,6 +268,7 @@ exports.handler = async (event) => {
       configured: configured(durable),
       durableRateLimit: durable,
       model: modelName(),
+      targets: TARGETS,
       languages: LANGUAGES,
       limits: { maxItems: MAX_ITEMS, maxCharsPerItem: MAX_TEXT_CHARS, maxTotalChars: MAX_TOTAL_CHARS }
     }, origin);
@@ -311,11 +310,12 @@ exports.handler = async (event) => {
   try { payload = JSON.parse(event.body || '{}'); }
   catch (e) { return reply(400, { ok: false, error: 'bad_json', message: 'Invalid JSON.' }, origin); }
 
-  /* Language */
+  /* Language: only configured targets; the canonical source (hinglish) and
+     the default display copy (en) are never translated into themselves. */
   const lang = String(payload.lang || '').toLowerCase();
-  if (!Object.prototype.hasOwnProperty.call(LANGUAGES, lang) || lang === DEFAULT_LANG) {
+  if (TARGETS.indexOf(lang) === -1) {
     log('POST', 400, now() - started, '-');
-    return reply(400, { ok: false, error: 'bad_lang', message: 'Unsupported or default language.' }, origin);
+    return reply(400, { ok: false, error: 'bad_lang', message: 'Unsupported, default, or canonical-source language.' }, origin);
   }
 
   /* Items */
