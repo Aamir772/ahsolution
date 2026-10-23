@@ -489,7 +489,6 @@ body.article-page .article-body pre code{background:none;border:0;color:inherit}
 body.article-page .reading-progress{height:3px;box-shadow:none}
 
 /* keep the dark chrome around the reading surface in sync */
-body.theme-editorial .announcement,
 body.theme-editorial .site-header,
 body.theme-editorial .site-footer{color-scheme:dark}
 

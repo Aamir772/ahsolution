@@ -184,13 +184,6 @@ const BOOT = `<div class="boot" data-boot aria-hidden="true">
   </div>
 </div>`;
 
-const ANNOUNCE = `<div class="announcement">
-  <div class="container">
-    <span><i class="ann-dot"></i><strong>AH SOLUTION</strong> &nbsp; TIPS, TRICKS AND TECHNIQUES</span>
-    <span>Practical guides for everyday tech</span>
-  </div>
-</div>`;
-
 const DEVICE_TAIL = `  </div><!-- /device-screen -->
   <div class="device-chrome" aria-hidden="true">
     <span class="device-cam" aria-hidden="true"></span>
@@ -247,7 +240,6 @@ ${BOOT}
 <div class="device-shell" data-device-shell>
   <div class="device-screen" data-device-screen>
 <a class="skip-link" href="#main">Skip to content</a>
-${ANNOUNCE}
 ${HEADER}
 ${SEARCH_MODAL}`;
 }
@@ -382,7 +374,7 @@ function articlePage(row, mdPath, all) {
       <div class="article-kicker">${esc(row.category)} · ${esc(mins)} min read</div>
       <h1 class="article-title">${esc(row.article_title)}</h1>
       <p class="article-intro">${esc(row.excerpt)}</p>
-      <div class="article-meta"><span>${esc(AUTHORS)}</span><span>${esc(row.language || 'Hinglish')}</span><span>Source video ${esc((row.video_publish_date || '').slice(0, 10))}</span></div>
+      <div class="article-meta"><span>${esc(AUTHORS)}</span><span>${esc(row.language || 'English')}</span><span>Source video ${esc((row.video_publish_date || '').slice(0, 10))}</span></div>
     </div>
   </section>
 

@@ -144,6 +144,10 @@ async function boot(page) {
   await page.waitForSelector('[data-ai-panel].open', { timeout: 8000 });
   const openMs = Date.now() - t0;
   ok(openMs < 2500, 'panel opens on core click (' + openMs + 'ms)');
+  await page.waitForFunction(
+    () => document.activeElement === document.querySelector('[data-ai-input]'),
+    null, { timeout: 2000 }
+  ).catch(() => {});
   const focused = await page.evaluate(() => document.activeElement === document.querySelector('[data-ai-input]'));
   ok(focused, 'chat input receives focus on open');
   const stillAnimating = await page.evaluate(() => {
@@ -252,7 +256,12 @@ async function boot(page) {
 
   await mpage.click('[data-ai-open]');
   await mpage.waitForSelector('[data-ai-panel].open', { timeout: 8000 });
-  await mpage.waitForTimeout(400);
+  await mpage.waitForFunction(() => {
+    const p = document.querySelector('[data-ai-panel]');
+    if (!p) return false;
+    const t = getComputedStyle(p).transform;
+    return t === 'none' || /,\s*0(?:\.0+)?\)$/.test(t);
+  }, null, { timeout: 4000 }).catch(() => {});
   const sheet = await mpage.evaluate(() => {
     const p = document.querySelector('[data-ai-panel]');
     const r = p.getBoundingClientRect();

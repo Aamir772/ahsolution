@@ -176,3 +176,48 @@ layout unaffected by all the mobile-scoped media queries.
 - `release/v2.0/site/assets/` remains a stale v2.0 snapshot (pre-existing
   drift, confirmed before this task); only the mirrored `index.html` image
   change was applied there.
+
+## Appendix — localization error toast (follow-up fix)
+
+Reported separately: on selecting Tamil, a "Translation failed for part of
+this page" toast rendered behind page content / overlapping the navigation.
+
+Root causes found:
+
+1. **Translation failure (real cause):** the **live production deploy has no
+   `localize` function** — `https://ahsolution.live/api/localize` and
+   `/.netlify/functions/localize` both return 404 (while `/api/videos` works,
+   so it is a deployment gap, not a redirect problem). The client received an
+   HTML 404 body, `res.json()` failed, and the error was reported as the
+   generic `'network'` → generic toast copy. (The local Tamil dictionary is
+   intentionally `complete:false` — pending generation — which is reported
+   accurately already.)
+2. **Toast layering:** `.lang-chip` was created inside the header `.lang`
+   wrap, i.e. inside the scrolling/clipped `.device-screen`, with
+   `position:fixed;bottom:18px` — on desktop it spilled over the monitor
+   bezel/stand area of the device-frame decoration.
+
+Fixes:
+
+- `assets/js/localize.js`: the status chip is portaled to a shared
+  `#ah-notify-root` div appended to `<body>`; `fetchBatch` now preserves the
+  HTTP-level cause (`http_404` etc.) instead of collapsing everything into
+  `network`; new `failureKind()`/`failureMessage()` classify errors into
+  stale (service not deployed/configured — accurate message, no auto-retry),
+  request, and retryable (network/limits/upstream — Retry button that retries
+  only the failed translation, preserving translated sections); a
+  `retryLock` latch stops the MutationObserver from hammering a dead
+  endpoint until the user explicitly retries or switches language.
+- `assets/css/styles.css`: `.lang-chip` is now explicit about stacking and
+  placement — viewport-fixed bottom-center with `env(safe-area-inset-bottom)`,
+  inside the rendered monitor screen on desktop
+  (`--dw-world-b + --dw-bezel` offset), z-index 420 (above header 90 and
+  device chrome 60), max-width respecting screen bounds.
+- Verified: desktop 1366px and mobile 390px screenshots
+  (`localize-toast-desktop.png`, `localize-toast-mobile.png` in
+  `...\ah-qa\out\`), transient-failure Retry path, dead-service message,
+  English restore. `qa-pages` 22/0, `qa-blog` 322/0, AI index OK.
+- Note: the actual production fix still requires **deploying the `localize`
+  Netlify function** (and `GEMINI_API_KEY` + Upstash or
+  `LOCALIZE_REQUIRE_DURABLE_LIMIT=0`) — the client now reports that state
+  accurately instead of a generic failure.

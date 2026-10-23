@@ -1,0 +1,152 @@
+{
+  "sticky_390": {
+    "scrolled": false,
+    "hTop": 8,
+    "drTop": 0,
+    "diff": 8,
+    "position": "sticky",
+    "z": "90",
+    "scrolledClass": "site-header",
+    "docOfx": 0
+  },
+  "nav_390": {
+    "before": false,
+    "open": true,
+    "vis": true,
+    "expanded": "true",
+    "rect": [
+      8,
+      71,
+      374,
+      398
+    ],
+    "inViewport": true,
+    "ofx": 0
+  },
+  "navEsc_390": {
+    "open": false,
+    "expanded": "false"
+  },
+  "toast_390": {
+    "panelOpen": true,
+    "hasTa": true,
+    "before": {
+      "hidden": true,
+      "text": ""
+    },
+    "t1": {
+      "exists": true,
+      "hidden": false,
+      "text": "Translation service is not available on this site yet — the page keeps its original content. Interface strings from the ",
+      "rect": [
+        98,
+        683,
+        293,
+        826
+      ],
+      "inViewport": true,
+      "headerRect": [
+        8,
+        73
+      ],
+      "overlapsHeader": false,
+      "z": "420",
+      "position": "fixed",
+      "retry": false,
+      "retryLabel": null
+    },
+    "autoDismissedAfter3s": false
+  },
+  "ai_390": {
+    "exists": true,
+    "visible": true,
+    "rect": [
+      0,
+      737,
+      390,
+      1243
+    ],
+    "inViewport": false,
+    "ofx": 0
+  },
+  "pageErrors_390": [],
+  "sticky_1440": {
+    "scrolled": true,
+    "hTop": 116,
+    "drTop": 116,
+    "diff": 0,
+    "position": "sticky",
+    "z": "90",
+    "scrolledClass": "site-header scrolled",
+    "docOfx": 0
+  },
+  "nav_1440": {
+    "before": false,
+    "open": true,
+    "vis": true,
+    "expanded": "true",
+    "rect": [
+      374,
+      130,
+      500,
+      35
+    ],
+    "inViewport": true,
+    "ofx": 0
+  },
+  "navEsc_1440": {
+    "open": false,
+    "expanded": "false"
+  },
+  "toast_1440": {
+    "panelOpen": true,
+    "hasTa": true,
+    "before": {
+      "hidden": true,
+      "text": ""
+    },
+    "t1": {
+      "exists": true,
+      "hidden": false,
+      "text": "Translation service is not available on this site yet — the page keeps its original content. Interface strings from the ",
+      "rect": [
+        360,
+        708,
+        1080,
+        770
+      ],
+      "inViewport": true,
+      "headerRect": [
+        54,
+        127
+      ],
+      "overlapsHeader": false,
+      "z": "420",
+      "position": "fixed",
+      "retry": false,
+      "retryLabel": null
+    },
+    "autoDismissedAfter3s": false
+  },
+  "ai_1440": {
+    "exists": true,
+    "visible": true,
+    "rect": [
+      959,
+      168,
+      1313,
+      663
+    ],
+    "inViewport": true,
+    "ofx": 0
+  },
+  "pageErrors_1440": [],
+  "table390": {
+    "tableW": 305,
+    "wrapW": 304,
+    "tableSW": 305,
+    "wrapCW": 302,
+    "wrapOverflowX": "auto",
+    "scrollable": true
+  }
+}

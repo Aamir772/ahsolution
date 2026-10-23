@@ -27,25 +27,23 @@
 const crypto = require('crypto');
 
 /* Configured locale inventory.
-   Canonical source: the site's own Hinglish copy — `hinglish` and the
-   default display locale are not valid translation TARGETS. Translation
-   targets = the 9 available Indian locales. UI chrome strings for these
-   locales ship as validated local JSON dictionaries (assets/i18n/locales);
-   this endpoint translates on-demand CONTENT only. */
+   Canonical source: English (locales/en.json). English is the default and
+   fallback locale and is not a translation TARGET. UI chrome strings ship as
+   validated local JSON dictionaries in locales/; this endpoint translates
+   on-demand CONTENT only. Must stay in sync with assets/js/localize.js. */
 const LANGUAGES = {
-  hinglish: { name: 'Hinglish (canonical source)', dir: 'ltr' },
+  en: { name: 'English (canonical source)', dir: 'ltr' },
   hi: { name: 'हिन्दी', dir: 'ltr' },
+  es: { name: 'Español', dir: 'ltr' },
+  fr: { name: 'Français', dir: 'ltr' },
+  de: { name: 'Deutsch', dir: 'ltr' },
+  pt: { name: 'Português', dir: 'ltr' },
+  ar: { name: 'العربية', dir: 'rtl' },
   bn: { name: 'বাংলা', dir: 'ltr' },
-  ta: { name: 'தமிழ்', dir: 'ltr' },
-  te: { name: 'తెలుగు', dir: 'ltr' },
-  mr: { name: 'मराठी', dir: 'ltr' },
-  gu: { name: 'ગુજરાતી', dir: 'ltr' },
-  kn: { name: 'ಕನ್ನಡ', dir: 'ltr' },
-  ml: { name: 'മലയാളം', dir: 'ltr' },
-  pa: { name: 'ਪੰਜਾਬੀ', dir: 'ltr' }
+  ja: { name: '日本語', dir: 'ltr' }
 };
 const DEFAULT_LANG = 'en';
-const TARGETS = ['hi', 'bn', 'ta', 'te', 'mr', 'gu', 'kn', 'ml', 'pa'];
+const TARGETS = ['hi', 'es', 'fr', 'de', 'pt', 'ar', 'bn', 'ja'];
 const DEFAULT_MODEL = 'gemini-2.5-flash';
 
 const MAX_BODY_BYTES = 30000;
@@ -310,8 +308,8 @@ exports.handler = async (event) => {
   try { payload = JSON.parse(event.body || '{}'); }
   catch (e) { return reply(400, { ok: false, error: 'bad_json', message: 'Invalid JSON.' }, origin); }
 
-  /* Language: only configured targets; the canonical source (hinglish) and
-     the default display copy (en) are never translated into themselves. */
+  /* Language: only configured targets; the canonical source (English) is
+     never translated into itself. */
   const lang = String(payload.lang || '').toLowerCase();
   if (TARGETS.indexOf(lang) === -1) {
     log('POST', 400, now() - started, '-');

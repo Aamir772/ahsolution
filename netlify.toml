@@ -3,6 +3,12 @@
   publish = "."
   functions = "netlify/functions"
 
+# Hourly server-side YouTube sync (Netlify Scheduled Function, UTC cron).
+# It publishes to the durable Upstash store read by /api/videos; the static
+# assets/data/videos.json snapshot remains the offline fallback.
+[functions."videos-refresh"]
+  schedule = "0 * * * *"
+
 # Custom 404 page (Netlify serves 404.html automatically)
 [[headers]]
   for = "/*"

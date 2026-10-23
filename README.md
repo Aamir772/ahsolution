@@ -295,48 +295,47 @@ No real Supabase project, browser, or network access is required.
 ## Global language selector & Gemini localization
 
 The public site ships an accessible language selector in the header (desktop
-and mobile; the site's canonical copy stays the default for everyone — **no**
-IP/geo auto-detection, no language flash on first paint).
+and mobile). English is the canonical source, the default for every new
+visitor and the fallback — **no** IP/geo auto-detection, no language flash on
+first paint, and Hinglish is retired.
 
-### Locale model (10 configured locales)
-- **`hinglish`** — the site's existing canonical mixed-language copy, extracted
-  verbatim into `assets/i18n/locales/hinglish.json`. It is the source of truth;
-  existing content is never rewritten, normalized, or translated during
-  initialization.
-- **9 translation targets:** `hi` Hindi, `bn` Bengali, `ta` Tamil, `te` Telugu,
-  `mr` Marathi, `gu` Gujarati, `kn` Kannada, `ml` Malayalam, `pa` Punjabi.
-- **HTML tagging limitation:** Hinglish has no standard BCP47 locale. When
-  `hinglish` is explicitly selected the runtime sets a private-use tag
-  (`en-IN-x-hinglish`) on `<html lang>`; this is best-effort metadata — HTML
-  language tags cannot precisely represent mixed Hinglish text. The default
-  copy keeps `lang="en"` / `lang="en-IN"` as authored.
+### Locale model (English + 8 targets)
+- **Canonical source:** `locales/en.json` — the single source of truth,
+  extracted verbatim from the English site copy. Never regenerated from
+  another language.
+- **Targets:** `hi` Hindi, `es` Spanish, `fr` French, `de` German, `pt`
+  Portuguese, `ar` Arabic (RTL), `bn` Bengali, `ja` Japanese.
+- **Status manifest:** `locales/manifest.json` records per-locale completion;
+  `locales/translation-inventory.md` records coverage and known gaps.
 
 ### Separation of generation and runtime (important)
-- **Generation (offline, controlled):** `node scripts/i18n-generate.cjs` reads
-  `GEMINI_API_KEY` from the local environment only, calls the **Gemini API**'
+- **Generation (offline, controlled):** `node scripts/i18n-generate.cjs
+  --scaffold` creates pending mirrors with the same key tree (null values,
+  `meta.complete: false`). With `GEMINI_API_KEY` in the local environment the
+  same script translates only the pending keys via **Gemini**
   (`gemini-2.5-flash` by default, `LOCALIZE_MODEL` override), validates every
-  batch (count, non-empty strings, `{placeholder}` preservation, brand term
-  preservation, untrusted-data prompt), and writes the validated result to
-  `assets/i18n/locales/<locale>.json` with `meta.complete: true` — only when
-  **all** keys are translated. A rejected batch aborts the run without
-  partial writes.
-- **Validation:** `node scripts/i18n-validate.cjs` reports and enforces
-  missing/extra/duplicate keys, empty values, placeholder drift, meta
-  truthfulness, and rejects untruthful `complete` flags.
+  batch (count, non-empty strings, `{{placeholder}}` integrity, brand terms,
+  untrusted-data prompt), and writes only validated output. A rejected batch
+  aborts without partial writes.
+- **Validation:** `node scripts/i18n-validate.cjs` enforces JSON/duplicate-key
+  integrity, supported locale codes, missing/extra keys, non-string/empty
+  values, placeholder parity, meta truthfulness, manifest status, and
+  accidental edits to canonical English (via `locales/en.lock.json`,
+  refreshed with `--update-lock` after a reviewed change).
 - **Runtime (production):** locale switches for UI strings load the local
   JSON dictionaries — **zero API calls for interface strings**. Only
   article/video/dynamic content is translated on demand through the secure
-  backend endpoint, with caching and fallback to the canonical copy.
-- **Pending locales:** a dictionary with `meta.complete: false` (initial
-  state for the 9 targets until generation runs with a key) falls back to the
-  canonical copy for UI strings and is never presented as a finished
-  translation; article/content translation on demand remains available.
+  backend endpoint, with caching and fallback to English.
+- **Pending locales:** a dictionary with `meta.complete: false` falls back to
+  English for UI strings, is labelled `pending` in the selector and status
+  chip, and is never presented as a finished translation; content translation
+  on demand remains available.
 
 ### On-demand content translation (Gemini, server-side only)
 - **Endpoint:** `/api/localize` (rewrite to `netlify/functions/localize`).
-  `GET` → status/config (10 locales, 9 targets); `POST` →
-  `{ lang, items: [string, …] }` → translated strings. Targets only
-  (`hinglish` and the default copy are never "translated into themselves").
+  `GET` → status/config (9 locales, 8 targets); `POST` →
+  `{ lang, items: [string, …] }` → translated strings. Targets only (English
+  is never "translated into itself").
 - **Model:** `gemini-2.5-flash` (fixed, documented; override with
   `LOCALIZE_MODEL`). Frontend requests can never change the model.
 - **Key handling:** set `GEMINI_API_KEY` in the Netlify dashboard (Site →

@@ -1,0 +1,74 @@
+{
+  "sourceLocale": "en",
+  "version": 1,
+  "generatedAt": "2026-10-22T17:11:01.296Z",
+  "locales": {
+    "en": {
+      "language": "English",
+      "dir": "ltr",
+      "status": "complete",
+      "keys": 277,
+      "translated": 277
+    },
+    "hi": {
+      "language": "Hindi",
+      "dir": "ltr",
+      "status": "pending",
+      "keys": 277,
+      "translated": 0
+    },
+    "es": {
+      "language": "Spanish",
+      "dir": "ltr",
+      "status": "pending",
+      "keys": 277,
+      "translated": 0
+    },
+    "fr": {
+      "language": "French",
+      "dir": "ltr",
+      "status": "pending",
+      "keys": 277,
+      "translated": 0
+    },
+    "de": {
+      "language": "German",
+      "dir": "ltr",
+      "status": "pending",
+      "keys": 277,
+      "translated": 0
+    },
+    "pt": {
+      "language": "Portuguese",
+      "dir": "ltr",
+      "status": "pending",
+      "keys": 277,
+      "translated": 0
+    },
+    "ar": {
+      "language": "Arabic",
+      "dir": "rtl",
+      "status": "pending",
+      "keys": 277,
+      "translated": 0
+    },
+    "bn": {
+      "language": "Bengali",
+      "dir": "ltr",
+      "status": "pending",
+      "keys": 277,
+      "translated": 0
+    },
+    "ja": {
+      "language": "Japanese",
+      "dir": "ltr",
+      "status": "pending",
+      "keys": 277,
+      "translated": 0
+    }
+  },
+  "validation": {
+    "ok": true,
+    "problems": []
+  }
+}

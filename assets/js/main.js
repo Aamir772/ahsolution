@@ -24,7 +24,11 @@
   const nestedScroll = () => !!deviceScreen && getComputedStyle(deviceScreen).overflowY === 'auto';
   const scrollTopOf = () => nestedScroll() ? deviceScreen.scrollTop : window.scrollY;
   const viewportHeight = () => nestedScroll() ? deviceScreen.clientHeight : window.innerHeight;
-  const scrollRoot = deviceScreen || window;
+  /* Listen on both sources: the monitor scroller is active on wide/device
+     layouts while the window scrolls on mobile (device-screen overflow is
+     visible there). Scroll events do not bubble, so each needs its own
+     listener; scrollTopOf()/nestedScroll() resolve the live source. */
+  const scrollTargets = deviceScreen ? [window, deviceScreen] : [window];
 
   /* ------------------------------------------------------------------ *
    * 0. Active navigation state (route + hash aware, single source)
@@ -145,7 +149,7 @@
   if (header) {
     const onScroll = () => header.classList.toggle('scrolled', scrollTopOf() > 12);
     onScroll();
-    scrollRoot.addEventListener('scroll', onScroll, { passive: true });
+    scrollTargets.forEach(t => t.addEventListener('scroll', onScroll, { passive: true }));
   }
 
   /* ------------------------------------------------------------------ *
@@ -308,13 +312,19 @@
       const h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), sec = s % 60;
       return (h ? h + ':' + String(m).padStart(2, '0') : String(m)) + ':' + String(sec).padStart(2, '0');
     };
+    const fmtDate = (iso) => {
+      const d = new Date(iso || '');
+      return Number.isNaN(d.getTime()) ? null : d.toLocaleDateString(undefined, { month: 'short', year: 'numeric' });
+    };
     const days = (v) => Math.max(1, (Date.now() - new Date(v.published).getTime()) / 86400000);
-    const meta = (v, extra) => {
+    const meta = (v, extra, showDate) => {
       const bits = [];
       if (v.views != null) bits.push('<b>' + fmtViews(v.views) + '</b> views');
       if (v.likes != null) bits.push('<b>' + fmtViews(v.likes) + '</b> likes');
       const d = fmtDur(v.durationSeconds);
       if (d) bits.push('<b>' + d + '</b>');
+      const when = showDate ? fmtDate(v.published) : null;
+      if (when) bits.push(esc(when));
       if (extra) bits.push(extra);
       return '<div class="video-stats">' + bits.map(b => '<span>' + b + '</span>').join('') + '</div>';
     };
@@ -328,9 +338,9 @@
         `<span class="facade-play" aria-hidden="true">${playSvg}</span></button>`;
     };
 
-    const latestCard = (v, delay) => `<div class="video-card reveal" data-delay="${delay || 0}" data-video-cat="${catOf(v)}" data-video-published="${esc(v.published || '')}" data-video-views="${v.views ?? 0}">` +
+    const latestCard = (v, delay, opts) => `<div class="video-card reveal" data-delay="${delay || 0}" data-video-cat="${catOf(v)}" data-video-published="${esc(v.published || '')}" data-video-views="${v.views ?? 0}">` +
       facade(v, 'video-facade') +
-      `<div class="video-info"><h3>${esc(v.title)}</h3>${meta(v, v.isShort ? 'Short' : '')}</div></div>`;
+      `<div class="video-info"><h3>${esc(v.title)}</h3>${meta(v, v.isShort ? 'Short' : '', opts && opts.date)}</div></div>`;
 
     const highlightDefs = {
       top: { cls: 'hl-card--top', label: 'Top video', rule: 'Highest total views on the channel' },
@@ -365,12 +375,54 @@
         `<span class="short-info"><h3>${t}</h3>${meta(v, null)}</span></a>`;
     };
 
-    function setStatus(text, cached) {
+    function setStatus(text, opts) {
+      opts = opts || {};
+      const cached = !!opts.cached;
+      const stateClass = opts.updating ? ' is-updating' : (opts.delayed ? ' is-stale' : (cached ? ' is-cache' : ''));
+      const label = opts.label || (cached ? 'Cached snapshot' : 'Live channel data');
       statusEls.forEach(el => {
-        el.innerHTML = '<span class="data-badge' + (cached ? ' is-cache' : '') + '"><span class="dot"></span>' +
-          (cached ? 'Cached snapshot' : 'Live channel data') + '</span><span>' + esc(text) + '</span>' +
-          '<button type="button" class="data-info-btn" data-yt-data-about>About YouTube channel data</button>';
+        el.innerHTML = '<span class="data-badge' + stateClass + '"><span class="dot"></span>' + esc(label) + '</span>' +
+          '<span>' + esc(text) + '</span>' +
+          '<button type="button" class="data-info-btn" data-yt-data-about aria-haspopup="dialog" aria-expanded="false" aria-controls="yt-data-modal">About YouTube channel data</button>';
       });
+    }
+
+    /* Hourly sync timestamps are shown in IST with a time, not just a date. */
+    function fmtSyncTime(iso) {
+      if (!iso) return null;
+      const d = new Date(iso);
+      if (Number.isNaN(d.getTime())) return null;
+      try {
+        return new Intl.DateTimeFormat('en-IN', {
+          timeZone: 'Asia/Kolkata', day: 'numeric', month: 'short', year: 'numeric',
+          hour: 'numeric', minute: '2-digit', hour12: true
+        }).format(d) + ' IST';
+      } catch (e) {
+        return d.toLocaleString();
+      }
+    }
+
+    function paintStatus(data, opts) {
+      opts = opts || {};
+      const cached = !!opts.cached;
+      const sync = (data && typeof data.sync === 'object' && data.sync) || null;
+      const syncedAt = fmtSyncTime(data && (data.syncedAt || data.generatedAt));
+      if (opts.updating) {
+        setStatus('Updating channel data… this can take a few seconds.', { updating: true, label: 'Updating' });
+        return;
+      }
+      if (opts.delayed || (sync && sync.ok === false)) {
+        setStatus('Last sync failed — showing previously saved data' + (syncedAt ? ' from ' + syncedAt : '') + '.', {
+          cached: true, delayed: true, label: 'Saved data'
+        });
+        return;
+      }
+      if (!syncedAt) {
+        setStatus('Data may be delayed — showing a saved snapshot.', { cached: true, delayed: true, label: 'Saved data' });
+        return;
+      }
+      setStatus((cached ? 'Source: YouTube channel data' : 'Last synced: ' + syncedAt) +
+        (cached ? ' · refreshed ' + syncedAt : ' · figures can briefly trail the channel on YouTube') + '.', { cached });
     }
 
     /* Accessible "About YouTube channel data" dialog (created once per page). */
@@ -379,44 +431,97 @@
       if (modal) return modal;
       modal = document.createElement('div');
       modal.id = 'yt-data-modal';
+      modal.className = 'yt-data-pop';
       modal.hidden = true;
       const panel = document.createElement('div');
-      panel.className = 'yt-data-panel';
+      panel.className = 'yt-data-card';
       panel.setAttribute('role', 'dialog');
-      panel.setAttribute('aria-modal', 'true');
+      panel.setAttribute('aria-modal', 'false');
       panel.setAttribute('aria-labelledby', 'yt-data-title');
       panel.innerHTML =
-        '<div class="yt-data-backdrop" data-yt-data-close aria-hidden="true"></div>' +
-        '<div class="yt-data-card">' +
         '<h2 id="yt-data-title">About YouTube channel data</h2>' +
         '<ul>' +
         '<li>Video lists, view counts and like counts shown on this site come from <strong>AH Solution&rsquo;s own public YouTube channel data</strong>.</li>' +
-        '<li>We refresh that data periodically rather than showing live numbers, so figures can briefly trail the channel page on YouTube.</li>' +
+        '<li>Channel data is refreshed automatically about once an hour on the server. Between syncs, figures can trail the live YouTube channel page.</li>' +
         '<li>This is channel metadata only — browsing this site does not connect you to YouTube and nothing about you is shared.</li>' +
         '</ul>' +
-        '<button type="button" class="button button-primary" data-yt-data-close>Got it</button>' +
-        '</div>';
+        '<button type="button" class="button button-primary" data-yt-data-close>Got it</button>';
       modal.appendChild(panel);
       document.body.appendChild(modal);
-      let lastFocus = null;
-      const close = () => {
-        modal.hidden = true;
-        modal.removeEventListener('keydown', escListener);
-        if (lastFocus && lastFocus.focus) lastFocus.focus();
-        lastFocus = null;
+      let opener = null;
+      let rafId = 0;
+
+      const position = () => {
+        rafId = 0;
+        if (modal.hidden) return;
+        if (!opener || !opener.isConnected) { close(); return; }
+        const vw = document.documentElement.clientWidth || window.innerWidth;
+        const vh = window.innerHeight;
+        const gap = 10;
+        const margin = 12;
+        const r = opener.getBoundingClientRect();
+        /* If the trigger itself scrolls out of view, a clamped fixed popup
+           would float detached from its anchor: close instead. */
+        if (r.bottom <= 0 || r.top >= vh) { close(); return; }
+        panel.style.maxHeight = Math.max(160, vh - margin * 2) + 'px';
+        const cw = panel.offsetWidth;
+        const ch = panel.offsetHeight;
+        let left = Math.min(Math.max(r.left, margin), vw - cw - margin);
+        if (left < margin) left = margin;
+        const roomAbove = r.top - gap - margin;
+        const roomBelow = vh - r.bottom - gap - margin;
+        let top;
+        if (ch <= roomAbove) top = r.top - gap - ch;
+        else if (ch <= roomBelow) top = r.bottom + gap;
+        else top = roomAbove >= roomBelow ? r.top - gap - ch : r.bottom + gap;
+        top = Math.max(margin, Math.min(top, vh - margin - ch));
+        modal.style.left = Math.round(left) + 'px';
+        modal.style.top = Math.round(top) + 'px';
+        modal.dataset.side = top < r.top ? 'above' : 'below';
       };
-      const escListener = (e) => { if (e.key === 'Escape') close(); };
-      modal.addEventListener('click', (e) => {
-        if (e.target.closest('[data-yt-data-close]') || e.target.classList.contains('yt-data-backdrop')) close();
-      });
-      modal.openFor = (opener) => {
-        lastFocus = opener instanceof Element ? opener : document.activeElement;
+      const queuePosition = () => { if (!rafId) rafId = requestAnimationFrame(position); };
+      const onPointerDown = (e) => {
+        if (panel.contains(e.target) || (opener && opener.contains(e.target))) return;
+        close();
+      };
+      const onKeyDown = (e) => { if (e.key === 'Escape') { e.preventDefault(); close(); } };
+
+      function close() {
+        if (modal.hidden) return;
+        modal.hidden = true;
+        if (rafId) { cancelAnimationFrame(rafId); rafId = 0; }
+        window.removeEventListener('scroll', queuePosition, true);
+        window.removeEventListener('resize', queuePosition);
+        document.removeEventListener('pointerdown', onPointerDown, true);
+        document.removeEventListener('keydown', onKeyDown);
+        if (opener) {
+          opener.setAttribute('aria-expanded', 'false');
+          if (opener.isConnected && opener.focus) opener.focus({ preventScroll: true });
+        }
+        opener = null;
+      }
+
+      modal.openFor = (trigger) => {
+        if (!modal.hidden && opener === trigger) { close(); return; }
+        if (!modal.hidden) close();
+        opener = trigger;
+        trigger.setAttribute('aria-expanded', 'true');
         modal.hidden = false;
-        modal.addEventListener('keydown', escListener);
+        modal.style.left = '0px';
+        modal.style.top = '0px';
+        panel.style.maxHeight = '';
+        position();
         const btn = panel.querySelector('button[data-yt-data-close]');
-        if (btn) btn.focus();
+        if (btn) btn.focus({ preventScroll: true });
+        window.addEventListener('scroll', queuePosition, true);
+        window.addEventListener('resize', queuePosition);
+        document.addEventListener('pointerdown', onPointerDown, true);
+        document.addEventListener('keydown', onKeyDown);
       };
       modal.close = close;
+      modal.addEventListener('click', (e) => {
+        if (e.target.closest('[data-yt-data-close]')) close();
+      });
       return modal;
     }
 
@@ -490,7 +595,10 @@
         : 'No long-form videos in this category yet — try another filter.';
       containers.latest.forEach(el => {
         const first = Number(el.dataset.limit) || 12;
-        chunked(el, latest, (v, k) => latestCard(v, (k % 3) + 1), first, 12, emptyMsg);
+        /* Library cards carry a compact upload date; the Home showcase keeps
+           its cinematic card meta unchanged. */
+        const opts = { date: el.classList.contains('video-library-grid') };
+        chunked(el, latest, (v, k) => latestCard(v, (k % 3) + 1, opts), first, 12, emptyMsg);
       });
     }
 
@@ -535,9 +643,7 @@
           'No Shorts were found in the current feed.');
       });
 
-      const when = data.generatedAt ? new Date(data.generatedAt).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' }) : 'unknown date';
-      const hasRealDate = !!data.generatedAt && !Number.isNaN(Date.parse(data.generatedAt));
-      setStatus('Source: YouTube channel data' + (hasRealDate ? ' · refreshed ' + when : '') + '. Figures can briefly trail the channel on YouTube.', cached);
+      paintStatus(data, { cached });
     }
 
     fetch(base + 'assets/data/videos.json', { cache: 'no-cache' })
@@ -554,15 +660,17 @@
       try { if (typeof AbortController === 'function') ctrl = new AbortController(); } catch { /* old browsers */ }
       const timer = ctrl ? setTimeout(() => ctrl.abort(), 6000) : null;
       const url = base ? base.replace(/\/$/, '') + '/api/videos' : 'api/videos';
+      paintStatus(current, { updating: true });
       fetch(url, { cache: 'no-cache', signal: ctrl ? ctrl.signal : undefined })
         .then(r => { if (!r.ok) throw new Error(r.status); return r.json(); })
         .then(live => {
-          if (!live || !Array.isArray(live.videos) || !live.videos.length) return;
+          if (!live || !Array.isArray(live.videos) || !live.videos.length) throw new Error('empty feed');
           const snapAt = Date.parse(current && current.generatedAt || '') || 0;
           const liveAt = Date.parse(live.generatedAt || '') || 0;
           if (liveAt > snapAt + 1000) render(live, false);
+          else paintStatus(live, { cached: false });
         })
-        .catch(() => { /* snapshot stays */ })
+        .catch(() => { paintStatus(current, { cached: true, delayed: true }); })
         .finally(() => { if (timer) clearTimeout(timer); });
     }
   })();
@@ -656,7 +764,7 @@
       const done = Math.min(1, Math.max(0, -rect.top / Math.max(1, total)));
       progress.style.width = (done * 100) + '%';
     };
-    scrollRoot.addEventListener('scroll', update, { passive: true });
+    scrollTargets.forEach(t => t.addEventListener('scroll', update, { passive: true }));
     update();
   }
 

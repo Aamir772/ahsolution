@@ -1,155 +1,106 @@
 /* ==========================================================================
    netlify/functions/videos-fresh/videos-fresh.js
-   Live public YouTube dataset for the AH Solution channel, fetched at
-   request time (server-side only — the API key never leaves this-island).
+   Public YouTube dataset for the AH Solution channel.
 
    GET /.netlify/functions/videos-fresh  (also mounted at /api/videos)
 
-   Behaviour:
-     - Builds the same dataset schema as scripts/fetch-videos.mjs so the
-       frontend can swap them transparently: publish data from the public
-       channel RSS, view/like counts + durations from the YouTube Data API
-       when YT_API_KEY is configured.
-     - In-process cache with TTL (VIDEOS_CACHE_TTL_SECONDS, default 900s)
-       protects the YouTube quota against duplicate refreshes.
-     - On refresh failure the last successful payload is served (X-Fresh-Cache:
-       STALE); with no cache at all the caller gets 503 JSON.
+   Source order:
+     1. Durable hourly dataset written by videos-refresh to Upstash
+        (X-Fresh-Cache: DURABLE). Includes syncedAt + sync metadata so the
+        site can show an honest "last synced" time and failure state.
+     2. If the store is unavailable/empty, a live request-time build with a
+        short in-process TTL cache (X-Fresh-Cache: LIVE / HIT / STALE).
+     3. 503 JSON with no-store when nothing can be produced.
+
+   The API key never leaves the server; errors are sanitized.
    ========================================================================== */
 'use strict';
 
-const CHANNEL_ID = 'UC_LdZmWha8cvotco41D77fw';
-const HANDLE = '@ah.solution';
-const API_KEY = process.env.YT_API_KEY || '';
+const feed = require('../_shared/youtube-feed.cjs');
+const store = require('../_shared/videos-store.cjs');
+
 const TTL_SECONDS = (() => {
   const n = parseInt(process.env.VIDEOS_CACHE_TTL_SECONDS || '900', 10);
   return Number.isFinite(n) ? Math.min(Math.max(n, 0), 86400) : 900;
 })();
 
-/* Same publish data the RSS feed carries inside <media:group>; medium carries
-   the view/rating stats, link can prove a Short via the /shorts/ URL. */
-function decode(s = '') {
-  return String(s)
-    .replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>')
-    .replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&nbsp;/g, ' ')
-    .replace(/&#(\d+);/g, (_, n) => String.fromCharCode(+n));
-}
-function tag(xml, name) {
-  const m = xml.match(new RegExp('<' + name + '[^>]*>([\\s\\S]*?)</' + name + '>'));
-  return m ? decode(m[1].trim()) : null;
-}
-async function get(url) {
-  const res = await fetch(url, { headers: { 'user-agent': 'AH-Solution-runtime/1.0' } });
-  if (!res.ok) throw new Error('upstream ' + res.status);
-  return res.text();
+/* Older than two missed hourly runs -> flag as stale but keep serving. */
+const STALE_AFTER_MS = 2 * 60 * 60 * 1000;
+const CACHE_CONTROL = 'public, max-age=60, must-revalidate, stale-while-revalidate=300';
+
+let cache = null; // { payload, atMs } for the live fallback path
+
+function payloadFrom(envelope, status) {
+  const dataset = envelope.dataset;
+  const syncedAt = envelope.syncedAt || dataset.generatedAt || null;
+  const syncedMs = Date.parse(syncedAt || '');
+  const sync = status ? {
+    ok: status.ok !== false,
+    lastAttemptAt: status.lastAttemptAt || null,
+    lastSuccessAt: status.lastSuccessAt || syncedAt,
+    lastError: status.ok === false ? String(status.lastError || 'sync_failed').slice(0, 160) : null
+  } : {
+    ok: true,
+    lastAttemptAt: syncedAt,
+    lastSuccessAt: syncedAt,
+    lastError: null
+  };
+  return Object.assign({}, dataset, {
+    syncedAt,
+    sync,
+    stale: !Number.isFinite(syncedMs) || Date.now() - syncedMs > STALE_AFTER_MS
+  });
 }
 
-async function fromRss() {
-  const xml = await get('https://www.youtube.com/feeds/videos.xml?channel_id=' + CHANNEL_ID);
-  const title = tag(xml, 'title') || 'AH SOLUTION';
-  const blocks = xml.match(/<entry>[\s\S]*?<\/entry>/g) || [];
-  const videos = blocks.map((e) => {
-    const id = tag(e, 'yt:videoId');
-    const link = (e.match(/<link rel="alternate" href="([^"]+)"/) || [])[1] || 'https://www.youtube.com/watch?v=' + id;
-    const stats = e.match(/<media:statistics views="(\d+)"/);
-    const rating = e.match(/<media:starRating[^>]*count="(\d+)"/);
-    const thumb = (e.match(/<media:thumbnail url="([^"]+)"/) || [])[1] || 'https://i.ytimg.com/vi/' + id + '/hqdefault.jpg';
-    return {
-      id,
-      title: tag(e, 'title'),
-      url: link,
-      isShort: /\/shorts\//.test(link),
-      published: tag(e, 'published'),
-      updated: tag(e, 'updated'),
-      thumbnail: thumb,
-      views: stats ? Number(stats[1]) : null,
-      likes: rating ? Number(rating[1]) : null,
-      durationSeconds: null,
-      statsSource: 'rss'
-    };
-  }).filter(v => v.id);
-  return { title, videos };
-}
-
-const isoToSeconds = (d) => {
-  const m = /P(?:(\d+)D)?T?(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/.exec(d || '');
-  if (!m) return null;
-  return (+(m[1] || 0)) * 86400 + (+(m[2] || 0)) * 3600 + (+(m[3] || 0)) * 60 + (+(m[4] || 0));
-};
-
-/* Keep the API key out of any error path: failures look like "upstream 403". */
-async function enrichWithApi(videos) {
-  const ids = videos.map(v => v.id);
-  const byId = Object.fromEntries(videos.map(v => [v.id, v]));
-  for (let i = 0; i < ids.length; i += 50) {
-    const chunk = ids.slice(i, i + 50).join(',');
-    const url = 'https://www.googleapis.com/youtube/v3/videos?part=statistics,contentDetails,snippet&id=' + chunk + '&key=' + API_KEY;
-    const data = JSON.parse(await get(url));
-    for (const item of data.items || []) {
-      const v = byId[item.id];
-      if (!v) continue;
-      v.views = Number(item.statistics.viewCount ?? v.views);
-      v.likes = item.statistics.likeCount != null ? Number(item.statistics.likeCount) : v.likes;
-      v.durationSeconds = isoToSeconds(item.contentDetails.duration);
-      /* Short classification prefers concrete evidence: the /shorts/ URL from
-         RSS. Duration is a fallback only where the title itself claims #short.  */
-      if (v.durationSeconds <= 60 && !v.isShort && /#short/i.test(v.title || '')) v.isShort = true;
-      v.statsSource = 'api';
-    }
-  }
-  return videos;
-}
-
-async function buildDataset() {
-  const { title, videos } = await fromRss();
-  let source = 'youtube-rss';
-  if (API_KEY) {
-    source = 'youtube-data-api';
-    await enrichWithApi(videos);
-  }
-  videos.sort((a, b) => new Date(b.published) - new Date(a.published));
-  const generatedAt = new Date().toISOString();
+function json(payload, extraHeaders, statusCode) {
   return {
-    generatedAt,
-    source,
-    channel: { id: CHANNEL_ID, title, handle: HANDLE, url: 'https://www.youtube.com/channel/' + CHANNEL_ID },
-    counts: {
-      total: videos.length,
-      shorts: videos.filter(v => v.isShort).length,
-      longForm: videos.filter(v => !v.isShort).length
-    },
-    videos
+    statusCode: statusCode || 200,
+    headers: Object.assign({
+      'Content-Type': 'application/json; charset=utf-8',
+      'Cache-Control': CACHE_CONTROL,
+      'X-Content-Type-Options': 'nosniff',
+      'X-Feed-Source': payload.source || 'unknown'
+    }, extraHeaders || {}),
+    body: JSON.stringify(payload)
   };
 }
 
-/* Module-scoped cache: survives repeated invocations inside one warm function
-   instance, resets on cold start (acceptable — quota is protected per-lane). */
-let cache = null; // { payload, atMs }
+exports.handler = async (event) => {
+  const method = event && event.httpMethod;
+  if (method && method !== 'GET' && method !== 'HEAD') {
+    return {
+      statusCode: 405,
+      headers: { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store', Allow: 'GET, HEAD' },
+      body: JSON.stringify({ error: 'method_not_allowed' })
+    };
+  }
 
-const json = (payload, extraHeaders = {}, status = 200) => ({
-  statusCode: status,
-  headers: Object.assign({
-    'Content-Type': 'application/json; charset=utf-8',
-    'Cache-Control': 'public, max-age=300, must-revalidate',
-    'X-Feed-Source': payload.source || 'unknown'
-  }, extraHeaders),
-  body: JSON.stringify(payload)
-});
+  if (store.configured()) {
+    try {
+      const { envelope, status } = await store.readAll();
+      if (envelope && feed.validateDataset(envelope.dataset).ok) {
+        return json(payloadFrom(envelope, status), { 'X-Fresh-Cache': 'DURABLE', 'X-Data-Synced-At': envelope.syncedAt || '' });
+      }
+    } catch (e) { /* fall through to the live fallback */ }
+  }
 
-exports.handler = async () => {
   const now = Date.now();
   if (cache && now - cache.atMs < TTL_SECONDS * 1000) {
     return json(cache.payload, { 'X-Fresh-Cache': 'HIT' });
   }
   try {
-    const payload = await buildDataset();
+    const payload = await feed.buildDataset();
     cache = { payload, atMs: now };
-    return json(payload, { 'X-Fresh-Cache': 'MISS' });
+    return json(payload, { 'X-Fresh-Cache': 'LIVE' });
   } catch (err) {
     if (cache) return json(cache.payload, { 'X-Fresh-Cache': 'STALE' });
     return {
       statusCode: 503,
       headers: { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' },
-      body: JSON.stringify({ error: 'YouTube feed unavailable', detail: String(err && err.message || err).slice(0, 120) })
+      body: JSON.stringify({
+        error: 'YouTube feed unavailable',
+        detail: String(err && err.message || err).replace(/[?&]key=[^&\s]+/gi, '&key=***').slice(0, 120)
+      })
     };
   }
 };

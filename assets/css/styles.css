@@ -72,10 +72,10 @@ button,input,textarea{font:inherit}
 .hidden{display:none !important}
 
 .skip-link{
-  position:absolute;left:-9999px;top:0;z-index:300;
+  position:absolute;left:0;top:-100px;z-index:300;
   background:var(--red);color:#fff;padding:12px 18px;border-radius:0 0 10px 0;font-weight:700;font-size:13px;
 }
-.skip-link:focus{left:0}
+.skip-link:focus{top:0}
 
 /* ---------- Typography ---------- */
 h1,h2,h3,h4{font-family:var(--font-display);line-height:1.12;letter-spacing:-.04em;margin:0;font-weight:800}
@@ -159,35 +159,29 @@ p{margin:0;color:#bdbdc7}
 /* pressed state for icon + carousel controls (shared) */
 .icon-btn:active,.ah-carousel__btn:active,.filter-chip:active,.pill:active{transform:scale(.94)}
 
-/* ---------- Announcement ---------- */
-.announcement{
-  position:relative;border-bottom:1px solid var(--line);background:#0a0a0e;
-  color:#cbc8d0;font-size:11px;letter-spacing:.15em;text-transform:uppercase;
-}
-.announcement .container{display:flex;align-items:center;justify-content:space-between;gap:14px;min-height:34px}
-.announcement strong{color:#f5f2f2;font-weight:700}
-.ann-dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--red-2);margin-right:8px;box-shadow:0 0 14px var(--red-2);animation:pulse 2.4s infinite}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
-
 /* ---------- Glass header / nav ---------- */
+/* Single premium dark-glass bar: the redundant announcement strip above it
+   was removed — "Tips, Tricks and Techniques" lives on in page <title>s and
+   SEO copy. Scrolled state deepens the glass and adds the hairline + shadow;
+   no transform is ever applied to the sticky header so sticky never shifts. */
 .site-header{
   position:sticky;top:0;z-index:90;
-  background:rgba(8,8,11,.62);
+  background:linear-gradient(180deg,rgba(12,12,17,.66),rgba(8,8,11,.52));
   backdrop-filter:blur(22px) saturate(140%);
   -webkit-backdrop-filter:blur(22px) saturate(140%);
   border-bottom:var(--bw) solid transparent;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.05);
   transition:background var(--dur-base) var(--ease-standard),
              border-color var(--dur-base) var(--ease-standard),
-             box-shadow var(--dur-base) var(--ease-standard),
-             transform var(--dur-slow) var(--ease-out);
+             box-shadow var(--dur-base) var(--ease-standard);
 }
 .site-header.scrolled{
-  background:rgba(9,9,13,.72);border-bottom-color:var(--line);
+  background:linear-gradient(180deg,rgba(12,12,18,.86),rgba(8,8,11,.78));border-bottom-color:var(--line);
   backdrop-filter:blur(30px) saturate(150%);
   -webkit-backdrop-filter:blur(30px) saturate(150%);
-  box-shadow:0 18px 50px rgba(0,0,0,.45);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.05),0 18px 50px rgba(0,0,0,.45);
 }
-.nav{height:var(--header-h);display:flex;align-items:center;justify-content:space-between;gap:20px}
+.nav{height:var(--header-h);display:flex;align-items:center;justify-content:space-between;gap:22px}
 
 .brand{display:inline-flex;align-items:center;gap:11px;min-width:0}
 .brand-logo{
@@ -196,15 +190,17 @@ p{margin:0;color:#bdbdc7}
   transition:filter var(--dur-base) var(--ease-standard);
 }
 .brand:hover .brand-logo{filter:drop-shadow(0 2px 10px rgba(0,0,0,.5)) drop-shadow(0 0 22px rgba(255,82,107,.42))}
+.brand:focus-visible{outline:var(--focus-ring);outline-offset:var(--focus-offset)}
 .brand-logo--sm{height:34px}
 
-.nav-links{position:relative;display:flex;align-items:center;gap:4px;color:#c6c3cc;font-size:13px;font-weight:600}
+.nav-links{position:relative;display:flex;align-items:center;gap:6px;color:#c6c3cc;font-size:13px;font-weight:600}
 .nav-links a{
-  position:relative;z-index:1;padding:9px 13px;border-radius:9px;
+  position:relative;z-index:1;padding:9px 14px;border-radius:9px;white-space:nowrap;
   transition:color var(--dur-fast) var(--ease-standard),transform var(--dur-fast) var(--ease-out);
 }
 .nav-links a:hover{color:#fff}
 .nav-links a:active{transform:scale(.97)}
+.nav-links a:focus-visible{outline:var(--focus-ring);outline-offset:-1px}
 .nav-links a.active{color:#fff}
 .nav-pill{
   position:absolute;z-index:0;top:50%;left:0;height:34px;width:0;transform:translateY(-50%);
@@ -447,9 +443,16 @@ html.booted .hero-visual{animation:heroFade var(--dur-slower) var(--ease-out) va
   position:relative;background:linear-gradient(150deg,#16161c,#0e0e13);
   border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;min-width:0;
   transition:transform .3s ease,border-color .3s ease,box-shadow .3s ease;
-  transform-style:preserve-3d;will-change:transform;
+  will-change:transform;
   backdrop-filter:blur(8px);
 }
+/* The card itself tilts in 3D (see the inline perspective() transform written by
+   main.js), but its children must stay in the card plane. A preserve-3d context
+   here used to push .card-body 30px toward the viewer; once the tilt added a
+   perspective, that pushed body was projected up and out of the card, so the
+   title/paragraph overlapped the cover image and were cut off by the card's own
+   overflow:hidden. Flattening the context keeps every part of the card inside
+   its border box at rest, on hover and on focus. */
 .content-card::after{
   content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;opacity:0;
   background:radial-gradient(400px circle at var(--gx,50%) var(--gy,50%),rgba(240,68,94,.16),transparent 60%);
@@ -459,6 +462,11 @@ html.booted .hero-visual{animation:heroFade var(--dur-slower) var(--ease-out) va
 .content-card:hover::after{opacity:1}
 .content-card.tilt:hover{box-shadow:0 40px 80px rgba(0,0,0,.6),0 0 0 1px rgba(240,68,94,.3)}
 .card-image{height:190px;position:relative;overflow:hidden;background:#16161b}
+/* Related-article cards (.grid-2) carry the 640x360 editorial thumbnail, which
+   is 16:9. In the default 190px box the artwork was cropped and its own
+   headline/category line was sliced in half; matching the artwork ratio keeps
+   the whole graphic inside the card, exactly like the blog listing cards. */
+.grid-2 .content-card .card-image{height:auto;aspect-ratio:16/9}
 .card-image img{width:100%;height:100%;object-fit:cover;transition:transform .6s ease;opacity:.88}
 .content-card:hover .card-image img{transform:scale(1.06)}
 .card-image::after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,rgba(8,8,11,.72),transparent 60%)}
@@ -467,7 +475,7 @@ html.booted .hero-visual{animation:heroFade var(--dur-slower) var(--ease-out) va
   border:1px solid rgba(255,255,255,.2);background:rgba(12,12,16,.6);backdrop-filter:blur(10px);
   padding:6px 10px;border-radius:6px;color:#fff;text-transform:uppercase;letter-spacing:.12em;font-size:9px;font-weight:800;
 }
-.card-body{padding:20px;transform:translateZ(30px)}
+.card-body{padding:20px}
 .card-meta{display:flex;gap:10px;align-items:center;flex-wrap:wrap;color:#8d8994;font-size:11px;margin-bottom:11px;letter-spacing:.04em}
 .card-body h3{font-size:18px;line-height:1.35}
 .card-body p{font-size:13px;line-height:1.75;margin-top:10px}
@@ -477,8 +485,7 @@ html.booted .hero-visual{animation:heroFade var(--dur-slower) var(--ease-out) va
 /* touch devices: flatten 3D tilt cards so hover-lift/scale cannot look clipped
    against the frame edges; desktop keeps the full tilt treatment */
 @media (hover:none),(max-width:767.98px){
-  .content-card.tilt{transform:none !important;transform-style:flat}
-  .content-card.tilt .card-body{transform:none}
+  .content-card.tilt{transform:none !important}
   .content-card.tilt:hover{box-shadow:0 18px 40px rgba(0,0,0,.5)}
 }
 
@@ -523,32 +530,45 @@ html.booted .hero-visual{animation:heroFade var(--dur-slower) var(--ease-out) va
 .video-stats{display:flex;gap:14px;flex-wrap:wrap;margin-top:9px;color:#8d8994;font-size:11px;letter-spacing:.03em}
 .video-stats b{color:#d3d0d8;font-weight:700}
 
-/* ---------- Video library (Videos page) — compact 3-up grid ----------
-   Scoped to [data-videos-library] so the Home page's 2-up preview grid
-   keeps its current look. Breakpoints: ≥1024px 3 cols, 640–1023 2 cols,
-   <640 1 col. Cards are fluid; thumbnails keep aspect-ratio:16/9. */
+/* ---------- Video grids: shared card, page-specific layouts ----------
+   .home-featured  — cinematic 2-up showcase (Home page).
+   .video-library-grid — compact YouTube-style catalogue (Videos page).
+   Layout variants are explicit so neither page's rules leak into the other.
+   Cards are fluid; thumbnails keep aspect-ratio:16/9 and lazy images. */
+.home-featured.video-grid{grid-template-columns:repeat(2,1fr)}
+@media (max-width:700px){.home-featured.video-grid{grid-template-columns:1fr}}
+.video-grid.video-library-grid{grid-template-columns:repeat(5,1fr);gap:16px 14px}
+@media (max-width:1599px){.video-grid.video-library-grid{grid-template-columns:repeat(4,1fr)}}
+@media (max-width:1199px){.video-grid.video-library-grid{grid-template-columns:repeat(3,1fr)}}
+@media (max-width:1023px){.video-grid.video-library-grid{grid-template-columns:repeat(2,1fr);gap:15px 14px}}
+@media (max-width:559px){.video-grid.video-library-grid{grid-template-columns:1fr;gap:13px}}
 [data-videos-library] .section-head{margin-bottom:20px}
 [data-videos-library] .section-head p{max-width:420px}
-[data-videos-library] .video-grid{grid-template-columns:repeat(3,1fr);gap:18px}
-[data-videos-library] .video-card{border-radius:14px}
-[data-videos-library] .video-card:hover{transform:translateY(-2px)}
-[data-videos-library] .video-facade{aspect-ratio:16 / 9}
-[data-videos-library] .facade-play{
-  width:52px;height:52px;
-  box-shadow:0 0 0 9px rgba(240,68,94,.14),0 12px 26px rgba(0,0,0,.45);
+/* Compact library cards: restrained radius/hover, 2-line titles, tight
+   padding and small controls. Never applied to .home-featured. */
+.video-grid.video-library-grid .video-card{border-radius:12px}
+.video-grid.video-library-grid .video-card:hover{transform:translateY(-2px)}
+.video-grid.video-library-grid .video-facade{aspect-ratio:16 / 9}
+.video-grid.video-library-grid .facade-play{
+  width:46px;height:46px;
+  box-shadow:0 0 0 8px rgba(240,68,94,.13),0 10px 22px rgba(0,0,0,.45);
 }
-[data-videos-library] .facade-play svg{width:16px;height:16px}
-[data-videos-library] .video-facade:hover .facade-play{
+.video-grid.video-library-grid .facade-play svg{width:15px;height:15px}
+.video-grid.video-library-grid .video-facade:hover .facade-play{
   transform:translate(-50%,-50%) scale(1.06);
-  box-shadow:0 0 0 12px rgba(240,68,94,.18),0 14px 30px rgba(0,0,0,.45);
+  box-shadow:0 0 0 10px rgba(240,68,94,.17),0 12px 26px rgba(0,0,0,.45);
 }
-[data-videos-library] .facade-dur{right:10px;bottom:10px;padding:2px 7px;font-size:10px;border-radius:7px}
-[data-videos-library] .video-info{padding:12px 14px 13px}
-[data-videos-library] .video-info h3{
-  font-size:14.5px;line-height:1.35;
+.video-grid.video-library-grid .facade-dur{right:8px;bottom:8px;padding:1px 6px;font-size:10px;border-radius:6px}
+.video-grid.video-library-grid .video-info{padding:10px 12px 12px}
+.video-grid.video-library-grid .video-info h3{
+  font-size:13.5px;line-height:1.4;
   display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
 }
-[data-videos-library] .video-stats{gap:12px;margin-top:7px;font-size:11px}
+.video-grid.video-library-grid .video-stats{gap:8px;margin-top:6px;font-size:10.5px}
+@media (max-width:559px){
+  .video-grid.video-library-grid .video-info h3{font-size:14.5px}
+  .video-grid.video-library-grid .video-stats{font-size:11px}
+}
 /* Filter chips + sort control (functional: main.js filters/re-renders) */
 .video-toolbar{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:18px}
 .video-chips{display:flex;gap:8px;flex-wrap:wrap}
@@ -570,9 +590,9 @@ html.booted .hero-visual{animation:heroFade var(--dur-slower) var(--ease-out) va
   padding:7px 10px;color:var(--text);font-size:12px;cursor:pointer;font-family:inherit;
 }
 .video-sort-select:focus-visible{outline:2px solid var(--red-2);outline-offset:2px}
-@media (max-width:1023px){[data-videos-library] .video-grid{grid-template-columns:repeat(2,1fr)}}
+/* Mobile toolbar only — grid columns are defined with the layout variants
+   above (.home-featured / .video-library-grid), never by data attributes. */
 @media (max-width:639px){
-  [data-videos-library] .video-grid{grid-template-columns:1fr;gap:13px}
   .video-toolbar{align-items:stretch;flex-direction:column-reverse}
   .video-chips{max-height:none}
 }
@@ -988,6 +1008,9 @@ html.booted .hero-visual{animation:heroFade var(--dur-slower) var(--ease-out) va
 }
 .data-badge .dot{width:6px;height:6px;border-radius:50%;background:#57c98a;box-shadow:0 0 8px #57c98a}
 .data-badge.is-cache .dot{background:var(--gold);box-shadow:0 0 8px var(--gold)}
+.data-badge.is-stale .dot{background:var(--gold);box-shadow:0 0 8px var(--gold)}
+.data-badge.is-updating .dot{background:#6ea8fe;box-shadow:0 0 8px #6ea8fe;animation:dataPulse 1.1s ease-in-out infinite}
+@keyframes dataPulse{50%{opacity:.35}}
 /* "About YouTube channel data" trigger inside the status note */
 .data-info-btn{
   border:1px solid var(--line-2);border-radius:100px;padding:3px 10px;
@@ -996,13 +1019,17 @@ html.booted .hero-visual{animation:heroFade var(--dur-slower) var(--ease-out) va
   cursor:pointer;transition:border-color .2s,color .2s;
 }
 .data-info-btn:hover{border-color:var(--red-2);color:#fff}
-/* accessible channel-data dialog */
-.yt-data-modal{position:fixed;inset:0;z-index:300;display:grid;place-items:center;padding:20px}
-.yt-data-modal[hidden]{display:none}
-.yt-data-backdrop{position:absolute;inset:0;background:rgba(4,4,6,.82)}
+/* Accessible channel-data popover, anchored to its trigger. Portalled to
+   <body> and fixed so no page transform/overflow can clip it; the JS sets
+   left/top from the trigger rect. */
+.yt-data-pop{position:fixed;left:0;top:0;z-index:1500;width:max-content;max-width:calc(100vw - 24px)}
+.yt-data-pop[hidden]{display:none}
 .yt-data-card{
-  position:relative;width:min(460px,100%);background:var(--panel);border:1px solid var(--line-2);
-  border-radius:16px;box-shadow:var(--shadow);padding:26px 24px 22px;
+  position:relative;width:min(400px,calc(100vw - 24px));max-height:calc(100vh - 24px);
+  overflow-y:auto;overscroll-behavior:contain;
+  background:var(--panel);border:1px solid var(--line-2);
+  border-radius:14px;box-shadow:0 24px 60px rgba(0,0,0,.62),0 0 0 1px rgba(240,68,94,.1);
+  padding:22px 20px 18px;
 }
 .yt-data-card h2{margin:0 0 14px;font-size:19px}
 .yt-data-card ul{margin:0 0 18px;padding-left:2px;list-style:none}
@@ -1073,8 +1100,6 @@ html.booted .hero-visual{animation:heroFade var(--dur-slower) var(--ease-out) va
 @media(max-width:760px){
   :root{--header-h:64px}
   .container{width:min(var(--max),calc(100% - 32px))}
-  .announcement .container{justify-content:center;text-align:center}
-  .announcement .container>span:last-child{display:none}
   .brand-logo{height:34px}
   .cat-card__title{font-size:14px}
 }
@@ -1134,9 +1159,6 @@ html.booted .hero-visual{animation:heroFade var(--dur-slower) var(--ease-out) va
   .hero-title .hero-line{font-size:clamp(32px,10.4vw,44px);letter-spacing:-.035em}
   .page-hero h1{font-size:30px}
   .article-title{font-size:28px}
-  .announcement .container>span:first-child{
-    font-size:9.5px;letter-spacing:.05em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
-  }
   .hero-badge{font-size:10px;padding:6px 12px}
 }
 
@@ -1204,13 +1226,27 @@ html.booted .hero-visual{animation:heroFade var(--dur-slower) var(--ease-out) va
 .lang-list .lang-empty{cursor:default;color:#7d828f}
 .lang-list .lang-empty:hover{background:transparent}
 
+/* Localization status chip — portaled to #ah-notify-root at <body> level
+   (see localize.js). Viewport-fixed, deliberate stacking: above the sticky
+   header (90) and the decorative device chrome (60) but below the search
+   modal (next to which it never needs to appear). Screen-aware bottom offset
+   keeps it inside the monitor screen on desktop and clear of the phone bezel
+   and safe areas on mobile; it never covers nav, logo or search actions. */
 .lang-chip{
-  position:fixed;bottom:18px;left:50%;transform:translate(-50%,0);z-index:420;
+  position:fixed;bottom:calc(18px + env(safe-area-inset-bottom,0px));left:50%;transform:translate(-50%,0);z-index:420;
   display:flex;align-items:center;gap:10px;
-  max-width:min(560px,calc(100vw - 24px));
+  max-width:min(560px,calc(100vw - 48px));
   background:rgba(12,12,16,.97);border:1px solid var(--line-2);border-radius:12px;
   padding:10px 14px;color:#e8e6ea;font-size:12.5px;
   box-shadow:0 18px 44px rgba(0,0,0,.5);
+  pointer-events:auto;
+}
+@media (min-width:768px){
+  html:not(.device-wide) .lang-chip{
+    /* stay inside the rendered monitor screen, not over bezel/stand */
+    bottom:calc(var(--dw-world-b,0vh) + var(--dw-bezel,0px) + 18px);
+    max-width:calc(100vw - 2 * (var(--dw-world-x,0vw) + var(--dw-bezel,0px)) - 48px);
+  }
 }
 .lang-retry{
   flex:none;border:1px solid rgba(255,82,107,.55);background:rgba(255,82,107,.12);
