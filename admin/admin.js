@@ -178,7 +178,24 @@
       update: function (data) { return call('articles', Object.assign({ action: 'update' }, data)); },
       publish: function (id) { return call('articles', { action: 'publish', id: id }); },
       unpublish: function (id) { return call('articles', { action: 'unpublish', id: id }); },
+      schedule: function (id, publishAt) { return call('articles', { action: 'schedule', id: id, publish_at: publishAt }); },
+      cancelSchedule: function (id) { return call('articles', { action: 'cancel_schedule', id: id }); },
+      archive: function (id) { return call('articles', { action: 'archive', id: id }); },
+      restore: function (id) { return call('articles', { action: 'restore', id: id }); },
       remove: function (id) { return call('articles', { action: 'delete', id: id, confirm: true }); }
+    },
+    triggerBuild: function (reason, articleId) { return call('publish-trigger', { action: 'trigger', reason: reason || 'publish', article_id: articleId || null }); },
+    uploadImage: function (file, kind) {
+      return new Promise(function (resolve, reject) {
+        var reader = new FileReader();
+        reader.onerror = function () { reject(new Error('read_failed')); };
+        reader.onload = function () {
+          var base64 = String(reader.result).split(',')[1] || '';
+          call('upload-image', { filename: file.name, contentType: file.type, dataBase64: base64, kind: kind || 'body' })
+            .then(function (res) { if (!res.body || !res.body.ok) reject(new Error((res.body && res.body.error) || 'upload_failed')); else resolve(res.body); }).catch(reject);
+        };
+        reader.readAsDataURL(file);
+      });
     },
     uploadCover: function (file) {
       return new Promise(function (resolve, reject) {

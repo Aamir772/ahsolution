@@ -25,6 +25,34 @@ const {
 
 const fail = (event, code, status, extra) => json(event, status, Object.assign({ ok: false, error: code }, extra || {}));
 
+/* ------------------------------------------------------------------ *
+ * Simple in-memory rate limiter (per serverless instance).
+ * Reuses the pattern from netlify/functions/localize/localize.js.
+ * ------------------------------------------------------------------ */
+const RATE_LIMIT = Number(process.env.ARTICLES_RATE_LIMIT || 30);
+const RATE_WINDOW_MS = Number(process.env.ARTICLES_RATE_WINDOW_MS || 600000);
+const rateBuckets = new Map();
+
+function clientIp(event) {
+  const h = event.headers || {};
+  return (h['x-forwarded-for'] || h['X-Forwarded-For'] || h['client-ip'] || '').split(',')[0].trim() || 'unknown';
+}
+
+function checkRate(event) {
+  const ip = clientIp(event);
+  const now = Date.now();
+  let bucket = rateBuckets.get(ip);
+  if (!bucket || now - bucket.start > RATE_WINDOW_MS) {
+    bucket = { start: now, count: 0 };
+    rateBuckets.set(ip, bucket);
+  }
+  bucket.count++;
+  if (bucket.count > RATE_LIMIT) {
+    return false;
+  }
+  return true;
+}
+
 function parseBody(event) {
   if (!event.body) return {};
   try { return JSON.parse(event.body); } catch (e) { return null; }
@@ -38,6 +66,11 @@ exports.handler = async (event) => {
   }
 
   if (!serviceConfig()) return fail(event, 'missing_keys', 500);
+
+  /* Rate limit: applies to all requests (public + admin) */
+  if (!checkRate(event)) {
+    return fail(event, 'rate_limited', 429, { retry_after_ms: RATE_WINDOW_MS });
+  }
 
   try {
     /* ---------------- public read ---------------- */
@@ -102,7 +135,8 @@ exports.handler = async (event) => {
 
       if (action === 'create') {
         if (await slugTaken(row.slug)) return fail(event, 'slug_taken', 400);
-        if (row.status === 'published') row.published_at = new Date().toISOString();
+        /* SECURITY: always create as draft. Publication via dedicated action. */
+        row.status = 'draft';
         const created = await insertArticle(row, auth.user.email);
         return json(event, 201, { ok: true, article: created });
       }
@@ -118,11 +152,12 @@ exports.handler = async (event) => {
       }
       if (!SLUG_RE.test(row.slug)) return fail(event, 'invalid_slug', 400, { slug: row.slug });
       if (await slugTaken(row.slug, id)) return fail(event, 'slug_taken', 400);
-      if (payload.status === 'published' && !payload.published_at) {
-        row.published_at = new Date().toISOString();
-      } else if (payload.published_at) {
-        row.published_at = str(payload.published_at, 40);
-      }
+      /* SECURITY: clients cannot set status/published_at/publish_at in create/update. These fields are never changed via
+         update. Use dedicated publish/unpublish/schedule/archive/restore
+         actions. Remove any client-provided values. */
+      delete row.status;
+      delete row.published_at;
+      delete row.publish_at;
       const updated = await updateArticle(id, row);
       return json(event, 200, { ok: true, article: updated });
     }
@@ -132,7 +167,52 @@ exports.handler = async (event) => {
       if (!id) return fail(event, 'missing_id', 400);
       const status = action === 'publish' ? 'published' : 'draft';
       const patch = { status, updated_at: new Date().toISOString() };
-      if (status === 'published') patch.published_at = new Date().toISOString();
+      if (status === 'published') {
+        patch.published_at = new Date().toISOString();
+        patch.publish_at = null; /* clear any pending schedule */
+      }
+      const updated = await updateArticle(id, patch);
+      return json(event, 200, { ok: true, article: updated });
+    }
+
+    if (action === 'schedule') {
+      const id = str(payload.id, 64);
+      if (!id) return fail(event, 'missing_id', 400);
+      const publishAt = str(payload.publish_at, 40).trim();
+      if (!publishAt) return fail(event, 'missing_publish_at', 400);
+      /* Validate ISO timestamp */
+      const d = new Date(publishAt);
+      if (isNaN(d.getTime())) return fail(event, 'invalid_publish_at', 400);
+      if (d.getTime() <= Date.now()) return fail(event, 'publish_at_must_be_future', 400);
+      const patch = {
+        status: 'draft',
+        publish_at: publishAt,
+        updated_at: new Date().toISOString()
+      };
+      const updated = await updateArticle(id, patch);
+      return json(event, 200, { ok: true, article: updated });
+    }
+
+    if (action === 'archive') {
+      const id = str(payload.id, 64);
+      if (!id) return fail(event, 'missing_id', 400);
+      const patch = { status: 'archived', updated_at: new Date().toISOString() };
+      const updated = await updateArticle(id, patch);
+      return json(event, 200, { ok: true, article: updated });
+    }
+
+    if (action === 'restore') {
+      const id = str(payload.id, 64);
+      if (!id) return fail(event, 'missing_id', 400);
+      const patch = { status: 'draft', updated_at: new Date().toISOString() };
+      const updated = await updateArticle(id, patch);
+      return json(event, 200, { ok: true, article: updated });
+    }
+
+    if (action === 'cancel_schedule') {
+      const id = str(payload.id, 64);
+      if (!id) return fail(event, 'missing_id', 400);
+      const patch = { publish_at: null, updated_at: new Date().toISOString() };
       const updated = await updateArticle(id, patch);
       return json(event, 200, { ok: true, article: updated });
     }
@@ -150,7 +230,7 @@ exports.handler = async (event) => {
   }
 };
 
-/* public payloads never need author email or internal ids of drafts */
+/* public payloads never need author email, internal ids, or scheduling metadata */
 function publicShape(row) {
   return {
     id: row.id,
@@ -163,6 +243,7 @@ function publicShape(row) {
     tags: row.tags,
     reading_minutes: row.reading_minutes,
     published_at: row.published_at,
-    view_count: row.view_count
+    view_count: row.view_count,
+    new_until: row.new_until
   };
 }

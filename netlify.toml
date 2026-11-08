@@ -80,6 +80,12 @@
   to = "/.netlify/functions/localize"
   status = 200
 
+# Secure build trigger for CMS publishing
+[[redirects]]
+  from = "/api/publish-trigger"
+  to = "/.netlify/functions/publish-trigger"
+  status = 200
+
 [[redirects]]
   from = "/article/*"
   to = "/article.html?slug=:splat"
@@ -100,3 +106,12 @@
   from = "/admin/editor"
   to = "/admin/editor.html"
   status = 200
+
+[[redirects]]
+  from = "/api/upload-image"
+  to = "/.netlify/functions/upload-image"
+  status = 200
+
+# Scheduled publisher: publish due drafts (idempotent) and trigger build
+[functions."publish-scheduled"]
+  schedule = "*/15 * * * *"

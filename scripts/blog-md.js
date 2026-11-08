@@ -56,6 +56,7 @@ function isoDuration(mmss) {
 }
 
 function videoJsonDiv(row) {
+  if (!row.video_id) return '';
   const data = {
     id: row.video_id,
     title: row.source_title,
@@ -332,7 +333,7 @@ function filterKey(cat) {
   if (/remote/.test(c)) return 'remote';
   if (/android|apps|connectivity/.test(c)) return 'android';
   if (/pc|windows|laptop|gaming/.test(c)) return 'windows';
-  if (/gadget|watch|wear|smartphone|phone/.test(c)) return 'gadgets';
+  if (/gadget|watch|wear|smartphone|phone|ai|productivity/.test(c)) return 'gadgets';
   if (/about|welcome/.test(c)) return 'about';
   return '';
 }

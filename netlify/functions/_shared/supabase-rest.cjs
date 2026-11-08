@@ -153,7 +153,7 @@ function tagsToString(input) {
  * but pasted markup must never be able to run script or load remote code.
  * ------------------------------------------------------------------ */
 const ALLOWED_TAGS = new Set([
-  'p', 'br', 'hr', 'h2', 'h3', 'h4',
+  'p', 'br', 'hr', 'h1', 'h2', 'h3', 'h4',
   'ul', 'ol', 'li',
   'strong', 'b', 'em', 'i', 'u', 's', 'mark', 'small', 'sub', 'sup',
   'code', 'pre', 'blockquote', 'figure', 'figcaption',
@@ -271,14 +271,16 @@ function escapeText(s) {
 /* ------------------------------------------------------------------ *
  * Articles table access
  * ------------------------------------------------------------------ */
-const ARTICLE_COLUMNS = 'id,slug,title,excerpt,body,cover_image_url,category,tags,status,seo_description,reading_minutes,created_at,updated_at,published_at,author_email,view_count';
+const ARTICLE_COLUMNS = 'id,slug,title,excerpt,body,cover_image_url,category,tags,status,seo_description,reading_minutes,created_at,updated_at,published_at,publish_at,author_email,view_count,new_until';
 
 function articleRow(payload) {
-  const status = ['draft', 'published', 'archived'].includes(payload.status) ? payload.status : 'draft';
+  /* SECURITY: status is always 'draft' for create/update. Publication
+     must go through the dedicated publish/unpublish/schedule actions.
+     Clients cannot set published_at or publish_at directly. */
   const bodyHtml = sanitizeHtml(payload.body);
   const plain = bodyHtml.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
   const words = plain ? plain.split(' ').length : 0;
-  return {
+  const row = {
     title: str(payload.title, 200).trim(),
     slug: cleanSlug(payload.slug || payload.title),
     excerpt: str(payload.excerpt, 400),
@@ -288,8 +290,14 @@ function articleRow(payload) {
     tags: tagsToString(payload.tags),
     seo_description: str(payload.seo_description, 300) || str(payload.excerpt, 300),
     reading_minutes: Math.max(1, Math.round(words / 200)),
-    status
+    status: 'draft'
   };
+  // new_until: accept ISO timestamp or null/empty (admin-controlled)
+  if (payload.new_until !== undefined) {
+    const nu = str(payload.new_until, 40).trim();
+    row.new_until = nu ? nu : null;
+  }
+  return row;
 }
 
 async function slugTaken(slug, exceptId) {
@@ -333,7 +341,12 @@ async function deleteArticle(id) {
 async function listArticles(opts) {
   const o = opts || {};
   const params = ['select=' + ARTICLE_COLUMNS];
-  if (o.publishedOnly) params.push('status=eq.published');
+  if (o.publishedOnly) {
+    /* Only published articles. Legacy policy: published_at IS NULL (legacy records)
+       or published_at <= now() (scheduled). Future-dated articles are hidden. */
+    params.push('status=eq.published');
+    params.push('or=(published_at.is.null,published_at.lte.' + encodeURIComponent(new Date().toISOString()) + ')');
+  }
   if (o.status) params.push('status=eq.' + encodeURIComponent(o.status));
   if (o.slug) params.push('slug=eq.' + encodeURIComponent(o.slug));
   if (o.category) params.push('category=eq.' + encodeURIComponent(o.category));

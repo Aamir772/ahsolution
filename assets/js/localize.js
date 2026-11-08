@@ -365,34 +365,68 @@
       var touched = [];
       while ((n = walk.nextNode())) {
         var p = n.parentElement;
-        if (!p || !isChrome(p)) continue;
-        if (/^(script|style|code|pre)$/i.test(p.tagName) || p.closest('pre, code, svg')) continue;
+        if (!p) continue;
+        if (/^(script|style|code|pre)$/i.test(p.tagName) || p.closest(SKIP_SEL)) continue;
         var t = n.nodeValue.replace(/\s+/g, ' ').trim();
         if (t.length < 2) continue;
         var key = locale === DEFAULT_LOCALE ? null : (reverse[t] || null);
         if (locale !== DEFAULT_LOCALE && key && strings[key] != null) {
           if (!n._locOriginal) n._locOriginal = n.nodeValue;
           n.nodeValue = n.nodeValue.replace(t, strings[key]);
+          n._locDict = true;
           touchedTextNodes.add(n);
           touched.push(n);
           applied++;
         } else if (locale === DEFAULT_LOCALE && n._locOriginal != null) {
           n.nodeValue = n._locOriginal;
+          if (n._locDict) delete n._locDict;
         }
       }
-      /* aria-labels and placeholders whose canonical value matches exactly */
+      /* aria-labels, alt text and placeholders whose canonical value matches
+         exactly. Any hit is marked so the content API never re-translates it. */
       $$('[aria-label]', document).forEach(function (el) {
-        if (!isChrome(el)) return;
         var v = el.getAttribute('aria-label');
         if (locale === DEFAULT_LOCALE) {
           if (el._locOrigAria != null) { el.setAttribute('aria-label', el._locOrigAria); delete el._locOrigAria; }
+          if (el._locDict) delete el._locDict;
           return;
         }
         var key = reverse[v];
         if (key && strings[key] != null) {
           el._locOrigAria = el._locOrigAria != null ? el._locOrigAria : v;
           el.setAttribute('aria-label', strings[key]);
+          el._locDict = true;
           touchedAttrs.push(el);
+          applied++;
+        }
+      });
+      $$('img[alt]', document).forEach(function (img) {
+        var v = (img.getAttribute('alt') || '').trim();
+        if (locale === DEFAULT_LOCALE) {
+          if (img._locOrigAlt != null) { img.setAttribute('alt', img._locOrigAlt); delete img._locOrigAlt; }
+          if (img._locDict) delete img._locDict;
+          return;
+        }
+        var key = reverse[v];
+        if (key && strings[key] != null) {
+          img._locOrigAlt = img._locOrigAlt != null ? img._locOrigAlt : v;
+          img.setAttribute('alt', strings[key]);
+          img._locDict = true;
+          applied++;
+        }
+      });
+      $$('input[placeholder], textarea[placeholder]', document).forEach(function (el) {
+        var v = (el.getAttribute('placeholder') || '').trim();
+        if (locale === DEFAULT_LOCALE) {
+          if (el._locOrigPh != null) { el.setAttribute('placeholder', el._locOrigPh); delete el._locOrigPh; }
+          if (el._locDict) delete el._locDict;
+          return;
+        }
+        var key = reverse[v];
+        if (key && strings[key] != null) {
+          el._locOrigPh = el._locOrigPh != null ? el._locOrigPh : v;
+          el.setAttribute('placeholder', strings[key]);
+          el._locDict = true;
           applied++;
         }
       });
@@ -421,6 +455,7 @@
 
   function contentText(n) {
     if (!n || n.nodeType !== 3) return '';
+    if (n._locDict) return '';
     var p = n.parentElement;
     if (!p) return '';
     if (SKIP_TAGS[p.tagName] || p.closest(SKIP_SEL) || isChrome(p)) return '';
@@ -445,12 +480,12 @@
     /* content images (alt) + content inputs (placeholder) */
     var attrs = [];
     $$('img[alt]', root).forEach(function (img) {
-      if (isChrome(img)) return;
+      if (isChrome(img) || img._locDict) return;
       var v = (img.getAttribute('alt') || '').trim();
       if (v.length > 1) { img._locOrigAlt = v; attrs.push({ el: img, kind: 'alt', text: v }); }
     });
     $$('input[placeholder], textarea[placeholder]', root).forEach(function (el) {
-      if (isChrome(el)) return;
+      if (isChrome(el) || el._locDict) return;
       var v = (el.getAttribute('placeholder') || '').trim();
       if (v.length > 1) { el._locOrigPh = v; attrs.push({ el: el, kind: 'ph', text: v }); }
     });
@@ -575,15 +610,19 @@
     beginQuiet();
     touchedTextNodes.forEach(function (n) {
       if (n._locOriginal != null) n.nodeValue = n._locOriginal;
+      if (n._locDict) delete n._locDict;
     });
     $$('img').forEach(function (img) {
       if (img._locOrigAlt != null) { img.setAttribute('alt', img._locOrigAlt); delete img._locOrigAlt; }
+      if (img._locDict) delete img._locDict;
     });
     touchedAttrs.forEach(function (el) {
       if (el._locOrigAria != null) { el.setAttribute('aria-label', el._locOrigAria); delete el._locOrigAria; }
+      if (el._locDict) delete el._locDict;
     });
     $$('input[placeholder], textarea[placeholder]').forEach(function (el) {
       if (el._locOrigPh != null) { el.setAttribute('placeholder', el._locOrigPh); delete el._locOrigPh; }
+      if (el._locDict) delete el._locDict;
     });
     if (titleOriginal != null) document.title = titleOriginal;
     endQuietSoon();
@@ -685,7 +724,14 @@
       if (selfMutating || currentLocale === DEFAULT_LOCALE || translating || !translate_on_demand) return;
       if (retryLock) return; /* backend is down/not configured: no automatic hammering */
       if (timer) clearTimeout(timer);
-      timer = setTimeout(function () { translateContent(currentLocale).catch(function () {}); }, 1000);
+      timer = setTimeout(function () {
+        /* Dynamic cards/menus need dictionary UI first; marked nodes are then
+           skipped by the content pass. */
+        applyDictionary(currentLocale)
+          .catch(function () { return false; })
+          .then(function () { return translateContent(currentLocale); })
+          .catch(function () {});
+      }, 1000);
     });
     obs.observe(document.body, { childList: true, subtree: true });
   }

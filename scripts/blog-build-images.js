@@ -47,7 +47,12 @@ const ART = {
   14: { glyph: 'shield',   bullets: ['Legal and malware risks', 'Privacy concerns', 'Safer legal alternatives'] },
   15: { glyph: 'ah',       bullets: ['The mission of the channel', 'Content map: videos + blog', 'Where to start'] },
   16: { glyph: 'remote',   bullets: ['Official setup steps', 'PIN and account security', 'Offline-host troubleshooting'] },
-  17: { glyph: 'cast',     bullets: ['Cast vs Miracast vs PC', 'Method comparison table', 'Network and lag troubleshooting'] }
+  17: { glyph: 'cast',     bullets: ['Cast vs Miracast vs PC', 'Method comparison table', 'Network and lag troubleshooting'] },
+  18: { glyph: 'monitor',  bullets: ['Writing, research and scheduling help', 'Design and coding assistants', 'Privacy limits and human review'] },
+  19: { glyph: 'phone',    bullets: ['Screen lock and app permissions', 'Theft protection and Find My Device', 'Google Account and backup checks'] },
+  20: { glyph: 'laptop',   bullets: ['PowerToys, ShareX and VLC', '7-Zip, Everything and LocalSend', 'OBS Studio, GIMP and Ninite'] },
+  21: { glyph: 'shield',   bullets: ['Strong lock and MFA', 'App permissions and updates', 'Backups and safe browsing'] },
+  22: { glyph: 'camera',   bullets: ['Visual inspection and source checks', 'Reverse-image search and provenance', 'Verify urgent requests through another channel'] }
 };
 
 /* ------------------------------- helpers -------------------------------- */
@@ -260,7 +265,7 @@ function cover(row, art) {
     'Original editorial vector illustration for the article “' + row.article_title + '”. Not a product photograph, screenshot or YouTube thumbnail.');
   s += '<circle cx="920" cy="315" r="300" fill="url(#glow)"/>';
   s += '<rect x="0" y="0" width="' + w + '" height="6" fill="url(#bar)"/>';
-  s += '<text x="80" y="120" font-family="' + FONT + '" font-size="20" font-weight="700" letter-spacing="4" fill="' + CRIMSON + '">AH SOLUTION \u00B7 BLOG ' + String(row.article_number).padStart(2, '0') + '/17</text>';
+  s += '<text x="80" y="120" font-family="' + FONT + '" font-size="20" font-weight="700" letter-spacing="4" fill="' + CRIMSON + '">AH SOLUTION \u00B7 BLOG ' + String(row.article_number).padStart(2, '0') + '</text>';
   lines.forEach(function (ln, i) {
     s += '<text x="80" y="' + (startY + i * (tSize + 14)) + '" font-family="' + FONT + '" font-size="' + tSize + '" font-weight="800" fill="' + TEXT + '">' + esc(ln) + '</text>';
   });
@@ -286,7 +291,7 @@ function thumb(row, art) {
     'Original editorial vector thumbnail for the article “' + row.article_title + '”.');
   s += '<circle cx="500" cy="180" r="170" fill="url(#glow)"/>';
   s += '<rect x="0" y="0" width="' + w + '" height="4" fill="url(#bar)"/>';
-  s += '<text x="36" y="64" font-family="' + FONT + '" font-size="13" font-weight="700" letter-spacing="3" fill="' + CRIMSON + '">AH SOLUTION \u00B7 ' + String(row.article_number).padStart(2, '0') + '/17</text>';
+  s += '<text x="36" y="64" font-family="' + FONT + '" font-size="13" font-weight="700" letter-spacing="3" fill="' + CRIMSON + '">AH SOLUTION \u00B7 ' + String(row.article_number).padStart(2, '0') + '</text>';
   const startY = 160 - (lines.length - 1) * 14;
   lines.forEach(function (ln, i) {
     s += '<text x="36" y="' + (startY + i * (tSize + 8)) + '" font-family="' + FONT + '" font-size="' + tSize + '" font-weight="800" fill="' + TEXT + '">' + esc(ln) + '</text>';
@@ -308,7 +313,7 @@ function explainer(row, art) {
     'Original editorial explainer illustration for the article “' + row.article_title + '”. Diagram-style visual; not a screenshot or benchmark.');
   s += '<circle cx="330" cy="470" r="250" fill="url(#glow)"/>';
   s += '<rect x="0" y="0" width="' + w + '" height="6" fill="url(#bar)"/>';
-  s += '<text x="70" y="110" font-family="' + FONT + '" font-size="18" font-weight="700" letter-spacing="4" fill="' + CRIMSON + '">AH SOLUTION \u00B7 EXPLAINER \u00B7 ARTICLE ' + String(row.article_number).padStart(2, '0') + '/17</text>';
+  s += '<text x="70" y="110" font-family="' + FONT + '" font-size="18" font-weight="700" letter-spacing="4" fill="' + CRIMSON + '">AH SOLUTION \u00B7 EXPLAINER \u00B7 ARTICLE ' + String(row.article_number).padStart(2, '0') + '</text>';
   lines.forEach(function (ln, i) {
     s += '<text x="70" y="' + (190 + i * 56) + '" font-family="' + FONT + '" font-size="46" font-weight="800" fill="' + TEXT + '">' + esc(ln) + '</text>';
   });

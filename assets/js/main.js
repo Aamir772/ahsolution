@@ -693,7 +693,7 @@
       cards.forEach(card => {
         const text = (card.dataset.search || card.textContent).toLowerCase();
         const cat = (card.dataset.category || '').toLowerCase();
-        const show = (!query || text.includes(query)) && (activeFilter === 'all' || cat === activeFilter);
+        const show=(!query||text.includes(query))&&(activeFilter==='all'||cat===activeFilter||activeFilter==='new'&&card.dataset.newUntil&&new Date(card.dataset.newUntil)>Date.now());
         card.classList.toggle('hidden', !show);
         if (show) shown++;
       });

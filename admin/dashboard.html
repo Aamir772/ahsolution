@@ -33,6 +33,7 @@
       <div class="stat"><div class="stat__k">Total</div><div class="stat__v" data-stat="total">0</div></div>
       <div class="stat stat--published"><div class="stat__k">Published</div><div class="stat__v" data-stat="published">0</div></div>
       <div class="stat stat--drafts"><div class="stat__k">Drafts</div><div class="stat__v" data-stat="draft">0</div></div>
+      <div class="stat"><div class="stat__k">Scheduled</div><div class="stat__v" data-stat="scheduled">0</div></div>
       <div class="stat"><div class="stat__k">Archived</div><div class="stat__v" data-stat="archived">0</div></div>
       <div class="stat"><div class="stat__k">Total views</div><div class="stat__v" data-stat="views">0</div></div>
     </section>
@@ -49,6 +50,7 @@
             <option value="">All statuses</option>
             <option value="published">Published</option>
             <option value="draft">Drafts</option>
+            <option value="scheduled">Scheduled</option>
             <option value="archived">Archived</option>
           </select>
         </label>
@@ -100,12 +102,15 @@
         return '<span class="status status--' + A.esc(status) + '"><span class="dot"></span>' + A.esc(status) + '</span>';
       }
 
+      function isScheduled(a) { return a.status === 'draft' && !!a.publish_at; }
+
       function renderStats() {
         if (!statsEl) return;
-        var counts = { published: 0, draft: 0, archived: 0 };
+        var counts = { published: 0, draft: 0, scheduled: 0, archived: 0 };
         var views = 0;
         all.forEach(function (a) {
-          counts[a.status] = (counts[a.status] || 0) + 1;
+          if (isScheduled(a)) counts.scheduled++;
+          else counts[a.status] = (counts[a.status] || 0) + 1;
           views += Number(a.view_count) || 0;
         });
         statsEl.hidden = false;
@@ -122,7 +127,8 @@
         var q = (searchEl.value || '').trim().toLowerCase();
         var st = statusEl.value;
         var list = all.filter(function (a) {
-          if (st && a.status !== st) return false;
+          if (st === 'scheduled') { if (!isScheduled(a)) return false; }
+          else if (st && a.status !== st) return false;
           if (!q) return true;
           return (String(a.title || '') + ' ' + String(a.slug || '') + ' ' + String(a.category || '')).toLowerCase().indexOf(q) !== -1;
         });
@@ -139,17 +145,27 @@
               '<a href="editor.html?id=' + encodeURIComponent(a.id) + '">' + A.esc(a.title) + '</a>' +
               '<span class="slug">/' + A.esc(a.slug) + '</span>' +
             '</div></td>' +
-            '<td>' + statusBadge(a.status) + '</td>' +
+            '<td>' + statusBadge(isScheduled(a) ? 'scheduled' : a.status) + '</td>' +
             '<td>' + (a.category ? A.esc(a.category) : '<span class="hint">—</span>') + '</td>' +
             '<td>' + A.fmtDate(a.published_at || a.created_at) + '</td>' +
             '<td>' + (a.view_count || 0) + '</td>' +
             '<td><div class="actions">' +
               '<a class="btn btn--sm" href="editor.html?id=' + encodeURIComponent(a.id) + '">Edit</a>' +
-              (a.status === 'published'
-                ? '<button class="btn btn--sm" type="button" data-act="unpublish">Unpublish</button>'
-                : '<button class="btn btn--sm btn--primary" type="button" data-act="publish">Publish</button>') +
+              (a.status === 'archived'
+                ? '<button class="btn btn--sm btn--primary" type="button" data-act="restore">Restore</button>'
+                : a.status === 'published'
+                  ? '<button class="btn btn--sm" type="button" data-act="unpublish">Unpublish</button>'
+                  : (isScheduled(a)
+                      ? '<button class="btn btn--sm" type="button" data-act="cancel_schedule">Cancel schedule</button>'
+                      : '<button class="btn btn--sm btn--primary" type="button" data-act="publish">Publish</button>')) +
+              (a.status === 'draft' && !isScheduled(a)
+                ? '<button class="btn btn--sm" type="button" data-act="schedule">Schedule</button>'
+                : '') +
+              (a.status !== 'archived'
+                ? '<button class="btn btn--sm" type="button" data-act="archive">Archive</button>'
+                : '') +
               (a.status === 'published' && a.slug
-                ? '<a class="btn btn--sm" href="../article.html?slug=' + encodeURIComponent(a.slug) + '" target="_blank" rel="noopener">View</a>'
+                ? '<a class="btn btn--sm" href="../article/' + encodeURIComponent(a.slug) + '/" target="_blank" rel="noopener">View</a>'
                 : '') +
               '<button class="btn btn--sm btn--danger" type="button" data-act="delete">Delete</button>' +
             '</div></td>' +
@@ -180,16 +196,55 @@
         var act = btn.dataset.act;
         btn.disabled = true;
 
-        var job = act === 'delete'
-          ? (window.confirm('Delete this article permanently? This cannot be undone.')
-              ? A.articles.remove(id)
-              : Promise.resolve(null))
-          : act === 'publish' ? A.articles.publish(id) : A.articles.unpublish(id);
+        var job;
+        if (act === 'delete') {
+          job = window.confirm('Delete this article permanently? This cannot be undone.')
+            ? A.articles.remove(id) : Promise.resolve(null);
+        } else if (act === 'publish') {
+          job = A.articles.publish(id).then(function (res) {
+            if (res && res.body && res.body.ok) {
+              // Trigger build (fire-and-forget, don't block on failure)
+              A.call('publish-trigger', { action: 'trigger', reason: 'publish' }).catch(function () {});
+            }
+            return res;
+          });
+        } else if (act === 'unpublish') {
+          job = A.articles.unpublish(id).then(function (res) {
+            if (res && res.body && res.body.ok) {
+              A.call('publish-trigger', { action: 'trigger', reason: 'unpublish' }).catch(function () {});
+            }
+            return res;
+          });
+        } else if (act === 'schedule') {
+          var when = window.prompt('Schedule for (ISO date/time, e.g. 2026-12-01T09:00:00Z):');
+          if (!when) { btn.disabled = false; return; }
+          try { when = new Date(when).toISOString(); } catch (e) { btn.disabled = false; A.notice(noticeEl,'error','Invalid date/time.'); return; }
+          if (new Date(when).getTime() <= Date.now()) { btn.disabled = false; A.notice(noticeEl,'error','Schedule time must be in the future.'); return; }
+          job = A.articles.schedule(id, when);
+          // validate happens before call (client-side, server authoritative)
+        } else if (act === 'cancel_schedule') {
+          job = A.articles.cancelSchedule(id);
+        } else if (act === 'archive') {
+          job = A.articles.archive(id);
+        } else if (act === 'restore') {
+          job = A.articles.restore(id);
+        } else {
+          btn.disabled = false;
+          return;
+        }
 
         Promise.resolve(job).then(function (res) {
           if (!res) return;
           if (!res.body || !res.body.ok) throw new Error((res.body && res.body.error) || 'failed');
-          A.notice(noticeEl, 'ok', act === 'delete' ? 'Article deleted.' : (act === 'unpublish' ? 'Article unpublished.' : 'Article published.'));
+          var msg = 'Action completed.';
+          if (act === 'delete') msg = 'Article deleted.';
+          else if (act === 'unpublish') msg = 'Article unpublished. Build triggered.';
+          else if (act === 'publish') msg = 'Article published. Build triggered.';
+          else if (act === 'archive') msg = 'Article archived.';
+          else if (act === 'restore') msg = 'Article restored as draft.';
+          else if (act === 'schedule') msg = 'Article scheduled.';
+          else if (act === 'cancel_schedule') msg = 'Schedule cancelled.';
+          A.notice(noticeEl, 'ok', msg);
           load();
         }).catch(function (err) {
           btn.disabled = false;

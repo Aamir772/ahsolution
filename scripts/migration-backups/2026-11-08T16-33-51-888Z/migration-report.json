@@ -1,0 +1,193 @@
+{
+  "mode": "dry-run",
+  "timestamp": "2026-11-08T16:33:51.892Z",
+  "source_count": 22,
+  "md_files": 22,
+  "backup": "scripts\\migration-backups\\2026-11-08T16-33-51-888Z",
+  "items": [
+    {
+      "slug": "iqoo-z5-5g-unboxing-first-look",
+      "file": "blog/articles/01-iqoo-z5-5g-unboxing-first-look.md",
+      "action": "invalid",
+      "reasons": [
+        "missing_markdown_file"
+      ]
+    },
+    {
+      "slug": "msi-gf63-gaming-laptop-review-buying-guide",
+      "file": "blog/articles/02-msi-gf63-gaming-laptop-review-buying-guide.md",
+      "action": "invalid",
+      "reasons": [
+        "missing_markdown_file"
+      ]
+    },
+    {
+      "slug": "hp-pavilion-gaming-ryzen-5-3550h-review",
+      "file": "blog/articles/03-hp-pavilion-gaming-ryzen-5-3550h-review.md",
+      "action": "invalid",
+      "reasons": [
+        "missing_markdown_file"
+      ]
+    },
+    {
+      "slug": "hp-pavilion-ryzen-5-laptop-unboxing-short",
+      "file": "blog/articles/04-hp-pavilion-ryzen-5-laptop-unboxing-short.md",
+      "action": "invalid",
+      "reasons": [
+        "missing_markdown_file"
+      ]
+    },
+    {
+      "slug": "android-night-photography-long-exposure-guide",
+      "file": "blog/articles/05-android-night-photography-long-exposure-guide.md",
+      "action": "invalid",
+      "reasons": [
+        "missing_markdown_file"
+      ]
+    },
+    {
+      "slug": "aqfit-w15-smartwatch-review-buying-guide",
+      "file": "blog/articles/06-aqfit-w15-smartwatch-review-buying-guide.md",
+      "action": "invalid",
+      "reasons": [
+        "missing_markdown_file"
+      ]
+    },
+    {
+      "slug": "five-unique-android-apps-useful-apps-guide",
+      "file": "blog/articles/07-five-unique-android-apps-useful-apps-guide.md",
+      "action": "invalid",
+      "reasons": [
+        "missing_markdown_file"
+      ]
+    },
+    {
+      "slug": "eight-android-apps-free-alternatives-guide",
+      "file": "blog/articles/08-eight-android-apps-free-alternatives-guide.md",
+      "action": "invalid",
+      "reasons": [
+        "missing_markdown_file"
+      ]
+    },
+    {
+      "slug": "brave-vs-chrome-privacy-speed-comparison",
+      "file": "blog/articles/09-brave-vs-chrome-privacy-speed-comparison.md",
+      "action": "invalid",
+      "reasons": [
+        "missing_markdown_file"
+      ]
+    },
+    {
+      "slug": "windows-10-11-keyboard-shortcuts-productivity",
+      "file": "blog/articles/10-windows-10-11-keyboard-shortcuts-productivity.md",
+      "action": "invalid",
+      "reasons": [
+        "missing_markdown_file"
+      ]
+    },
+    {
+      "slug": "pc-live-wallpaper-mlwapp-guide",
+      "file": "blog/articles/11-pc-live-wallpaper-mlwapp-guide.md",
+      "action": "invalid",
+      "reasons": [
+        "missing_markdown_file"
+      ]
+    },
+    {
+      "slug": "windows-startup-welcome-voice-jarvis-style",
+      "file": "blog/articles/12-windows-startup-welcome-voice-jarvis-style.md",
+      "action": "invalid",
+      "reasons": [
+        "missing_markdown_file"
+      ]
+    },
+    {
+      "slug": "wamr-whatsapp-deleted-messages-limitations-privacy",
+      "file": "blog/articles/13-wamr-whatsapp-deleted-messages-limitations-privacy.md",
+      "action": "invalid",
+      "reasons": [
+        "missing_markdown_file"
+      ]
+    },
+    {
+      "slug": "thop-tv-free-streaming-apps-legal-security-risks",
+      "file": "blog/articles/14-thop-tv-free-streaming-apps-legal-security-risks.md",
+      "action": "invalid",
+      "reasons": [
+        "missing_markdown_file"
+      ]
+    },
+    {
+      "slug": "welcome-to-ah-solution-tech-tips-tutorials",
+      "file": "blog/articles/15-welcome-to-ah-solution-tech-tips-tutorials.md",
+      "action": "invalid",
+      "reasons": [
+        "missing_markdown_file"
+      ]
+    },
+    {
+      "slug": "control-laptop-from-android-chrome-remote-desktop",
+      "file": "blog/articles/16-control-laptop-from-android-chrome-remote-desktop.md",
+      "action": "invalid",
+      "reasons": [
+        "missing_markdown_file"
+      ]
+    },
+    {
+      "slug": "mirror-android-screen-to-tv-pc-wireless-guide",
+      "file": "blog/articles/17-mirror-android-screen-to-tv-pc-wireless-guide.md",
+      "action": "invalid",
+      "reasons": [
+        "missing_markdown_file"
+      ]
+    },
+    {
+      "slug": "best-ai-tools-automate-everyday-tasks-2026",
+      "file": "blog/articles/18-best-ai-tools-automate-everyday-tasks-2026.md",
+      "action": "invalid",
+      "reasons": [
+        "missing_markdown_file"
+      ]
+    },
+    {
+      "slug": "android-features-you-should-enable-2026",
+      "file": "blog/articles/19-android-features-you-should-enable-2026.md",
+      "action": "invalid",
+      "reasons": [
+        "missing_markdown_file"
+      ]
+    },
+    {
+      "slug": "best-free-windows-apps-2026",
+      "file": "blog/articles/20-best-free-windows-apps-2026.md",
+      "action": "invalid",
+      "reasons": [
+        "missing_markdown_file"
+      ]
+    },
+    {
+      "slug": "smartphone-security-settings-protect-privacy",
+      "file": "blog/articles/21-smartphone-security-settings-protect-privacy.md",
+      "action": "invalid",
+      "reasons": [
+        "missing_markdown_file"
+      ]
+    },
+    {
+      "slug": "identify-ai-generated-images-fake-screenshots-scams",
+      "file": "blog/articles/22-identify-ai-generated-images-fake-screenshots-scams.md",
+      "action": "invalid",
+      "reasons": [
+        "missing_markdown_file"
+      ]
+    }
+  ],
+  "summary": {
+    "create": 0,
+    "update": 0,
+    "skip": 0,
+    "invalid": 22,
+    "duplicate": 0
+  },
+  "checksums": {}
+}

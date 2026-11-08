@@ -1,5 +1,5 @@
-/* ==========================================================================
-   scripts/blog-build.js — build the PUBLIC blog from the manifest
+﻿/* ==========================================================================
+   scripts/blog-build.js â€” build the PUBLIC blog from the manifest
 
    Single source of truth: blog/blog-manifest.json. This one script:
      1. generates a real, indexable article page for every manifest record at
@@ -9,7 +9,7 @@
      3. injects the article URLs into sitemap.xml between its markers
 
    It replaces the old local-only preview generator (scripts/blog-preview.js).
-   Nothing is committed or deployed here — it only writes files into the repo.
+   Nothing is committed or deployed here â€” it only writes files into the repo.
 
    Run: node scripts/blog-build.js
    ========================================================================== */
@@ -22,6 +22,19 @@ const {
   articleWordCount, videoJsonDiv, isoDuration, ARTICLES_DIR
 } = require('./blog-md.js');
 
+/* ------------------------------------------------------------------ *
+ * Source selection: --source=manifest (default) or --source=db
+ * ------------------------------------------------------------------ */
+const args = process.argv.slice(2);
+const sourceFlag = args.find((a) => a.startsWith('--source='));
+const SOURCE = sourceFlag ? sourceFlag.split('=')[1] : 'manifest';
+const TEST_MODE = args.includes('--test');
+
+if (!['manifest', 'db'].includes(SOURCE)) {
+  console.error('Unknown source: ' + SOURCE + '. Use --source=manifest or --source=db');
+  process.exit(1);
+}
+
 const SITE = 'https://ahsolution.live';
 const ROOT = path.join(__dirname, '..');
 const BLOG_HTML = path.join(ROOT, 'blog.html');
@@ -32,8 +45,8 @@ const AUTHORS = 'AH Solution Editorial Team';
    so every NON-metadata internal reference (chrome, css, images, nav, cards)
    must be page-relative. This keeps the pages correct at the production
    domain root AND under any sub-path host (e.g. GitHub Pages project sites),
-   where root-absolute paths would hit 404s. Metadata—canonical, og:*, sitemap
-   <loc>—stays absolute to SITE, the single consistent production base URL. */
+   where root-absolute paths would hit 404s. Metadataâ€”canonical, og:*, sitemap
+   <loc>â€”stays absolute to SITE, the single consistent production base URL. */
 const PAGE_PREFIX = '../../';
 const OG_DEFAULT = 'assets/img/og-default.jpg';
 
@@ -41,7 +54,7 @@ const MARK_START = '<!-- BLOG:ARTICLES:START -->';
 const MARK_END = '<!-- BLOG:ARTICLES:END -->';
 
 /* Editorial reading order for the listing (position 1 = the feature card).
-   This is a deliberate, hand-picked sequence — not an engagement metric —
+   This is a deliberate, hand-picked sequence â€” not an engagement metric â€”
    so the first card a reader sees is always a broadly useful how-to. */
 const EDITORIAL_ORDER = [
   'control-laptop-from-android-chrome-remote-desktop',
@@ -89,17 +102,17 @@ const SEARCH_MODAL = `<div class="search-modal" data-search-modal role="dialog" 
   <div class="search-panel">
     <div class="search-field">
       <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#A5A5B0" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
-      <input type="search" placeholder="Search tutorials, guides and pages…" aria-label="Search">
-      <button class="icon-btn" data-search-close aria-label="Close search">✕</button>
+      <input type="search" placeholder="Search tutorials, guides and pagesâ€¦" aria-label="Search">
+      <button class="icon-btn" data-search-close aria-label="Close search">âœ•</button>
     </div>
     <div class="search-results" data-search-results></div>
-    <div class="search-hint">Tip: press <strong>/</strong> to search · <strong>Esc</strong> to close</div>
+    <div class="search-hint">Tip: press <strong>/</strong> to search Â· <strong>Esc</strong> to close</div>
   </div>
 </div>`;
 
 const HEADER = `<header class="site-header">
   <div class="container nav">
-    <a class="brand" href="${PAGE_PREFIX}index.html" aria-label="AH Solution — home">
+    <a class="brand" href="${PAGE_PREFIX}index.html" aria-label="AH Solution â€” home">
       <img class="brand-logo" src="${PAGE_PREFIX}assets/img/logo.svg" alt="AH Solution" width="152" height="40" decoding="async">
     </a>
     <nav class="nav-links" id="primary-nav" aria-label="Main navigation">
@@ -116,7 +129,7 @@ const HEADER = `<header class="site-header">
       <button class="icon-btn" data-search-open aria-label="Search the website" title="Search (press /)">
         <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
       </button>
-      <a class="nav-cta" href="https://www.youtube.com/channel/UC_LdZmWha8cvotco41D77fw" target="_blank" rel="noopener noreferrer">Watch on YouTube <span aria-hidden="true">↗</span></a>
+      <a class="nav-cta" href="https://www.youtube.com/channel/UC_LdZmWha8cvotco41D77fw" target="_blank" rel="noopener noreferrer">Watch on YouTube <span aria-hidden="true">â†—</span></a>
       <button class="menu-toggle" aria-label="Toggle navigation" aria-expanded="false" aria-controls="primary-nav"><span></span><span></span><span></span></button>
     </div>
   </div>
@@ -126,7 +139,7 @@ const FOOTER = `<footer class="site-footer">
   <div class="container">
     <div class="footer-top">
       <div class="footer-brand">
-        <a class="brand" href="${PAGE_PREFIX}index.html" aria-label="AH Solution — home">
+        <a class="brand" href="${PAGE_PREFIX}index.html" aria-label="AH Solution â€” home">
           <img class="brand-logo brand-logo--sm" src="${PAGE_PREFIX}assets/img/logo.svg" alt="AH Solution" width="129" height="34" decoding="async">
         </a>
         <p>Simple solutions for everyday tech problems. Practical tutorials, digital tools, and honest discoveries made easier to understand.</p>
@@ -148,14 +161,14 @@ const FOOTER = `<footer class="site-footer">
       </div>
       <div class="footer-col">
         <strong>Connect</strong>
-        <a href="https://www.youtube.com/channel/UC_LdZmWha8cvotco41D77fw" target="_blank" rel="noopener noreferrer">YouTube ↗</a>
-        <a href="https://www.instagram.com/ahsolutions01/" target="_blank" rel="noopener noreferrer">Instagram ↗</a>
-        <a href="https://www.facebook.com/ahsolutions001" target="_blank" rel="noopener noreferrer">Facebook ↗</a>
-        <a href="mailto:official.ahsolution@gmail.com">official.ahsolution@gmail.com ↗</a>
+        <a href="https://www.youtube.com/channel/UC_LdZmWha8cvotco41D77fw" target="_blank" rel="noopener noreferrer">YouTube â†—</a>
+        <a href="https://www.instagram.com/ahsolutions01/" target="_blank" rel="noopener noreferrer">Instagram â†—</a>
+        <a href="https://www.facebook.com/ahsolutions001" target="_blank" rel="noopener noreferrer">Facebook â†—</a>
+        <a href="mailto:official.ahsolution@gmail.com">official.ahsolution@gmail.com â†—</a>
       </div>
     </div>
     <div class="footer-bottom">
-      <span>© <span data-year></span> AH Solution. Built for curious minds.</span>
+      <span>Â© <span data-year></span> AH Solution. Built for curious minds.</span>
       <div class="footer-socials">
         <a href="${PAGE_PREFIX}privacy.html">Privacy</a>
         <a href="${PAGE_PREFIX}terms.html">Terms</a>
@@ -253,22 +266,32 @@ function card(row, words, indent, size, pagePrefix) {
   const mins = row.reading_minutes || readingMinutes(words);
   const search = [row.article_title, row.excerpt, row.category, (row.tags || []).join(' '),
     (row.secondary_keywords || []).join(' ')].join(' ').toLowerCase().replace(/"/g, '');
+  const newUntil = row.new_until || '';
+  const hasNewBadge = newUntil && new Date(newUntil) > Date.now();
   const href = pre + 'article/' + row.slug + '/';
-  return pad + `<a class="content-card tilt${size ? ' ' + size : ''}" data-tilt="6" data-blog-card data-slug="${esc(row.slug)}" data-category="${esc(filterKey(row.category))}" data-order="${editorialPos(row.slug)}" data-min="${esc(mins)}" data-title="${esc(row.article_title)}" data-search="${esc(search)}" href="${href}">
-${pad}  <div class="card-image"><img src="${esc(thumb)}" alt="Cover graphic: ${esc(row.article_title)}" loading="lazy" decoding="async" width="640" height="360" onerror="this.onerror=null;this.src='${pre}${OG_DEFAULT}'"><span class="card-tag">${esc(row.category)}</span></div>
-${pad}  <div class="card-body"><div class="card-meta">${esc(String(row.category).toUpperCase())} · ${esc(mins)} MIN READ</div>
+  return pad + `<a class="content-card tilt${size ? ' ' + size : ''}" data-tilt="6" data-blog-card data-slug="${esc(row.slug)}" data-category="${esc(filterKey(row.category))}" data-order="${editorialPos(row.slug)}" data-min="${esc(mins)}" data-title="${esc(row.article_title)}" data-search="${esc(search)}" data-new-until="${newUntil}" href="${href}">
+${pad}  <div class="card-image"><img src="${esc(thumb)}" alt="Cover graphic: ${esc(row.article_title)}" loading="lazy" decoding="async" width="640" height="360" onerror="this.onerror=null;this.src='${pre}${OG_DEFAULT}'"><span class="card-tag">${esc(row.category)}</span>${hasNewBadge ? '<span class="new-badge">NEW</span>' : ''}
+${pad}  <div class="card-body"><div class="card-meta">${esc(String(row.category).toUpperCase())} Â· ${esc(mins)} MIN READ</div>
 ${pad}    <h3>${esc(row.article_title)}</h3>
 ${pad}    <p>${esc(row.excerpt)}</p>
-${pad}    <div class="card-bottom"><span>Read Article</span><span class="arrow">↗</span></div></div></a>`;
+${pad}    <div class="card-bottom"><span>Read Article</span><span class="arrow">â†—</span></div></div></a>`;
 }
 
 /* ----------------------------- article page ------------------------------ */
 
-function articlePage(row, mdPath, all) {
-  const md = fs.readFileSync(mdPath, 'utf8');
-  const parsed = parseArticle(md);
-  const rendered = renderBody(parsed.bodyMd);
-  const words = rendered.words || articleWordCount(md);
+function articlePage(row, mdPath, all, dbBody) {
+  let rendered;
+  let words;
+  if (dbBody) {
+    /* Database source: body is already sanitized HTML */
+    rendered = { html: dbBody, words: dbBody.replace(/<[^>]+>/g, ' ').split(/\s+/).filter(Boolean).length };
+    words = rendered.words;
+  } else {
+    const md = fs.readFileSync(mdPath, 'utf8');
+    const parsed = parseArticle(md);
+    rendered = renderBody(parsed.bodyMd);
+    words = rendered.words || articleWordCount(md);
+  }
   const mins = row.reading_minutes || readingMinutes(words);
   const cover = rel(row.cover_image_path || ('blog/assets/' + row.slug + '-cover.svg'));
   const canonical = SITE + '/article/' + row.slug + '/';
@@ -279,35 +302,38 @@ function articlePage(row, mdPath, all) {
   const usePng = fs.existsSync(path.join(ROOT, coverPng));
   const image = abs(usePng ? coverPng : (row.cover_image_path || ('blog/assets/' + row.slug + '-cover.svg')));
 
-  const video = {
-    '@type': 'VideoObject',
-    name: row.source_title,
-    description: row.meta_description,
-    thumbnailUrl: ['https://i.ytimg.com/vi/' + row.video_id + '/hqdefault.jpg'],
-    contentUrl: row.source_video_url,
-    embedUrl: 'https://www.youtube-nocookie.com/embed/' + row.video_id
-  };
-  if (row.video_publish_date) video.uploadDate = row.video_publish_date;
-  if (row.video_duration) video.duration = isoDuration(row.video_duration);
+  const graph = [
+    {
+      '@type': 'BlogPosting',
+      headline: row.article_title,
+      description: row.meta_description,
+      image: [image],
+      inLanguage: 'en-IN',
+      author: { '@type': 'Organization', name: AUTHORS, url: SITE + '/' },
+      publisher: { '@type': 'Organization', name: 'AH Solution', url: SITE + '/' },
+      isPartOf: { '@type': 'Blog', name: 'AH Solution Blog', url: SITE + '/blog.html' },
+      mainEntityOfPage: { '@type': 'WebPage', '@id': canonical },
+      articleSection: row.category,
+      keywords: (row.tags || []).join(', ')
+    }
+  ];
+  if (row.video_id) {
+    const video = {
+      '@type': 'VideoObject',
+      name: row.source_title,
+      description: row.meta_description,
+      thumbnailUrl: ['https://i.ytimg.com/vi/' + row.video_id + '/hqdefault.jpg'],
+      contentUrl: row.source_video_url,
+      embedUrl: 'https://www.youtube-nocookie.com/embed/' + row.video_id
+    };
+    if (row.video_publish_date) video.uploadDate = row.video_publish_date;
+    if (row.video_duration) video.duration = isoDuration(row.video_duration);
+    graph.push(video);
+  }
 
   const jsonld = JSON.stringify({
     '@context': 'https://schema.org',
-    '@graph': [
-      {
-        '@type': 'BlogPosting',
-        headline: row.article_title,
-        description: row.meta_description,
-        image: [image],
-        inLanguage: 'en-IN',
-        author: { '@type': 'Organization', name: AUTHORS, url: SITE + '/' },
-        publisher: { '@type': 'Organization', name: 'AH Solution', url: SITE + '/' },
-        isPartOf: { '@type': 'Blog', name: 'AH Solution Blog', url: SITE + '/blog.html' },
-        mainEntityOfPage: { '@type': 'WebPage', '@id': canonical },
-        articleSection: row.category,
-        keywords: (row.tags || []).join(', ')
-      },
-      video
-    ]
+    '@graph': graph
   });
 
   // related: same filter key first, then fill from the rest
@@ -329,7 +355,7 @@ function articlePage(row, mdPath, all) {
 
   /* Publication safety: the approved workflow is draft-for-review. A record
      stays `publish_status: "draft"` until the operator approves it, so the
-     generated page is protected (robots noindex) and carries NO canonical —
+     generated page is protected (robots noindex) and carries NO canonical â€”
      the author-approved canonical is exactly what publishing adds. Setting
      publish_status to "published" (or canonical_url to a real URL) flips the
      page to fully indexable. */
@@ -338,13 +364,13 @@ function articlePage(row, mdPath, all) {
   const draftRobots = approved ? '' : 'noindex, nofollow';
   const publishedCanonical = approved ? canonical : '';
 
-  /* the trailing "Watch the original …" section becomes a framed component */
+  /* the trailing "Watch the original â€¦" section becomes a framed component */
   let bodyHtml = rendered.html;
   /* The markdown sources embed raw HTML figures (e.g. <img src="/blog/assets/
      <slug>-explainer.svg">) that never pass through the markdown link
      rewriter. Convert root-absolute Urirefs inside the body to the same
      page-relative form so sub-path hosts (GitHub Pages) resolve them too.
-     Metadata (canonical/og/JSON-LD) is untouched — it is host-absolute. */
+     Metadata (canonical/og/JSON-LD) is untouched â€” it is host-absolute. */
   bodyHtml = bodyHtml.replace(/(src|href|poster)="\//g, (m, attr) => attr + '="' + PAGE_PREFIX);
   const VIDEO_H2 = '<h2 id="watch-the-original-ah-solution-video">';
   const vi = bodyHtml.indexOf(VIDEO_H2);
@@ -369,12 +395,12 @@ function articlePage(row, mdPath, all) {
   <section class="page-hero">
     <div class="container">
       <nav class="breadcrumbs" aria-label="Breadcrumb">\n<a href="${PAGE_PREFIX}index.html">Home</a> <span aria-hidden="true">/</span> <a href="${PAGE_PREFIX}blog.html">Blog</a> <span aria-hidden="true">/</span> <a href="${PAGE_PREFIX}blog.html?category=${encodeURIComponent(catKey || 'all')}">${esc(row.category)}</a> <span aria-hidden="true">/</span> <span aria-current="page">${esc(row.article_title)}</span></nav>
-      ${approved ? '' : '<p class="draft-ribbon" role="status">Draft for review — not yet published. Search: noindex pending approval.</p>'}
-      <a class="back-link" href="${PAGE_PREFIX}blog.html">← Back to all articles</a>
-      <div class="article-kicker">${esc(row.category)} · ${esc(mins)} min read</div>
+      ${approved ? '' : '<p class="draft-ribbon" role="status">Draft for review â€” not yet published. Search: noindex pending approval.</p>'}
+      <a class="back-link" href="${PAGE_PREFIX}blog.html">â† Back to all articles</a>
+      <div class="article-kicker">${esc(row.category)} Â· ${esc(mins)} min read</div>
       <h1 class="article-title">${esc(row.article_title)}</h1>
       <p class="article-intro">${esc(row.excerpt)}</p>
-      <div class="article-meta"><span>${esc(AUTHORS)}</span><span>${esc(row.language || 'English')}</span><span>Source video ${esc((row.video_publish_date || '').slice(0, 10))}</span></div>
+      <div class="article-meta"><span>${esc(AUTHORS)}</span><span>${esc(row.language || 'English')}</span>${row.video_publish_date ? '<span>Source video ' + esc((row.video_publish_date || '').slice(0, 10)) + '</span>' : ''}</div>
     </div>
   </section>
 
@@ -399,15 +425,11 @@ ${bodyHtml}
           <div class="grid-2">${relatedHtml}</div>
         </div>
 
-        <p style="margin-top:18px"><a class="filter-chip" href="${PAGE_PREFIX}blog.html">← Back to the blog</a></p>
+        <p style="margin-top:18px"><a class="filter-chip" href="${PAGE_PREFIX}blog.html">â† Back to the blog</a></p>
       </article>
 
       <aside class="article-aside">
-        <div class="aside-card">
-          <h3>Source video</h3>
-          <p>${esc(row.source_title)}</p>
-          <div class="aside-links"><a href="${esc(row.source_video_url)}" target="_blank" rel="noopener noreferrer">Watch original on YouTube ↗</a></div>
-        </div>
+        ${row.video_id ? '<div class="aside-card">\n          <h3>Source video</h3>\n          <p>' + esc(row.source_title) + '</p>\n          <div class="aside-links"><a href="' + esc(row.source_video_url) + '" target="_blank" rel="noopener noreferrer">Watch original on YouTube â†—</a></div>\n        </div>' : ''}
         <div class="aside-card">
           <h3>What we cover</h3>
           <div class="aside-links">
@@ -431,26 +453,190 @@ ${DEVICE_TAIL}
 </html>`;
 }
 
+/* ------------------------------------------------------------------ *
+ * Database source loader (Phase 2C.1)
+ * Fetches published articles from Supabase via the articles API.
+ * ------------------------------------------------------------------ */
+async function loadDbArticles() {
+  // No silent fallback to manifest in DB mode.
+  const url = process.env.SUPABASE_URL;
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!url || !key) {
+    throw new Error('Supabase not configured: SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY are required for --source=db');
+  }
+
+  const endpoint = url.replace(/\/$/, '') + '/rest/v1/articles';
+  const params = [
+    'select=' + 'id,slug,title,excerpt,body,cover_image_url,category,tags,status,seo_description,reading_minutes,created_at,updated_at,published_at,publish_at,author_email,view_count,new_until',
+    'status=eq.published',
+    'or=(published_at.is.null,published_at.lte.' + encodeURIComponent(new Date().toISOString()) + ')',
+    'order=published_at.desc.nullslast,created_at.desc',
+    'limit=100'
+  ];
+
+  let response;
+  try {
+    response = await fetch(endpoint + '?' + params.join('&'), {
+      headers: {
+        'apikey': key,
+        'Authorization': 'Bearer ' + key,
+        'Content-Type': 'application/json'
+      }
+    });
+  } catch (e) {
+    throw new Error('Database request failed: ' + (e.message || e));
+  }
+
+  if (!response.ok) {
+    const body = await response.text().catch(() => '');
+    throw new Error('Database request failed: HTTP ' + response.status + ' ' + body.slice(0, 200));
+  }
+
+  let rows;
+  try {
+    rows = await response.json();
+  } catch (e) {
+    throw new Error('Invalid database response: ' + (await response.text()).slice(0, 200));
+  }
+
+  if (!Array.isArray(rows)) {
+    throw new Error('Database returned non-array: ' + JSON.stringify(rows).slice(0, 200));
+  }
+
+  if (rows.length === 0) {
+    console.warn('WARNING: Database returned 0 articles. No content will be generated.');
+  }
+
+  // Validate required fields
+  const validated = [];
+  for (const row of rows) {
+    if (!row.slug || !row.title) {
+      console.warn('WARNING: Skipping article with missing slug or title:', row.id || 'unknown');
+      continue;
+    }
+    if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(row.slug)) {
+      console.warn('WARNING: Skipping article with invalid slug:', row.slug);
+      continue;
+    }
+    validated.push(row);
+  }
+
+  // Check for duplicate slugs
+  const slugs = new Set();
+  for (const row of validated) {
+    if (slugs.has(row.slug)) {
+      throw new Error('Duplicate slug in database response: ' + row.slug);
+    }
+    slugs.add(row.slug);
+  }
+
+  return validated.map(dbRowToManifestRow);
+}
+
+function dbRowToManifestRow(dbRow) {
+  // Map database row to manifest-compatible format
+  return {
+    article_number: 0, // Not used for DB articles
+    status: 'published',
+    publish_status: 'published',
+    source_title: dbRow.title,
+    article_title: dbRow.title,
+    slug: dbRow.slug,
+    suggested_url: SITE + '/article/' + dbRow.slug + '/',
+    canonical_url: SITE + '/article/' + dbRow.slug + '/',
+    source_video_url: '',
+    video_id: '',
+    video_publish_date: dbRow.published_at || dbRow.created_at,
+    video_duration: '',
+    views_at_export: String(dbRow.view_count || 0),
+    category: dbRow.category || 'Article',
+    primary_keyword: '',
+    secondary_keywords: [],
+    tags: (dbRow.tags || '').split(',').map((t) => t.trim()).filter(Boolean),
+    meta_title: dbRow.title + ' | AH Solution',
+    meta_description: dbRow.seo_description || dbRow.excerpt || '',
+    excerpt: dbRow.excerpt || '',
+    thumbnail_url: '',
+    cover_image_filename: '',
+    listing_image_filename: '',
+    in_article_image_filename: '',
+    image_alt_text: dbRow.title,
+    author: 'AH Solution Editorial Team',
+    language: 'English',
+    reading_time_estimate: (dbRow.reading_minutes || 1) + ' min read',
+    schema_type: 'BlogPosting',
+    publish_status: 'published',
+    notes: 'Generated from database',
+    article_id: dbRow.id,
+    article_file: '',
+    word_count: 0,
+    reading_minutes: dbRow.reading_minutes || 1,
+    route: '/article/' + dbRow.slug + '/',
+    cover_image_path: dbRow.cover_image_url || '',
+    thumbnail_image_path: dbRow.cover_image_url || '',
+    in_article_image_path: '',
+    image_prompts_file: '',
+    image_status: 'db_sourced',
+    editorial_verification_status: 'completed',
+    source_verification: { method: 'database', verified_on: new Date().toISOString().slice(0, 10), title_match: true },
+    new_until: dbRow.new_until,
+    // Extra fields for DB mode
+    _db_body: dbRow.body,
+    _db_id: dbRow.id,
+    _db_created_at: dbRow.created_at,
+    _db_updated_at: dbRow.updated_at
+  };
+}
+
 /* --------------------------------- main ---------------------------------- */
 
-function main() {
-  const all = loadManifest().slice().sort((a, b) => Number(a.article_number) - Number(b.article_number));
-  if (all.length === 0) throw new Error('manifest is empty');
+async function main() {
+  let all;
+  if (SOURCE === 'db') {
+    console.log('Source: database (Supabase)');
+    all = await loadDbArticles();
+    if (all.length === 0) {
+      if (args.includes('--allow-empty')) {
+        console.warn('WARNING: Database returned 0 articles. Proceeding with --allow-empty override.');
+      } else {
+        console.error('ERROR: Database returned 0 articles. Use --allow-empty to proceed intentionally.');
+        process.exit(1);
+      }
+    }
+  } else {
+    console.log('Source: manifest (blog/blog-manifest.json)');
+    all = loadManifest().slice().sort((a, b) => Number(a.article_number) - Number(b.article_number));
+    if (all.length === 0) throw new Error('manifest is empty');
+  }
 
-  const prepared = all.map(function (row) {
-    const num = String(row.article_number).padStart(2, '0');
-    const file = num + '-' + row.slug + '.md';
-    const mdPath = path.join(ARTICLES_DIR, file);
-    if (!fs.existsSync(mdPath)) throw new Error('missing article: ' + mdPath);
-    return { row: row, words: articleWordCount(fs.readFileSync(mdPath, 'utf8')), file: file };
-  });
+  let prepared;
+  if (SOURCE === 'db') {
+    prepared = all.map(function (row) {
+      const words = row._db_body ? row._db_body.replace(/<[^>]+>/g, ' ').split(/\s+/).filter(Boolean).length : 0;
+      return { row: row, words: words, file: null, mdPath: null };
+    });
+  } else {
+    prepared = all.map(function (row) {
+      const num = String(row.article_number).padStart(2, '0');
+      const file = num + '-' + row.slug + '.md';
+      const mdPath = path.join(ARTICLES_DIR, file);
+      if (!fs.existsSync(mdPath)) throw new Error('missing article: ' + mdPath);
+      return { row: row, words: articleWordCount(fs.readFileSync(mdPath, 'utf8')), file: file, mdPath: mdPath };
+    });
+  }
+
+  /* Determine output directory */
+  const outDir = TEST_MODE ? path.join(ROOT, 'test-output') : ARTICLE_DIR;
+  const outBlogHtml = TEST_MODE ? path.join(ROOT, 'test-output', 'blog.html') : BLOG_HTML;
+  const outSitemap = TEST_MODE ? path.join(ROOT, 'test-output', 'sitemap.xml') : SITEMAP;
 
   /* 1. public article pages */
-  fs.mkdirSync(ARTICLE_DIR, { recursive: true });
+  fs.mkdirSync(outDir, { recursive: true });
   prepared.forEach(function (p) {
-    const dir = path.join(ARTICLE_DIR, p.row.slug);
+    const dbBody = SOURCE === 'db' ? p.row._db_body : null;
+    const dir = path.join(outDir, p.row.slug);
     fs.mkdirSync(dir, { recursive: true });
-    fs.writeFileSync(path.join(dir, 'index.html'), articlePage(p.row, path.join(ARTICLES_DIR, p.file), all), 'utf8');
+    fs.writeFileSync(path.join(dir, 'index.html'), articlePage(p.row, p.mdPath, all, dbBody), 'utf8');
   });
 
   /* 2. listing cards injected into the main blog.html, in editorial order:
@@ -464,34 +650,63 @@ function main() {
     return i === 0 ? 'is-feature' : (i === 1 || i === 2) ? 'is-compact' : '';
   };
   const cards = ordered.map((p) => card(p.row, p.words, 8, sizeOf(p.row.slug))).join('\n');
-  const blogHtml = fs.readFileSync(BLOG_HTML, 'utf8');
-  fs.writeFileSync(BLOG_HTML, replaceRegion(blogHtml, cards, 'blog.html'), 'utf8');
+  if (!TEST_MODE) {
+    const blogHtml = fs.readFileSync(BLOG_HTML, 'utf8');
+    fs.writeFileSync(BLOG_HTML, replaceRegion(blogHtml, cards, 'blog.html'), 'utf8');
+  } else {
+    // In test mode, write to test output dir
+    fs.mkdirSync(path.join(ROOT, 'test-output'), { recursive: true });
+    const testBlogHtml = fs.existsSync(BLOG_HTML) ? fs.readFileSync(BLOG_HTML, 'utf8') : '';
+    if (testBlogHtml) fs.writeFileSync(path.join(ROOT, 'test-output', 'blog.html'), replaceRegion(testBlogHtml, cards, 'blog.html'), 'utf8');
+  }
 
-  /* 3. sitemap entries — ONLY approved articles. Draft-for-review records are
+  /* 3. sitemap entries â€” ONLY approved articles. Draft-for-review records are
      never listed (indexing protection), so the public sitemap always matches
      the intended publication state. Approved entries use the markdown source
      file's modification date as a reliable <lastmod>. */
   const approvedRows = all.filter((r) => {
+    if (SOURCE === 'db') {
+      return r.publish_status === 'published' && r.canonical_url && r.canonical_url !== 'SET_ONLY_AFTER_PUBLISHING';
+    }
     const num = String(r.article_number).padStart(2, '0');
     const mdPath = path.join(ARTICLES_DIR, num + '-' + r.slug + '.md');
     return r.publish_status === 'published' && r.canonical_url && r.canonical_url !== 'SET_ONLY_AFTER_PUBLISHING' &&
       fs.existsSync(mdPath);
   });
   const entries = approvedRows.map((r) => {
-    const num = String(r.article_number).padStart(2, '0');
     let lastmod = '';
-    try {
-      lastmod = '<lastmod>' + fs.statSync(path.join(ARTICLES_DIR, num + '-' + r.slug + '.md')).mtime.toISOString().slice(0, 10) + '</lastmod>';
-    } catch (e) { /* omit lastmod when no reliable date exists */ }
+    if (SOURCE === 'db') {
+      const date = r._db_updated_at || r._db_created_at || r.video_publish_date;
+      if (date) lastmod = '<lastmod>' + new Date(date).toISOString().slice(0, 10) + '</lastmod>';
+    } else {
+      const num = String(r.article_number).padStart(2, '0');
+      try {
+        lastmod = '<lastmod>' + fs.statSync(path.join(ARTICLES_DIR, num + '-' + r.slug + '.md')).mtime.toISOString().slice(0, 10) + '</lastmod>';
+      } catch (e) { /* omit lastmod when no reliable date exists */ }
+    }
     return '  <url><loc>' + SITE + '/article/' + r.slug + '/</loc>' + lastmod + '<changefreq>monthly</changefreq><priority>0.7</priority></url>';
-  }).join('\n');
-  const sitemap = fs.readFileSync(SITEMAP, 'utf8');
-  fs.writeFileSync(SITEMAP, replaceRegion(sitemap, entries, 'sitemap.xml'), 'utf8');
+  }).join('\\n');
+  if (TEST_MODE) {
+    if (fs.existsSync(SITEMAP)) {
+      const testSitemap = fs.readFileSync(SITEMAP, 'utf8');
+      fs.mkdirSync(path.join(ROOT, 'test-output'), { recursive: true });
+      fs.writeFileSync(path.join(ROOT, 'test-output', 'sitemap.xml'), replaceRegion(testSitemap, entries, 'sitemap.xml'), 'utf8');
+    }
+  } else {
+    const sitemap = fs.readFileSync(SITEMAP, 'utf8');
+    fs.writeFileSync(SITEMAP, replaceRegion(sitemap, entries, 'sitemap.xml'), 'utf8');
+  }
 
   const draftCount = all.length - approvedRows.length;
   console.log('blog-build: ' + prepared.length + ' article pages (' + approvedRows.length + ' approved/indexable, ' + draftCount + ' draft-protected noindex) + ' + prepared.length + ' blog cards + sitemap (' + approvedRows.length + ' article URLs)');
-  console.log('review: npm start  →  http://localhost:8000/blog.html');
+  console.log('review: npm start  â†’  http://localhost:8000/blog.html');
 }
 
-if (require.main === module) main();
-module.exports = { articlePage, card };
+if (require.main === module) {
+  main().catch((e) => {
+    console.error('blog-build failed:', e.message || e);
+    process.exit(1);
+  });
+}
+module.exports = { articlePage, card, loadDbArticles, dbRowToManifestRow };
+

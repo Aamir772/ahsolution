@@ -56,13 +56,15 @@
     if (/remote/.test(c)) return 'remote';
     if (/android|apps|connectivity/.test(c)) return 'android';
     if (/pc|windows|laptop|gaming/.test(c)) return 'windows';
-    if (/gadget|watch|wear|smartphone|phone/.test(c)) return 'gadgets';
+    if (/gadget|watch|wear|smartphone|phone|ai|productivity/.test(c)) return 'gadgets';
     if (/about|welcome/.test(c)) return 'about';
     return '';
   }
 
+  /* Canonical public URL format: /article/<slug>/
+     Must stay in sync with scripts/blog-build.js and sitemap entries. */
   function articleUrl(slug) {
-    return 'article.html?slug=' + encodeURIComponent(slug);
+    return '/article/' + encodeURIComponent(slug) + '/';
   }
 
   function cardHTML(a) {
@@ -73,6 +75,7 @@
     return '<a class="content-card tilt" data-tilt="6" data-blog-card' +
       ' data-slug="' + esc(a.slug) + '"' +
       ' data-category="' + esc(filterKey(cat)) + '"' +
+      (a.new_until ? ' data-new-until="' + esc(a.new_until) + '"' : '') +
       ' data-search="' + esc(text.toLowerCase()) + '"' +
       ' data-cms-card href="' + esc(articleUrl(a.slug)) + '">' +
       '<div class="card-image"><img src="' + esc(cover) + '" alt="" loading="lazy" decoding="async" width="900" height="600"' +
@@ -125,6 +128,17 @@
     if (a.cover_image_url) setMeta('meta', 'property', { key: 'og:image', content: a.cover_image_url });
     var desc = document.head.querySelector('meta[name="description"]');
     if (desc) desc.setAttribute('content', a.seo_description || a.excerpt || '');
+
+    /* Published CMS articles must be indexable. The static article.html shell
+       ships with noindex, nofollow; override it when a published article loads.
+       Drafts (should never reach the public API) keep noindex. */
+    var robots = document.head.querySelector('meta[name="robots"]');
+    if (robots) {
+      robots.setAttribute('content', a.status === 'draft' ? 'noindex, nofollow' : 'index, follow');
+    }
+    /* Canonical link must point to the unified public URL. */
+    var canon = document.head.querySelector('link[rel="canonical"]');
+    if (canon) canon.setAttribute('href', canonical);
 
     var old = document.getElementById('cms-ld');
     if (old) old.remove();
@@ -232,7 +246,7 @@
       if (status) status.textContent = 'Pick an article from the blog to read it here.';
       return;
     }
-    var canonical = 'https://ahsolution.live/article.html?slug=' + encodeURIComponent(slug);
+    var canonical = 'https://ahsolution.live/article/' + encodeURIComponent(slug) + '/';
     if (status) status.textContent = 'Loading article…';
 
     return getJSON(ENDPOINT + qs({ action: 'list', slug: slug })).then(function (res) {
@@ -240,6 +254,12 @@
       if (!a) throw new Error('not_found');
       fill(root, a, canonical);
       if (status) status.hidden = true;
+      /* Legacy URL handling: if loaded via /article.html?slug=, update the
+         browser URL to the canonical /article/<slug>/ without a full redirect.
+         Avoids redirect loops and duplicate URL indexing. */
+      if (location.pathname.indexOf('/article.html') !== -1 && location.search.indexOf('slug=') !== -1) {
+        try { history.replaceState(null, '', canonical); } catch (e) { /* ignore */ }
+      }
       document.dispatchEvent(new CustomEvent('ah:article:ready', { detail: a }));
       return loadRelated(a, root);
     }).catch(function (err) {

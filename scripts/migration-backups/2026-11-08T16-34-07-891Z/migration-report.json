@@ -1,0 +1,194 @@
+{
+  "mode": "dry-run",
+  "timestamp": "2026-11-08T16:34:07.895Z",
+  "source_count": 22,
+  "md_files": 22,
+  "backup": "scripts\\migration-backups\\2026-11-08T16-34-07-891Z",
+  "items": [
+    {
+      "slug": "iqoo-z5-5g-unboxing-first-look",
+      "file": "blog/articles/01-iqoo-z5-5g-unboxing-first-look.md",
+      "action": "create",
+      "reasons": [],
+      "canonical": "https://ahsolution.live/article/iqoo-z5-5g-unboxing-first-look/"
+    },
+    {
+      "slug": "msi-gf63-gaming-laptop-review-buying-guide",
+      "file": "blog/articles/02-msi-gf63-gaming-laptop-review-buying-guide.md",
+      "action": "create",
+      "reasons": [],
+      "canonical": "https://ahsolution.live/article/msi-gf63-gaming-laptop-review-buying-guide/"
+    },
+    {
+      "slug": "hp-pavilion-gaming-ryzen-5-3550h-review",
+      "file": "blog/articles/03-hp-pavilion-gaming-ryzen-5-3550h-review.md",
+      "action": "create",
+      "reasons": [],
+      "canonical": "https://ahsolution.live/article/hp-pavilion-gaming-ryzen-5-3550h-review/"
+    },
+    {
+      "slug": "hp-pavilion-ryzen-5-laptop-unboxing-short",
+      "file": "blog/articles/04-hp-pavilion-ryzen-5-laptop-unboxing-short.md",
+      "action": "create",
+      "reasons": [],
+      "canonical": "https://ahsolution.live/article/hp-pavilion-ryzen-5-laptop-unboxing-short/"
+    },
+    {
+      "slug": "android-night-photography-long-exposure-guide",
+      "file": "blog/articles/05-android-night-photography-long-exposure-guide.md",
+      "action": "create",
+      "reasons": [],
+      "canonical": "https://ahsolution.live/article/android-night-photography-long-exposure-guide/"
+    },
+    {
+      "slug": "aqfit-w15-smartwatch-review-buying-guide",
+      "file": "blog/articles/06-aqfit-w15-smartwatch-review-buying-guide.md",
+      "action": "create",
+      "reasons": [],
+      "canonical": "https://ahsolution.live/article/aqfit-w15-smartwatch-review-buying-guide/"
+    },
+    {
+      "slug": "five-unique-android-apps-useful-apps-guide",
+      "file": "blog/articles/07-five-unique-android-apps-useful-apps-guide.md",
+      "action": "create",
+      "reasons": [],
+      "canonical": "https://ahsolution.live/article/five-unique-android-apps-useful-apps-guide/"
+    },
+    {
+      "slug": "eight-android-apps-free-alternatives-guide",
+      "file": "blog/articles/08-eight-android-apps-free-alternatives-guide.md",
+      "action": "create",
+      "reasons": [],
+      "canonical": "https://ahsolution.live/article/eight-android-apps-free-alternatives-guide/"
+    },
+    {
+      "slug": "brave-vs-chrome-privacy-speed-comparison",
+      "file": "blog/articles/09-brave-vs-chrome-privacy-speed-comparison.md",
+      "action": "create",
+      "reasons": [],
+      "canonical": "https://ahsolution.live/article/brave-vs-chrome-privacy-speed-comparison/"
+    },
+    {
+      "slug": "windows-10-11-keyboard-shortcuts-productivity",
+      "file": "blog/articles/10-windows-10-11-keyboard-shortcuts-productivity.md",
+      "action": "create",
+      "reasons": [],
+      "canonical": "https://ahsolution.live/article/windows-10-11-keyboard-shortcuts-productivity/"
+    },
+    {
+      "slug": "pc-live-wallpaper-mlwapp-guide",
+      "file": "blog/articles/11-pc-live-wallpaper-mlwapp-guide.md",
+      "action": "create",
+      "reasons": [],
+      "canonical": "https://ahsolution.live/article/pc-live-wallpaper-mlwapp-guide/"
+    },
+    {
+      "slug": "windows-startup-welcome-voice-jarvis-style",
+      "file": "blog/articles/12-windows-startup-welcome-voice-jarvis-style.md",
+      "action": "create",
+      "reasons": [],
+      "canonical": "https://ahsolution.live/article/windows-startup-welcome-voice-jarvis-style/"
+    },
+    {
+      "slug": "wamr-whatsapp-deleted-messages-limitations-privacy",
+      "file": "blog/articles/13-wamr-whatsapp-deleted-messages-limitations-privacy.md",
+      "action": "create",
+      "reasons": [],
+      "canonical": "https://ahsolution.live/article/wamr-whatsapp-deleted-messages-limitations-privacy/"
+    },
+    {
+      "slug": "thop-tv-free-streaming-apps-legal-security-risks",
+      "file": "blog/articles/14-thop-tv-free-streaming-apps-legal-security-risks.md",
+      "action": "create",
+      "reasons": [],
+      "canonical": "https://ahsolution.live/article/thop-tv-free-streaming-apps-legal-security-risks/"
+    },
+    {
+      "slug": "welcome-to-ah-solution-tech-tips-tutorials",
+      "file": "blog/articles/15-welcome-to-ah-solution-tech-tips-tutorials.md",
+      "action": "create",
+      "reasons": [],
+      "canonical": "https://ahsolution.live/article/welcome-to-ah-solution-tech-tips-tutorials/"
+    },
+    {
+      "slug": "control-laptop-from-android-chrome-remote-desktop",
+      "file": "blog/articles/16-control-laptop-from-android-chrome-remote-desktop.md",
+      "action": "create",
+      "reasons": [],
+      "canonical": "https://ahsolution.live/article/control-laptop-from-android-chrome-remote-desktop/"
+    },
+    {
+      "slug": "mirror-android-screen-to-tv-pc-wireless-guide",
+      "file": "blog/articles/17-mirror-android-screen-to-tv-pc-wireless-guide.md",
+      "action": "create",
+      "reasons": [],
+      "canonical": "https://ahsolution.live/article/mirror-android-screen-to-tv-pc-wireless-guide/"
+    },
+    {
+      "slug": "best-ai-tools-automate-everyday-tasks-2026",
+      "file": "blog/articles/18-best-ai-tools-automate-everyday-tasks-2026.md",
+      "action": "create",
+      "reasons": [],
+      "canonical": "https://ahsolution.live/article/best-ai-tools-automate-everyday-tasks-2026/"
+    },
+    {
+      "slug": "android-features-you-should-enable-2026",
+      "file": "blog/articles/19-android-features-you-should-enable-2026.md",
+      "action": "create",
+      "reasons": [],
+      "canonical": "https://ahsolution.live/article/android-features-you-should-enable-2026/"
+    },
+    {
+      "slug": "best-free-windows-apps-2026",
+      "file": "blog/articles/20-best-free-windows-apps-2026.md",
+      "action": "create",
+      "reasons": [],
+      "canonical": "https://ahsolution.live/article/best-free-windows-apps-2026/"
+    },
+    {
+      "slug": "smartphone-security-settings-protect-privacy",
+      "file": "blog/articles/21-smartphone-security-settings-protect-privacy.md",
+      "action": "create",
+      "reasons": [],
+      "canonical": "https://ahsolution.live/article/smartphone-security-settings-protect-privacy/"
+    },
+    {
+      "slug": "identify-ai-generated-images-fake-screenshots-scams",
+      "file": "blog/articles/22-identify-ai-generated-images-fake-screenshots-scams.md",
+      "action": "create",
+      "reasons": [],
+      "canonical": "https://ahsolution.live/article/identify-ai-generated-images-fake-screenshots-scams/"
+    }
+  ],
+  "summary": {
+    "create": 22,
+    "update": 0,
+    "skip": 0,
+    "invalid": 0,
+    "duplicate": 0
+  },
+  "checksums": {
+    "blog/articles/01-iqoo-z5-5g-unboxing-first-look.md": "4e3aeef2683cf70da504ac44279dd662e37915495d2eabe3ab8f872bf29b6824",
+    "blog/articles/02-msi-gf63-gaming-laptop-review-buying-guide.md": "82e4614903d7f856db78f5d2c052208b42a0f0833b57931a0d8777bbe13770c3",
+    "blog/articles/03-hp-pavilion-gaming-ryzen-5-3550h-review.md": "fa676493df55b4add8e6601b47edcd2e0d8807c53a4a91f9ddc6e47c9e655524",
+    "blog/articles/04-hp-pavilion-ryzen-5-laptop-unboxing-short.md": "5ab2ccde24e6bd0e82c54372fd66b7d195f60006d553129ef8a8cba46f17323c",
+    "blog/articles/05-android-night-photography-long-exposure-guide.md": "120ddb7d6d5c2f450728d12985a3663cc711c262bb51d50a47c63966e6dae2de",
+    "blog/articles/06-aqfit-w15-smartwatch-review-buying-guide.md": "9371a10f5214984e4ae6d70d50cb283f88aaf3c9ebd63d75db721242fdd4af14",
+    "blog/articles/07-five-unique-android-apps-useful-apps-guide.md": "dd7e86ba4bf92fc4ada7d539dea585a175c03ecec9ac07aee8417bda4352c060",
+    "blog/articles/08-eight-android-apps-free-alternatives-guide.md": "ed8d9188ecbb3a0014b6af6e953ad5a7e0a21af3e5ac78ea3edbd0952062a3a0",
+    "blog/articles/09-brave-vs-chrome-privacy-speed-comparison.md": "69dd103f98d4c858b4c0608f5ff89521247c86619c678b4e65b8746f97508054",
+    "blog/articles/10-windows-10-11-keyboard-shortcuts-productivity.md": "0351f42c2bdfa3afd08c6a2d978a2d51c7888c4bcb7a735ac961007a9f77d5a2",
+    "blog/articles/11-pc-live-wallpaper-mlwapp-guide.md": "ac6529274ed41c7be3584bcced04648edbe9ef97ab97c28ae0daf764ca2d69a5",
+    "blog/articles/12-windows-startup-welcome-voice-jarvis-style.md": "75ad302c831c13ea48afb56ca6a420752e24e25c78bb50a6edf4524c8ca75bba",
+    "blog/articles/13-wamr-whatsapp-deleted-messages-limitations-privacy.md": "d0b4ae97b04afdf4f460a206004528202f685da270efe9e34a536dcc466bc802",
+    "blog/articles/14-thop-tv-free-streaming-apps-legal-security-risks.md": "856c23d80dbcfafb5d8783798d2c1c6e7b0e425274af665666c1981f949287b2",
+    "blog/articles/15-welcome-to-ah-solution-tech-tips-tutorials.md": "b955851b542b202a589623cee55aa259ed5a6ee454674a8e3662719f369b126f",
+    "blog/articles/16-control-laptop-from-android-chrome-remote-desktop.md": "f9e015db7cfb01097492ee327e17e16de62d55fd8a26700bad7cf5684e04ca7d",
+    "blog/articles/17-mirror-android-screen-to-tv-pc-wireless-guide.md": "6216457ab13aef5874b568770efe95bb23bfab9f25bb957e85f40e6cc19db3de",
+    "blog/articles/18-best-ai-tools-automate-everyday-tasks-2026.md": "41a1fda6c7c0d959fc418c1fe658c6530506c6ddc83d2d0a6badc482748b4385",
+    "blog/articles/19-android-features-you-should-enable-2026.md": "f86d80329d578af7232c34960aa10a8337fe0ca397eed28ae81269486118ad74",
+    "blog/articles/20-best-free-windows-apps-2026.md": "e4c6673c11b5d69ca366948646da1fa31365d28216a5cfba932415f7c61498fc",
+    "blog/articles/21-smartphone-security-settings-protect-privacy.md": "1f0297958b850067e7ee57a032679af830e67632a3039922ade0738526a0a10c",
+    "blog/articles/22-identify-ai-generated-images-fake-screenshots-scams.md": "21d8b0482e08911cbd30afbf6fd24e7a6f9290133e6f4a6829970e65dbc29436"
+  }
+}

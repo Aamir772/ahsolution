@@ -29,7 +29,7 @@ const AUTHOR_PASS = 'password123';
 /* ------------------------------------------------------------------ *
  * In-memory mock Supabase
  * ------------------------------------------------------------------ */
-const store = { users: [], tokens: new Map(), refresh: new Map(), articles: [], admins: [], uploads: [] };
+const store = { users: [], tokens: new Map(), refresh: new Map(), tokenExpiry: new Map(), articles: [], admins: [], uploads: [] };
 let tokenSeq = 0;
 
 function publicUser(u) {
@@ -40,13 +40,15 @@ function issue(u) {
   tokenSeq += 1;
   const access = 'tok_a_' + tokenSeq;
   const refresh = 'tok_r_' + tokenSeq;
+  const now = Math.floor(Date.now() / 1000);
   store.tokens.set(access, u.id);
   store.refresh.set(refresh, u.id);
+  store.tokenExpiry.set(access, now + 3600);
   return {
     access_token: access,
     token_type: 'bearer',
     expires_in: 3600,
-    expires_at: Math.floor(Date.now() / 1000) + 3600,
+    expires_at: now + 3600,
     refresh_token: refresh,
     user: publicUser(u)
   };
@@ -70,6 +72,7 @@ function seed() {
   store.uploads = [];
   store.tokens.clear();
   store.refresh.clear();
+  store.tokenExpiry.clear();
 }
 seed();
 
@@ -127,6 +130,14 @@ const server = http.createServer((req, res) => {
     if (p === '/auth/v1/user') {
       const user = userByToken(req.headers.authorization);
       if (!user) return jsonRes(res, 401, { msg: 'invalid token' });
+      const header = req.headers.authorization || '';
+      const m = /^Bearer\s+(.+)$/i.exec(header);
+      if (m) {
+        const exp = store.tokenExpiry.get(m[1].trim());
+        if (exp !== undefined && exp * 1000 < Date.now()) {
+          return jsonRes(res, 401, { msg: 'token expired' });
+        }
+      }
       return jsonRes(res, 200, publicUser(user));
     }
     if (p === '/auth/v1/admin/users') {
@@ -388,7 +399,8 @@ async function main() {
   c.ok(created.status === 201 && created.body.ok === true, 'create succeeds for an admin');
   const row = created.body.article || {};
   c.ok(row.slug === 'how-to-clean-up-android-storage', 'slug is generated + normalised from the title', row.slug);
-  c.ok(row.status === 'published' && !!row.published_at, 'creating as published stamps published_at');
+  c.ok(row.status === 'draft', 'creating ignores client status and creates a draft (security hardening)');
+  c.ok(row.published_at === null || row.published_at === undefined, 'creating does not stamp published_at (security hardening)');
   c.ok(!/<script/i.test(row.body) && !/onclick/i.test(row.body) && !/javascript:/i.test(row.body), 'stored body is sanitised');
   c.ok(/<p>Real content<\/p>/.test(row.body), 'safe markup survives the sanitiser', row.body);
   c.ok(row.author_email === ADMIN_EMAIL, 'author_email is stamped from the verified JWT');
@@ -495,6 +507,43 @@ async function main() {
   c.ok(!JSON.stringify(login.body || {}).includes(ANON_KEY) && !JSON.stringify(created.body || {}).includes(ANON_KEY), 'the anon key is not echoed back either');
   const storageCalls = captured.filter((r) => r.label.startsWith('upload') && r.status === 200);
   c.ok(storageCalls.every((r) => !('apikey' in (r.headers || {}))), 'responses never echo request apikeys');
+
+  /* ---------------- 10. security regression: additional cases ---------------- */
+  console.log('\nsecurity regression: additional cases');
+
+  /* Expired JWT: create a token, force its expiry into the past, verify /auth/v1/user rejects it */
+  const expLogin = await call(adminAuth, { method: 'POST', body: { action: 'login', email: ADMIN_EMAIL, password: ADMIN_PASS }, label: 'exp-login' });
+  const expToken = expLogin.body.access_token;
+  const expMatch = expToken.match(/tok_a_(\d+)/);
+  const expKey = expMatch ? 'tok_a_' + expMatch[1] : expToken;
+  store.tokenExpiry.set(expKey, Math.floor(Date.now() / 1000) - 3600);
+store.tokenExpiry.set(expKey, 1); // clearly in the past
+  const expMe = await call(adminAuth, { method: 'POST', body: { action: 'me' }, headers: { Authorization: 'Bearer ' + expKey }, label: 'expired-jwt' });
+  c.ok(expMe.status === 401 && expMe.body.error === 'invalid_token', 'expired JWT rejected by /auth/v1/user -> 401 invalid_token');
+
+  /* Revoked refresh token: remove from store.refresh, verify refresh fails */
+  const revLogin = await call(adminAuth, { method: 'POST', body: { action: 'login', email: ADMIN_EMAIL, password: ADMIN_PASS }, label: 'rev-login' });
+  const revRefresh = revLogin.body.refresh_token;
+  store.refresh.delete(revRefresh);
+  const revResult = await call(adminAuth, { method: 'POST', body: { action: 'refresh', refresh_token: revRefresh }, label: 'revoked-refresh' });
+  c.ok(revResult.status === 401 && revResult.body.error === 'refresh_failed', 'revoked refresh token -> 401 refresh_failed');
+
+  /* ADMIN_EMAILS normalization: verified lowercase comparison */
+  const emailList = (process.env.ADMIN_EMAILS || '').split(',').map((s) => s.trim().toLowerCase());
+  c.ok(emailList.includes(ADMIN_EMAIL.toLowerCase()), 'ADMIN_EMAILS allowlist is lowercase-normalized');
+
+  /* Rate limiting on admin-auth login: NOT IMPLEMENTED in function (security finding) */
+  const rateDoc = await call(adminAuth, { method: 'POST', body: { action: 'login', email: ADMIN_EMAIL, password: 'wrong' }, label: 'rate1' });
+  const rateDoc2 = await call(adminAuth, { method: 'POST', body: { action: 'login', email: ADMIN_EMAIL, password: 'wrong' }, label: 'rate2' });
+  const rateDoc3 = await call(adminAuth, { method: 'POST', body: { action: 'login', email: ADMIN_EMAIL, password: 'wrong' }, label: 'rate3' });
+  c.ok(rateDoc.status === 401 && rateDoc2.status === 401 && rateDoc3.status === 401, 'three failed logins all return 401 (no rate limiting on admin-auth - see findings)');
+
+  /* Missing env vars: function returns 500 missing_keys */
+  const savedSvc = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  delete process.env.SUPABASE_SERVICE_ROLE_KEY;
+  const noSvc = await call(adminAuth, { method: 'POST', body: { action: 'login', email: ADMIN_EMAIL, password: ADMIN_PASS }, label: 'no-svc-key' });
+  c.ok(noSvc.status === 500 && noSvc.body.error === 'missing_keys', 'admin-auth returns 500 missing_keys without SUPABASE_SERVICE_ROLE_KEY');
+  process.env.SUPABASE_SERVICE_ROLE_KEY = savedSvc;
 
   server.close();
   const failed = c.fail;

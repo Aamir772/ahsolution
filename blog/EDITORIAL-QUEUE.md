@@ -1,5 +1,5 @@
 # AH Solution — Editorial Queue
-Source of truth: `blog-manifest.json` (sync with `node scripts/blog-manifest-sync.js`). Published: 17 · Drafts: 0.
+Source of truth: `blog-manifest.json` (sync with `node scripts/blog-manifest-sync.js`). Published: 22 · Drafts: 0.
 
 | # | Article title | Category | Slug (route) | Words | Status | Source video |
 |---:|---|---|---|---:|---|---|
@@ -20,3 +20,8 @@ Source of truth: `blog-manifest.json` (sync with `node scripts/blog-manifest-syn
 | 15 | Welcome to AH Solution: Tech Tips, Tutorials and Digital Guides | About AH Solution | `welcome-to-ah-solution-tech-tips-tutorials` → `/article/welcome-to-ah-solution-tech-tips-tutorials/` | 1409 | published · verification completed | [Watch](https://www.youtube.com/watch?v=_P-m_QS2334) |
 | 16 | Control Your Laptop From Android with Chrome Remote Desktop | Remote Access & Productivity | `control-laptop-from-android-chrome-remote-desktop` → `/article/control-laptop-from-android-chrome-remote-desktop/` | 1509 | published · verification completed | [Watch](https://www.youtube.com/watch?v=BqXARsRHsv8) |
 | 17 | Mirror Your Android Screen to a TV or PC: Wireless Options | Android & Connectivity | `mirror-android-screen-to-tv-pc-wireless-guide` → `/article/mirror-android-screen-to-tv-pc-wireless-guide/` | 1643 | published · verification completed | [Watch](https://www.youtube.com/watch?v=iWYXNmJXeME) |
+| 18 | 7 AI Tools That Can Automate Everyday Tasks in 2026 | AI & Productivity | `best-ai-tools-automate-everyday-tasks-2026` → `/article/best-ai-tools-automate-everyday-tasks-2026/` | 1023 | published · verification pending | [Watch]() |
+| 19 | 10 Android Features You Should Enable Right Now | Android Tips | `android-features-you-should-enable-2026` → `/article/android-features-you-should-enable-2026/` | 935 | published · verification pending | [Watch]() |
+| 20 | 9 Free Windows Apps That Make Your PC More Powerful | Windows & PC | `best-free-windows-apps-2026` → `/article/best-free-windows-apps-2026/` | 968 | published · verification pending | [Watch]() |
+| 21 | 8 Smartphone Security Settings to Protect Your Privacy | Cybersecurity & Digital Safety | `smartphone-security-settings-protect-privacy` → `/article/smartphone-security-settings-protect-privacy/` | 927 | published · verification pending | [Watch]() |
+| 22 | How to Identify AI-Generated Images, Fake Screenshots and Online Scams | Digital Safety & AI | `identify-ai-generated-images-fake-screenshots-scams` → `/article/identify-ai-generated-images-fake-screenshots-scams/` | 1331 | published · verification pending | [Watch]() |
